@@ -7,7 +7,9 @@ import youtube_dl
 import asyncio
 import utilities
 import requests
+from dotenv import load_dotenv
 
+load_dotenv()
 
 owner = '796915832617828352'
 
@@ -345,7 +347,12 @@ async def stop(ctx):
 
 
 
+token = os.getenv("TOKEN")
 
 
+<<<<<<< HEAD
 
 bot.run('TOKEN')
+=======
+bot.run(token)
+>>>>>>> b5ff57e (alr)

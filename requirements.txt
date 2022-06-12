@@ -1,0 +1,5 @@
+git+https://github.com/Rapptz/discord.py
+youtube-dl
+pynacl
+python-dotenv
+requests
