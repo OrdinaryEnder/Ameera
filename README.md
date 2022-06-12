@@ -25,3 +25,9 @@ SODIUM_INSTALL=system pip install -r requirements.txt
 ZairullahDeveloper - Code's
 
 OrdinaryEnder - Idea
+
+
+# To-do List
+
+**Adding 8ball And Akinator**
+**Automoderator**
