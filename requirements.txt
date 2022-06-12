@@ -3,3 +3,4 @@ youtube-dl
 pynacl
 python-dotenv
 requests
+akinator.py

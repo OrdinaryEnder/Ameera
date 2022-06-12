@@ -10,7 +10,8 @@ import requests
 from dotenv import load_dotenv
 from discord.utils import get
 from discord import NotFound
-
+import akinator
+from akinator.async_aki import Akinator
 
 load_dotenv()
 
@@ -65,6 +66,40 @@ async def _lvbypass(ctx, url):
       result = json.loads(loadlink)
       await ctx.send("Result:")
       await ctx.send(result['destination'])
+
+@bot.command(name='akinator', aliases=["aki"])
+async def _akinator(ctx):
+    await ctx.send("Akinator is here to guess!")
+    def check(msg):
+        return msg.author == ctx.author and msg.channel == ctx.channel and msg.content.lower() in ["y", "n","p","b"]
+    try:
+        aki = akinator.Akinator()
+        q = aki.start_game()
+        while aki.progression <= 80:
+            await ctx.send(q)
+            await ctx.send("Your answer:(y/n/p/b)")
+            msg = await bot.wait_for("message", check=check)
+            if msg.content.lower() == "b":
+                try:
+                    q=aki.back()
+                except aki.CantGoBackAnyFurther:
+                    await ctx.send(e)
+                    continue
+            else:
+                try:
+                    q = aki.answer(msg.content.lower())
+                except aki.InvalidAnswerError as e:
+                    await ctx.send(e)
+                    continue
+        aki.win()
+        await ctx.send(f"It's {aki.first_guess['name']} ({aki.first_guess['description']})! Was I correct?(y/n)\n{aki.first_guess['absolute_picture_path']}\n\t")
+        correct = await bot.wait_for("message", check=check)
+        if correct.content.lower() == "y":
+            await ctx.send("Yay\n")
+        else:
+            await ctx.send("Oof\n")
+    except Exception as e:
+        await ctx.send(e)
 
 @bot.command()
 @commands.is_owner()
