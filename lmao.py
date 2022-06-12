@@ -1,3 +1,4 @@
+import random
 import discord
 import os
 from discord.ext import commands
@@ -100,6 +101,35 @@ async def _akinator(ctx):
             await ctx.send("Oof\n")
     except Exception as e:
         await ctx.send(e)
+
+@bot.command(name='8ball', description='Let the 8 Ball Predict!\n')
+async def _8ball(ctx, question):
+    responses = ['As I see it, yes.',
+             'Yes.',
+             'Positive',
+             'From my point of view, yes',
+             'Convinced.',
+             'Most Likley.',
+             'Chances High',
+             'No.',
+             'Negative.',
+             'Not Convinced.',
+             'Perhaps.',
+             'Not Sure',
+             'Maybe',
+             'I cannot predict now.',
+             'Im to lazy to predict.',
+             'I am tired. *proceeds with sleeping*']
+    response = random.choice(responses)
+    embed=discord.Embed(title="The Magic 8 Ball has Spoken!")
+    embed.add_field(name='Question: ', value=f'{question}', inline=True)
+    embed.add_field(name='Answer: ', value=f'{response}', inline=False)
+    await ctx.send(embed=embed)
+
+@bot.command(name='avatar', description='get someone avatar (avatar copy)')
+async def _avatar(ctx, *,  avamember : discord.Member=None):
+    userAvatarUrl = avamember.avatar_url
+    await ctx.send(userAvatarUrl)
 
 @bot.command()
 @commands.is_owner()
