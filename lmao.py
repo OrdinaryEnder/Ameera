@@ -348,4 +348,4 @@ async def stop(ctx):
 
 
 
-bot.run('OTcyNDU5MjE3NTQ4MDk5NTg0.YnZXOA.Jix0nm_big4YbfGqTbRTE6aQUy4')
+bot.run('TOKEN')
