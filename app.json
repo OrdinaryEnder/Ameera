@@ -8,6 +8,15 @@
             "required": true
         }
     },
+    "buildpacks": [
+    {
+      "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest.git"
+    },
+    {
+      "url": "https://github.com/xiph/opus"
+    }
+  ]
+},
     "repository": "https://github.com/zairullahdev/Alexandra",
     "website": "https://youtu.be/dQw4w9WgXcQ",
     "formation": {
