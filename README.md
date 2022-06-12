@@ -20,6 +20,11 @@ pkg update && pkg install clang python libffi openssl libsodium
 SODIUM_INSTALL=system pip install -r requirements.txt
 ```
 
+### Heroku
+You can host this bot to make it stay online on Heroku.
+
+<a href="https://heroku.com/deploy?template=https://github.com/zairullahdev/Alexandra"><img src="https://www.herokucdn.com/deploy/button.svg" alt="Run your bot in Heroku"></a>
+
 
 # Credit 
 ZairullahDeveloper - Code's
@@ -29,6 +34,5 @@ OrdinaryEnder - Idea
 
 # To-do List
 
-**Adding 8ball And Akinator**
 
 **Automoderator**
