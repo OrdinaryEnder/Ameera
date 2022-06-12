@@ -9,7 +9,8 @@ Windows, MacOS, Linux
 ```
 pip install -r requirements.txt
 ```
-Note For Windows user, Please follow these Steps to Install Libsodium
+Note For Windows user, Please follow these Steps to Install Libsodium due required to install pynacl
+
 [Windows libsodium](https://py-ipv8.readthedocs.io/en/latest/preliminaries/install_libsodium.html)
 
 
