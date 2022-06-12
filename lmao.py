@@ -22,7 +22,26 @@ intents.members = True
 async def on_ready():
  print("Runnin")
 
-bot.event
+bot.remove_command("help")
+
+@bot.command
+async def help(ctx):
+embed=discord.Embed(title="Alexandra Bot", url="https://discord.com/api/oauth2/authorize?client_id=972459217548099584&permissions=8&scope=bot%20applications.commands", description="Discord Bot Ready at Your Service Yessir!", color=0xff00ff)
+embed.set_author(name="ZairullahDeveloper", url="https//github.com/zairullahdev", icon_url="https://i.ibb.co/9q6MYnM/Png.png")
+embed.set_thumbnail(url="https://camo.githubusercontent.com/51f16d28861eade2210bb6c5414a1d6b0096d0d8d56debc5fc64e8b88681c154/68747470733a2f2f656e637279707465642d74626e302e677374617469632e636f6d2f696d616765733f713d74626e3a414e6439476354664f54472d6d5268655674414b7164366430613774522d7157716b534e75464869767726757371703d434155")
+embed.add_field(name="Play", value="Play a music from YouTube ", inline=True)
+embed.add_field(name="Stop", value="Stop music", inline=True)
+embed.add_field(name="Leave ", value="Leave music voice", inline=True)
+embed.add_field(name="kick", value="Kick A Member", inline=True)
+embed.add_field(name="ban", value="Ban a member", inline=True)
+embed.add_field(name="mute", value="Mute a member", inline=True)
+embed.add_field(name="unmute ", value="Unmute them", inline=True)
+embed.add_field(name="lvbyass ", value="Bypass Linkvertise", inline=True)
+embed.set_footer(text="Report or suggest something at https://github com/zairullahdev/Alexandra")
+await ctx.send(embed=embed)
+
+
+@bot.event
 async def on_message_error(ctx, error):
     if isinstance(error, discord.ext.commands.errors.CommandNotFound):
         await ctx.send("Unknown command")
