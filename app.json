@@ -6,7 +6,9 @@
      "TOKEN": {
          "description": "Lmao",
          "required": true,
-       },
+       }
+    }
+},
     "repository": "https://github.com/zairullahdev/Alexandra",
     "website": "https://youtu.be/dQw4w9WgXcQ",
     "formation": {
