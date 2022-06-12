@@ -9,6 +9,10 @@ Windows, MacOS, Linux
 ```
 pip install -r requirements.txt
 ```
+Note For Windows user, Please follow these Steps to Install Libsodium
+[Windows libsodium](https://py-ipv8.readthedocs.io/en/latest/preliminaries/install_libsodium.html)
+
+
 Termux (Android, Not recommended using Data)
 ```
 pkg update && pkg install clang python libffi openssl libsodium
