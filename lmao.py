@@ -8,38 +8,22 @@ import asyncio
 import utilities
 import requests
 from dotenv import load_dotenv
+from discord.utils import get
+from discord import NotFound
+
 
 load_dotenv()
 
 owner = '796915832617828352'
 
-bot = commands.Bot(command_prefix='-')
+intents = discord.Intents().all()
 
-intents = discord.Intents.default()
-intents.members = True
+bot = commands.Bot(command_prefix='-', intents=intents)
+
 
 @bot.event
 async def on_ready():
  print("Runnin")
-
-bot.remove_command("help")
-
-@bot.command
-async def help(ctx):
-embed=discord.Embed(title="Alexandra Bot", url="https://discord.com/api/oauth2/authorize?client_id=972459217548099584&permissions=8&scope=bot%20applications.commands", description="Discord Bot Ready at Your Service Yessir!", color=0xff00ff)
-embed.set_author(name="ZairullahDeveloper", url="https//github.com/zairullahdev", icon_url="https://i.ibb.co/9q6MYnM/Png.png")
-embed.set_thumbnail(url="https://camo.githubusercontent.com/51f16d28861eade2210bb6c5414a1d6b0096d0d8d56debc5fc64e8b88681c154/68747470733a2f2f656e637279707465642d74626e302e677374617469632e636f6d2f696d616765733f713d74626e3a414e6439476354664f54472d6d5268655674414b7164366430613774522d7157716b534e75464869767726757371703d434155")
-embed.add_field(name="Play", value="Play a music from YouTube ", inline=True)
-embed.add_field(name="Stop", value="Stop music", inline=True)
-embed.add_field(name="Leave ", value="Leave music voice", inline=True)
-embed.add_field(name="kick", value="Kick A Member", inline=True)
-embed.add_field(name="ban", value="Ban a member", inline=True)
-embed.add_field(name="mute", value="Mute a member", inline=True)
-embed.add_field(name="unmute ", value="Unmute them", inline=True)
-embed.add_field(name="lvbyass ", value="Bypass Linkvertise", inline=True)
-embed.set_footer(text="Report or suggest something at https://github com/zairullahdev/Alexandra")
-await ctx.send(embed=embed)
-
 
 @bot.event
 async def on_message_error(ctx, error):
@@ -49,13 +33,38 @@ async def on_message_error(ctx, error):
     if isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
         await ctx.send("Argument Missing")
 
+class MyHelpCommand(commands.MinimalHelpCommand):
+
+ async def send_pages(self):
+  destination = self.get_destination()
+  embed=discord.Embed(title="Alexandra ", url="https://discord.com/api/oauth2/authorize?client_id=972459217548099584&permissions=0&scope=bot%20applications.commands", description="", color=0x004cff)
+  embed.set_author(name="ZairullahDeveloper", url="https://github.com/zairullahdev", icon_url="https://i.ibb.co/9q6MYnM/Png.png")
+  embed.set_thumbnail(url="https://camo.githubusercontent.com/51f16d28861eade2210bb6c5414a1d6b0096d0d8d56debc5fc64e8b88681c154/68747470733a2f2f656e637279707465642d74626e302e677374617469632e636f6d2f696d616765733f713d74626e3a414e6439476354664f54472d6d5268655674414b7164366430613774522d7157716b534e75464869767726757371703d434155")
+  embed.add_field(name="help ", value="Show this help", inline=True)
+  embed.add_field(name="play", value="Play some music", inline=True)
+  embed.add_field(name="skip", value="Skip da music", inline=True)
+  embed.add_field(name="pause", value="Pause da music", inline=True)
+  embed.add_field(name="resume", value="Resume da music", inline=True)
+  embed.add_field(name="kick", value="Kick dumbasses", inline=True)
+  embed.add_field(name="ban", value="Ban dumbasses", inline=True)
+  embed.add_field(name="mute", value="Mute da dumbasses", inline=True)
+  embed.add_field(name="unmute", value="Unmute a person ", inline=True)
+  embed.add_field(name="unban", value="unban a person", inline=True)
+  embed.add_field(name="lvbypass", value="Bypass Linkvertise using bypass.vip API!", inline=True)
+  embed.set_footer(text="Any suggestions contact ZairullahDeveloper in GitHub (zairullahdev)")
+  for page in self.paginator.pages:
+            embed.description += page
+  await destination.send(embed=embed)
+
+bot.help_command = MyHelpCommand()
+
 @bot.command(name='lvbypass', description='Bypass Linkvertise using bypass.vip api')
 async def _lvbypass(ctx, url):
       link = bypass(url)
       loadlink = json.dumps(link)
       result = json.loads(loadlink)
       await ctx.send("Result:")
-      await ctx.send(result)
+      await ctx.send(result['destination'])
 
 @bot.command()
 @commands.is_owner()
@@ -93,29 +102,36 @@ async def _unban(ctx, id: int):
 
 @bot.command(name='mute', description='Mute Whos Keep Spamming on ur Holy Server', pass_context = True)
 @commands.has_permissions(manage_messages=True)
-async def _mute(ctx, member: discord.Member, mute_time : int):
-        if not member:
-         await ctx.send("Who do you want me to mute?")
-        return
-        role = discord.utils.get(member.server.roles, name='Muted')
-        time_convert = {"s":1, "m":60, "h":3600,"d":86400}
-        tempmute= int(time[0]) * time_convert[mute_time[-1]]
-        await ctx.add_roles(member, role)
-        embed=discord.Embed(title="User Muted!", description="**{0}** was muted by **{1}**!".format(member, ctx.message.author), color=0xff00f6)
-        await ctx.send(embed=embed)
-        
-        await asyncio.sleep(tempmute)
-        await member.remove_roles(role)
+async def _mute(ctx, member: discord.Member, duration = 0,*, unit = None):
+        guild = bot.guilds[0]
+        roleobject = discord.utils.get(ctx.guild.roles, name="Nameless Muted")
+        memberrole = discodd.utils.get(ctx.guild.roles, name="Nameless Member")
+        await member.remove(memberrole)
 
+        if not roleobject:
+          roleobject = await ctx.guild.create_role("Nameless Muted", permissions=discord.Permissions(send_messages=False))
+
+        await ctx.send(f":white_check_mark: Muted {member} for {duration}{unit}")
+        await member.add_roles(roleobject)
+        if unit == "s":
+         wait = 1 * duration
+         await asyncio.sleep(wait)
+        elif unit == "m":
+         wait = 60 * duration
+         await asyncio.sleep(wait)
+         await member.add_roles(memberrole)
+         await member.remove_roles(roleobject)
 
 @bot.command(name='unmute', description='Unmute')
 @commands.has_permissions(manage_messages=True)
 async def unmute(ctx, member: discord.Member):
-   mutedRole = discord.utils.get(ctx.guild.roles, name="Muted")
+   mutedRole = discord.utils.get(ctx.guild.roles, name="Nameless Muted")
+   memberrole = discord.utils.get(ctx.guild.roles, name="Nameless Member")
 
    await member.remove_roles(mutedRole)
    await member.send(f" you have unmutedd from: - {ctx.guild.name}")
-   embed = discord.Embed(title="Unmuted", description=f" unmuted-{member.mention}",colour=discord.Colour.light_gray())
+   embed = discord.Embed(title="Unmuted", description=f" Unmuted {member.mention}",colour=discord.Colour.light_gray())
+   await member.add_roles(memberrole)
    await ctx.send(embed=embed)
 
 # YouTube is a bitch and tries to disconnect our bot from its servers. Use this to reconnect instantly
@@ -369,9 +385,4 @@ async def stop(ctx):
 token = os.getenv("TOKEN")
 
 
-<<<<<<< HEAD
-
-bot.run('TOKEN')
-=======
 bot.run(token)
->>>>>>> b5ff57e (alr)
