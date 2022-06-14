@@ -13,8 +13,15 @@ from discord.utils import get
 from discord import NotFound
 import akinator
 from akinator.async_aki import Akinator
+from json import loads
 
 load_dotenv()
+
+with open('badword.txt', 'r') as f:
+ words = f.read()
+ badwords = words.split()
+
+
 
 owner = '796915832617828352'
 
@@ -22,18 +29,10 @@ intents = discord.Intents().all()
 
 bot = commands.Bot(command_prefix='-', intents=intents)
 
-
 @bot.event
 async def on_ready():
- print("Runnin")
-
-@bot.event
-async def on_message_error(ctx, error):
-    if isinstance(error, discord.ext.commands.errors.CommandNotFound):
-        await ctx.send("Unknown command")
-    
-    if isinstance(error, discord.ext.commands.errors.MissingRequiredArgument):
-        await ctx.send("Argument Missing")
+ print("Logged As")
+ print(bot.user.name, bot.user.discriminator)
 
 class MyHelpCommand(commands.MinimalHelpCommand):
 
@@ -53,14 +52,21 @@ class MyHelpCommand(commands.MinimalHelpCommand):
   embed.add_field(name="unmute", value="Unmute a person ", inline=True)
   embed.add_field(name="unban", value="unban a person", inline=True)
   embed.add_field(name="lvbypass", value="Bypass Linkvertise using bypass.vip API!", inline=True)
+  embed.add_field(name="volume", value="Set Volume At Music Play", inline=True)
+  embed.add_field(name="8ball", value="Ask Any Question", inline=True)
+  embed.add_field(name="akinator", value="Akinator.py Discord Port", inline=True)
+  embed.add_field(name="avatar", value="Avatar copy", inline=True)
+  embed.add_field(name="say", value="make the bot say smth", inline=True)
+  embed.add_field(name='robloxinfo', value='Get your game info in JSON')
   embed.set_footer(text="Any suggestions contact ZairullahDeveloper in GitHub (zairullahdev)")
   for page in self.paginator.pages:
-            embed.description += page
+            embed.title += page
   await destination.send(embed=embed)
 
 bot.help_command = MyHelpCommand()
 
 @bot.command(name='lvbypass', description='Bypass Linkvertise using bypass.vip api')
+
 async def _lvbypass(ctx, url):
       link = bypass(url)
       loadlink = json.dumps(link)
@@ -127,8 +133,8 @@ async def _8ball(ctx, question):
     await ctx.send(embed=embed)
 
 @bot.command(name='avatar', description='get someone avatar (avatar copy)')
-async def _avatar(ctx, *,  avamember : discord.Member=None):
-    userAvatarUrl = avamember.avatar_url
+async def _avatar(ctx, avamember : discord.Member):
+    userAvatarUrl = avamember.avatar.url
     await ctx.send(userAvatarUrl)
 
 @bot.command()
@@ -146,7 +152,10 @@ async def _kick(self, ctx, Member: discord.Member):
         if ctx.author.top_role > user.top_role:
                 return await bot.kick(Member)
                 return await ctx.send(f"{user} Successfully Banned by {ctx.author.mention}")
-
+@_kick.error
+async def kick_error(ctx, error):
+    if isinstance(error, discord.ext.commands.BadArgument):
+        await bot.say('Could not recognize user')
 
 @bot.command(name='ban', description='Ban dumbass from your Holy Server')
 @commands.has_permissions(ban_members=True)
@@ -198,6 +207,39 @@ async def unmute(ctx, member: discord.Member):
    embed = discord.Embed(title="Unmuted", description=f" Unmuted {member.mention}",colour=discord.Colour.light_gray())
    await member.add_roles(memberrole)
    await ctx.send(embed=embed)
+
+@bot.command(name='say', description='make bot say smth')
+async def _speak(ctx, *, text):
+    message = ctx.message
+    await message.delete()
+
+    await ctx.send(f"{text}")
+
+@bot.command(name='image', description='Get Images')
+@commands.is_nsfw()
+async def _image(ctx, image):
+    img = image
+    r = requests.get("https://nekos.life/api/v2/img/{}".format(image))
+    res = r.json()
+    em = discord.Embed()
+    em.set_image(url=res['url'])
+    await ctx.send(embed=em)
+@bot.command(name='robloxinfo', description='Get Roblox Game Info')
+async def _robloxinfo(ctx, *, placeid):
+   # First we gonna get Universe ID, Because Roblox Only Allow show game with it
+   uidget = requests.get('https://api.roblox.com/universes/get-universe-containing-place?placeid={}'.format(placeid))
+   universeload = uidget.json()
+   load = json.dumps(universeload)
+   getid = json.loads(load)
+# and finally, post your universe id into roblox
+   robloxgame = requests.get('https://games.roblox.com/v1/games?universeIds={}'.format(getid['UniverseId']))
+   returngame = robloxgame.json()
+   getinfogame = json.dumps(returngame, indent=4, sort_keys=True)
+  # send it as json because this is for developer
+   jsonroblox = '```'
+   await ctx.send('```json\n{}\n{}'.format(getinfogame, jsonroblox))
+
+
 
 # YouTube is a bitch and tries to disconnect our bot from its servers. Use this to reconnect instantly
 # (Because of this disconnect/reconnect cycle, sometimes you will listen a sudden and brief stop)
@@ -445,7 +487,20 @@ async def stop(ctx):
     else:
         await ctx.send("There's nothing playing homie.")
 
+@bot.command(name="volume", description='Set Volume While Playing')                          
+async def _volume(ctx, volume: float):                   
+    voice = get(bot.voice_clients, guild=ctx.guild)  
 
+    if 0 <= volume <= 300:                              
+        if voice.is_playing():                          
+            new_volume = volume / 100                   
+            voice.source.volume = new_volume            
+        else:                                           
+            await ctx.reply("What?")   
+    else:                                               
+        await ctx.reply("Really?")
+
+    await ctx.reply(f"Volume: {volume}")
 
 token = os.getenv("TOKEN")
 
