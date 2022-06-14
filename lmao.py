@@ -1,3 +1,4 @@
+import inspect
 import random
 import discord
 import os
@@ -22,9 +23,6 @@ with open('badword.txt', 'r') as f:
  badwords = words.split()
 
 
-
-owner = '796915832617828352'
-
 intents = discord.Intents().all()
 
 bot = commands.Bot(command_prefix='-', intents=intents)
@@ -33,6 +31,9 @@ bot = commands.Bot(command_prefix='-', intents=intents)
 async def on_ready():
  print("Logged As")
  print(bot.user.name, bot.user.discriminator)
+
+
+
 
 class MyHelpCommand(commands.MinimalHelpCommand):
 
@@ -60,7 +61,7 @@ class MyHelpCommand(commands.MinimalHelpCommand):
   embed.add_field(name='robloxinfo', value='Get your game info in JSON')
   embed.set_footer(text="Any suggestions contact ZairullahDeveloper in GitHub (zairullahdev)")
   for page in self.paginator.pages:
-            embed.title += page
+            embed.description += page
   await destination.send(embed=embed)
 
 bot.help_command = MyHelpCommand()
@@ -143,6 +144,15 @@ async def shutdown(ctx):
      await ctx.send("CTRL+ALT+DEL PRESSED")
      await ctx.send("Bye :(")
      await ctx.bot.logout()
+
+@bot.command(name='eval', description='Evaluate Something')
+@commands.is_owner()
+async def _eval(ctx, *, command):
+    res = eval(command)
+    if inspect.isawaitable(res):
+        await ctx.send(res)
+    else:
+        await ctx.send(res)
 
 @bot.command(name='kick', description='Kick Dumbass from Your Holy Server')
 @commands.has_permissions(kick_members=True)
@@ -239,7 +249,26 @@ async def _robloxinfo(ctx, *, placeid):
    jsonroblox = '```'
    await ctx.send('```json\n{}\n{}'.format(getinfogame, jsonroblox))
 
+@bot.command(name='purge', description='Purge Old Messages', pass_context=True)
+@commands.has_permissions(manage_messages=True)
+async def _purge(ctx, limit: int):
+        await ctx.channel.purge(limit=limit)
+        await ctx.send("Purged by {}".format(ctx.author.mention), delete_after=5)
+        await ctx.message.delete()
 
+@_purge.error
+async def clear_error(ctx, error):
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.send("You cant do that!")
+
+@bot.command(name='report', description='Report someone to Admin or Owner')
+@commands.cooldown(1, 600, commands.BucketType.user)
+async def _report(ctx, member: discord.Member, reason=None):
+ owner = ctx.guild.owner
+ await owner.send("This guy break the rules")
+ await owner.send("Name: {}".format(member))
+ await owner.send("Reason: {}".format(reason))
+ await ctx.send("Reported to Owner, Please Calm Down")
 
 # YouTube is a bitch and tries to disconnect our bot from its servers. Use this to reconnect instantly
 # (Because of this disconnect/reconnect cycle, sometimes you will listen a sudden and brief stop)
@@ -488,17 +517,17 @@ async def stop(ctx):
         await ctx.send("There's nothing playing homie.")
 
 @bot.command(name="volume", description='Set Volume While Playing')                          
-async def _volume(ctx, volume: float):                   
+async def volume(ctx, volume: float):                   
     voice = get(bot.voice_clients, guild=ctx.guild)  
 
-    if 0 <= volume <= 300:                              
+    if 0 <= volume <= 100:                              
         if voice.is_playing():                          
             new_volume = volume / 100                   
             voice.source.volume = new_volume            
         else:                                           
-            await ctx.reply("What?")   
+            await ctx.reply("#")   
     else:                                               
-        await ctx.reply("Really?")
+        await ctx.reply("#")
 
     await ctx.reply(f"Volume: {volume}")
 
