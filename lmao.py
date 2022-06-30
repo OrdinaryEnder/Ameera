@@ -1,117 +1,122 @@
+import typing
+from discord import app_commands
+from discord import ClientException
+import re
+import os
+import subprocess 
+import math
+import functools
+import sys
+import io
+from lyricsgenius import Genius
 import inspect
 import random
 import discord
-import os
 from discord.ext import commands
+from discord.ext import tasks
 import json
 from botmod import bypass
 import youtube_dl
 import asyncio
-import utilities
+import time
+import datetime
+import platform
+
+from wavelink import (LavalinkException, LoadTrackError, SoundCloudTrack,
+                      YouTubeMusicTrack, YouTubePlaylist, YouTubeTrack)
+from wavelink.ext import spotify
+from wavelink.ext.spotify import SpotifyTrack
+
+from utilities._classes import Provider
+from utilities.checks import voice_channel_player, voice_connected
+from utilities.errors import MustBeSameChannel
+from utilities.paginator import Paginator
+from utilities.player import DisPlayer
+
 import requests
+from enum import Enum
+import lavalink
 from dotenv import load_dotenv
 from discord.utils import get
 from discord import NotFound
 import akinator
+import itertools
+from async_timeout import timeout
 from akinator.async_aki import Akinator
 from json import loads
+import wavelink
+import async_timeout
 
 load_dotenv()
 
-with open('badword.txt', 'r') as f:
- words = f.read()
- badwords = words.split()
+genius = Genius()
 
+def restart_bot(): 
+  os.execv(sys.executable, ['python'] + sys.argv)
 
 intents = discord.Intents().all()
 
 bot = commands.Bot(command_prefix='-', intents=intents)
 
+#
+
+
 @bot.event
 async def on_ready():
  print("Logged As")
- print(bot.user.name, bot.user.discriminator)
-
-
-
+ print(f"@{bot.user.name}#{bot.user.discriminator}")
+ print("Registering Commands (Wont take long time)....")
+ await bot.add_cog(Music(bot))
+ await bot.add_cog(Fun(bot))
+ await bot.add_cog(Moderation(bot))
+ await bot.add_cog(Other(bot))
+ await bot.add_cog(Owner(bot))
+ await bot.add_cog(nsfw(bot))
+ print("Powered by dismusic")
+@bot.event
+async def on_member_join(member):
+       embed = discord.Embed(title=f"Welcome to {member.guild.name}, {member.name}!", description="By Joining, Your agree to the rules given in server")
+       embed.timestamp = datetime.datetime.now()
+       await member.send(embed=embed)
+"""
+ZairullahDeveloper once said: Being a developer isnt that easy, start from making mistakes
+"""
 
 class MyHelpCommand(commands.MinimalHelpCommand):
 
  async def send_pages(self):
   destination = self.get_destination()
-  embed=discord.Embed(title="Alexandra ", url="https://discord.com/api/oauth2/authorize?client_id=972459217548099584&permissions=0&scope=bot%20applications.commands", description="", color=0x004cff)
-  embed.set_author(name="ZairullahDeveloper", url="https://github.com/zairullahdev", icon_url="https://i.ibb.co/9q6MYnM/Png.png")
-  embed.set_thumbnail(url="https://camo.githubusercontent.com/51f16d28861eade2210bb6c5414a1d6b0096d0d8d56debc5fc64e8b88681c154/68747470733a2f2f656e637279707465642d74626e302e677374617469632e636f6d2f696d616765733f713d74626e3a414e6439476354664f54472d6d5268655674414b7164366430613774522d7157716b534e75464869767726757371703d434155")
-  embed.add_field(name="help ", value="Show this help", inline=True)
-  embed.add_field(name="play", value="Play some music", inline=True)
-  embed.add_field(name="skip", value="Skip da music", inline=True)
-  embed.add_field(name="pause", value="Pause da music", inline=True)
-  embed.add_field(name="resume", value="Resume da music", inline=True)
-  embed.add_field(name="kick", value="Kick dumbasses", inline=True)
-  embed.add_field(name="ban", value="Ban dumbasses", inline=True)
-  embed.add_field(name="mute", value="Mute da dumbasses", inline=True)
-  embed.add_field(name="unmute", value="Unmute a person ", inline=True)
-  embed.add_field(name="unban", value="unban a person", inline=True)
-  embed.add_field(name="lvbypass", value="Bypass Linkvertise using bypass.vip API!", inline=True)
-  embed.add_field(name="volume", value="Set Volume At Music Play", inline=True)
-  embed.add_field(name="8ball", value="Ask Any Question", inline=True)
-  embed.add_field(name="akinator", value="Akinator.py Discord Port", inline=True)
-  embed.add_field(name="avatar", value="Avatar copy", inline=True)
-  embed.add_field(name="say", value="make the bot say smth", inline=True)
-  embed.add_field(name='robloxinfo', value='Get your game info in JSON')
-  embed.set_footer(text="Any suggestions contact ZairullahDeveloper in GitHub (zairullahdev)")
+  for command in bot.commands:
+   embed=discord.Embed(title="Alexandra ", url="https://discord.com/api/oauth2/authorize?client_id=972459217548099584&permissions=0&scope=bot%20applications.commands", description="")
+   embed.set_author(name="ZairullahDeveloper", url="https://github.com/zairullahdev", icon_url="https://i.ibb.co/9q6MYnM/Png.png")
+   embed.set_thumbnail(url="https://camo.githubusercontent.com/51f16d28861eade2210bb6c5414a1d6b0096d0d8d56debc5fc64e8b88681c154/68747470733a2f2f656e637279707465642d74626e302e677374617469632e636f6d2f696d616765733f713d74626e3a414e6439476354664f54472d6d5268655674414b7164366430613774522d7157716b534e75464869767726757371703d434155")
+   embed.add_field(name='By OrdinaryEnder Feat ZairullahDeveloper', value='MIT License')
+   embed.set_footer(text="Any suggestions contact ZairullahDeveloper in GitHub (zairullahdev)")
   for page in self.paginator.pages:
             embed.description += page
   await destination.send(embed=embed)
 
 bot.help_command = MyHelpCommand()
 
-@bot.command(name='lvbypass', description='Bypass Linkvertise using bypass.vip api')
+class Fun(commands.Cog):
+    def __init__(self, bot: commands.Bot):
+     self.bot = bot
+     super().__init__()
+ 
+    @commands.command(name='lvbypass', description='Bypass Linkvertise')
+    async def _lvbypass(self, ctx, url):
+       link = bypass(url)
+       loadlink = json.dumps(link)
+       print(loadlink)
+       datalink = loadlink['destination']
+       embed=discord.Embed(title="Result", description="Dont let your data get sold by Them!")
+       embed.add_field(name="ㅤ", value=datalink)
+       await ctx.send(embed=embed)
 
-async def _lvbypass(ctx, url):
-      link = bypass(url)
-      loadlink = json.dumps(link)
-      result = json.loads(loadlink)
-      await ctx.send("Result:")
-      await ctx.send(result['destination'])
 
-@bot.command(name='akinator', aliases=["aki"])
-async def _akinator(ctx):
-    await ctx.send("Akinator is here to guess!")
-    def check(msg):
-        return msg.author == ctx.author and msg.channel == ctx.channel and msg.content.lower() in ["y", "n","p","b"]
-    try:
-        aki = akinator.Akinator()
-        q = aki.start_game()
-        while aki.progression <= 80:
-            await ctx.send(q)
-            await ctx.send("Your answer:(y/n/p/b)")
-            msg = await bot.wait_for("message", check=check)
-            if msg.content.lower() == "b":
-                try:
-                    q=aki.back()
-                except aki.CantGoBackAnyFurther:
-                    await ctx.send(e)
-                    continue
-            else:
-                try:
-                    q = aki.answer(msg.content.lower())
-                except aki.InvalidAnswerError as e:
-                    await ctx.send(e)
-                    continue
-        aki.win()
-        await ctx.send(f"It's {aki.first_guess['name']} ({aki.first_guess['description']})! Was I correct?(y/n)\n{aki.first_guess['absolute_picture_path']}\n\t")
-        correct = await bot.wait_for("message", check=check)
-        if correct.content.lower() == "y":
-            await ctx.send("Yay\n")
-        else:
-            await ctx.send("Oof\n")
-    except Exception as e:
-        await ctx.send(e)
-
-@bot.command(name='8ball', description='Let the 8 Ball Predict!\n')
-async def _8ball(ctx, question):
-    responses = ['As I see it, yes.',
+    @commands.command(name='8ball', description='Let the 8 Ball Predict!\n')
+    async def _8ball(self, ctx, *, question: str):
+     responses = ['As I see it, yes.',
              'Yes.',
              'Positive',
              'From my point of view, yes',
@@ -127,411 +132,609 @@ async def _8ball(ctx, question):
              'I cannot predict now.',
              'Im to lazy to predict.',
              'I am tired. *proceeds with sleeping*']
-    response = random.choice(responses)
-    embed=discord.Embed(title="The Magic 8 Ball has Spoken!")
-    embed.add_field(name='Question: ', value=f'{question}', inline=True)
-    embed.add_field(name='Answer: ', value=f'{response}', inline=False)
-    await ctx.send(embed=embed)
+     response = random.choice(responses)
+     embed=discord.Embed(title="The Magic 8 Ball has Spoken!")
+     embed.add_field(name='Question: ', value=f'{question}', inline=True)
+     embed.add_field(name='Answer: ', value=f'{response}', inline=False)
+     await ctx.send(embed=embed)
 
-@bot.command(name='avatar', description='get someone avatar (avatar copy)')
-async def _avatar(ctx, avamember : discord.Member):
-    userAvatarUrl = avamember.avatar.url
-    await ctx.send(userAvatarUrl)
 
-@bot.command()
-@commands.is_owner()
-async def shutdown(ctx):
-     await ctx.send("CTRL+ALT+DEL PRESSED")
+    @commands.command(name='akinator', description="Lemme guess ur character")
+    async def akinator(self, ctx):
+     await ctx.send("Akinator is here to guess!")
+     def check(msg):
+         return msg.author == ctx.author and msg.channel == ctx.channel and msg.content.lower() in ["y", "n","p","b"]
+     try:
+         aki = akinator.Akinator()
+         q = aki.start_game()
+         while aki.progression < 80:
+             await ctx.send(q)
+             await ctx.send("Your answer:(y/n/p/b)")
+             msg = await bot.wait_for("message", check=check)
+             if msg.content.lower() == "b":
+                 try:
+                     q=aki.back()
+                 except aki.CantGoBackAnyFurther:
+                     await interaction.response.send_message(e)
+                     continue
+             else:
+                 try:
+                     q = aki.answer(msg.content.lower())
+                 except aki.InvalidAnswerError as e:
+                     await interaction.response.send_message(e)
+                     continue
+         aki.win()
+         await ctx.send(f"It's {aki.first_guess['name']} ({aki.first_guess['description']})! Was I correct?(y/n)\n{aki.first_guess['absolute_picture_path']}\n\t")
+         correct = await bot.wait_for("message", check=check)
+         if correct.content.lower() == "y":
+             await interaction.response.send_message("Yay\n")
+         else:
+             await interaction.response.send_message("Oof\n")
+     except Exception as e:
+         await interaction.response.send_message(e)
+    
+    @commands.command(name="date", description="Show today date")
+    async def __date(self, ctx):
+     date = datetime.datetime.now().strftime("%Y-%m-%d")
+     time = datetime.datetime.now().strftime("%H:%M:%S")
+     embed=discord.Embed(title="Now", description=f"Today is")
+     embed.add_field(name="Date", value=date)
+     embed.add_field(name="Time", value=time)
+     embed.set_footer(text="If you wanna donate to us your can execute donate command")
+     await ctx.send(embed=embed)
+
+    @commands.command(name="math", description="Math")
+    async def __math(self, ctx, num1: float, op: str, num2: float):
+     if op == "+":
+      result = num1 + num2
+     elif op == "-":
+      result = num1 - num2
+     elif op == "*":
+      result =num1 * num2
+     elif op == "/":
+      result = num1 / num2
+      
+     embed = discord.Embed(title="Result", description="ㅤ", color=discord.Color.from_rgb(0, 0, 0))
+     embed.add_field(name="Result Of Your Math:", value=f"{num1} {op} {num2} = {result}")
+     embed.set_footer(text="Be Smart Next Time!")
+     await ctx.send(embed=embed)
+
+class Owner(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command()
+    @commands.is_owner()
+    async def shutdown(self, ctx):
+     await ctx.send("ALT+F4 PRESSED")
+
      await ctx.send("Bye :(")
-     await ctx.bot.logout()
+     await bot.close()
 
-@bot.command(name='eval', description='Evaluate Something')
-@commands.is_owner()
-async def _eval(ctx, *, command):
-    res = eval(command)
-    if inspect.isawaitable(res):
-        await ctx.send(res)
-    else:
-        await ctx.send(res)
+    @commands.command(name='shell', description='Console Remote')
+    @commands.is_owner()
+    async def _eval(self, ctx, *, cmd):
+        # Ender : This very  damger dont give it to your friend ig D:<
+        await ctx.send(f"Current Shell = {os.getenv('SHELL')}")
+        results = subprocess.check_output(cmd, shell=True)
+        lmao = results.decode("utf-8")
 
-@bot.command(name='kick', description='Kick Dumbass from Your Holy Server')
-@commands.has_permissions(kick_members=True)
-async def _kick(self, ctx, Member: discord.Member):
+        await ctx.send(f"```css\n{ lmao }```")
+
+    @commands.command(name='restart', description='Restart Bot Session')
+    @commands.is_owner()
+    async def _restart(self, ctx):
+          embed = discord.Embed(title="Restarting.....", description="")
+          embed.set_thumbnail(url="https://camo.githubusercontent.com/51f16d28861eade2210bb6c5414a1d6b0096d0d8d56debc5fc64e8b88681c154/68747470733a2f2f656e637279707465642d74626e302e677374617469632e636f6d2f696d616765733f713d74626e3a414e6439476354664f54472d6d5268655674414b7164366430613774522d7157716b534e75464869767726757371703d434155")
+          embed.add_field(name="<a:igloading:989097955619393546>", value="Give us a support in [Github!](https://github.com/zairullahdev/Alexandra)")
+          embed.timestamp = datetime.datetime.now()
+          await ctx.send(embed=embed)
+          await asyncio.sleep(3)
+          await ctx.channel.purge(limit=1)
+          restart_bot()
+
+    @commands.command(name='chpresence', description='Change Bot Presence As You Wanted')
+    @commands.is_owner()
+    async def _chp(self, ctx, type, *, name=None, twittch=None):
+          if type == 'playing':
+             await bot.change_presence(activity=discord.Game(name=name))
+          elif type == 'watching':
+             await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=name))
+          elif type == 'listening':
+             await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=name))
+          elif type == 'streaming':
+             await bot.change_presence(activity=discord.Streaming(name=name, url=twittch))
+          elif type == 'sleep':
+             await bot.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.listening, name = '24/7 Lo-fi'))
+
+
+class Moderation(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command(name='kick', description='Kick Dumbass from Your Holy Server')
+    @commands.has_permissions(kick_members=True)
+    async def _kick(self, ctx, Member: discord.Member):
         if ctx.author.top_role < user.top_role:
                 return await ctx.send("**You don't have enough permission**")
         if ctx.author.top_role > user.top_role:
                 return await bot.kick(Member)
                 return await ctx.send(f"{user} Successfully Banned by {ctx.author.mention}")
-@_kick.error
-async def kick_error(ctx, error):
-    if isinstance(error, discord.ext.commands.BadArgument):
+    @_kick.error
+    async def kick_error(ctx, error):
+     if isinstance(error, discord.ext.commands.BadArgument):
         await bot.say('Could not recognize user')
 
-@bot.command(name='ban', description='Ban dumbass from your Holy Server')
-@commands.has_permissions(ban_members=True)
-async def _ban(ctx, user: discord.Member, *, reason=None):
-	if reason == None:
-		reason = f"{user} banned by {ctx.author}"
-	if ctx.author.top_role < user.top_role:
-		return await ctx.send("**You don't have enough permission**")
-	if ctx.author.top_role > user.top_role:
-		return await ctx.guild.ban(user, reason=reason)
-		return await ctx.send(f"{user} Successfully Banned by {ctx.author.mention}")
+    @commands.command(name='ban', description='Ban dumbass from your Holy Server')
+    @commands.has_permissions(ban_members=True)
+    async def _ban(self, ctx, user: discord.Member, *, reason=None):
+        if reason == None:
+           reason = f"{user} banned by {ctx.author}"
+        if ctx.author.top_role < user.top_role:
+           return await ctx.send("**You don't have enough permission**")
+        if ctx.author.top_role > user.top_role:
+           return await ctx.guild.ban(user, reason=reason)
+           return await ctx.send(f"{user} Successfully Banned by {ctx.author.mention}")
 
-@bot.command(name='unban', description='Unban people who have repented')
-@commands.has_permissions(ban_members=True)
-async def _unban(ctx, id: int):
-    user = await bot.fetch_user(id)
-    await ctx.guild.unban(user)
+    @commands.command(name='unban', description='Unban people who have repented')
+    @commands.has_permissions(ban_members=True)
+    async def _unban(ctx, id: int):
+         user = await bot.fetch_user(id)
+         await ctx.guild.unban(user)
 
-@bot.command(name='mute', description='Mute Whos Keep Spamming on ur Holy Server', pass_context = True)
-@commands.has_permissions(manage_messages=True)
-async def _mute(ctx, member: discord.Member, duration = 0,*, unit = None):
-        guild = bot.guilds[0]
-        roleobject = discord.utils.get(ctx.guild.roles, name="Nameless Muted")
-        memberrole = discodd.utils.get(ctx.guild.roles, name="Nameless Member")
-        await member.remove(memberrole)
+    @commands.command(name='mute', description='Mute Whos Keep Spamming on ur Holy Server', pass_context = True)
+    @commands.has_permissions(manage_messages=True)
+    async def _mute(self, ctx, member: discord.Member, duration: int, *, unit=None):
+         roleobject = discord.utils.get(ctx.guild.roles, name="Nameless Muted")
+         memberrole = discord.utils.get(ctx.guild.roles, name="Nameless Member")
+         await member.remove_roles(memberrole)
 
-        if not roleobject:
+         if not roleobject:
           roleobject = await ctx.guild.create_role("Nameless Muted", permissions=discord.Permissions(send_messages=False))
 
-        await ctx.send(f":white_check_mark: Muted {member} for {duration}{unit}")
-        await member.add_roles(roleobject)
-        if unit == "s":
-         wait = 1 * duration
-         await asyncio.sleep(wait)
-        elif unit == "m":
-         wait = 60 * duration
-         await asyncio.sleep(wait)
+         await ctx.send(f":white_check_mark: Muted {member} for {duration}{unit}")
+         await member.add_roles(roleobject)
+         if unit == "s":
+          wait = 1 * duration
+          await asyncio.sleep(wait)
+
+         elif unit == "m":
+          wait = 60 * duration
+          await asyncio.sleep(wait)
+
+         elif unit == "h":
+          wait = 3600 * duration
+          await asyncio.sleep(wait)
+
+          await member.remove_roles(roleobject)
+          await member.remove_roles(memberrole)
+
+    @commands.command(name='unmute', description='Unmute')
+    @commands.has_permissions(manage_messages=True)
+    async def unmute(self, ctx, member: discord.Member):
+         mutedRole = discord.utils.get(ctx.guild.roles, name="Nameless Muted")
+         memberrole = discord.utils.get(ctx.guild.roles, name="Nameless Member")
+
+         await member.remove_roles(mutedRole)
+         await member.send(f" you have unmutedd from: - {ctx.guild.name}")
+         embed = discord.Embed(title="Unmuted", description=f" Unmuted {member.mention}")
          await member.add_roles(memberrole)
-         await member.remove_roles(roleobject)
+         await ctx.send(embed=embed)
+       
+    @commands.command(name='purge', description='Purge Old Messages', pass_context=True)
+    @commands.has_permissions(manage_messages=True)
+    async def _purge(self, ctx, limit: int):
+         await ctx.channel.purge(limit=limit)
+         await ctx.send("Purged by {}".format(ctx.author.mention), delete_after=5)
+         await ctx.message.delete()
 
-@bot.command(name='unmute', description='Unmute')
-@commands.has_permissions(manage_messages=True)
-async def unmute(ctx, member: discord.Member):
-   mutedRole = discord.utils.get(ctx.guild.roles, name="Nameless Muted")
-   memberrole = discord.utils.get(ctx.guild.roles, name="Nameless Member")
+    @commands.command(name='report', description='Report someone to Admin or Owner')
+    @commands.cooldown(1, 600, commands.BucketType.user)
+    async def _report(self, ctx, member: discord.Member, reason=None):
+     owner = ctx.guild.owner
+     await owner.send("This guy break the rules")
+     await owner.send("Name: {}".format(member))
+     await owner.send("Reason: {}".format(reason))
+     await ctx.send("Reported to Owner, Please Calm Down")
 
-   await member.remove_roles(mutedRole)
-   await member.send(f" you have unmutedd from: - {ctx.guild.name}")
-   embed = discord.Embed(title="Unmuted", description=f" Unmuted {member.mention}",colour=discord.Colour.light_gray())
-   await member.add_roles(memberrole)
-   await ctx.send(embed=embed)
+    @commands.command(name='nick', description='Change Nickname of people')
+    @commands.has_permissions(manage_nicknames=True)
+    async def chnick(self, ctx, member: discord.Member, *, nick):
+     await member.edit(nick=nick)
+     await ctx.send(f'Nickname was changed for {member.mention} ')
 
-@bot.command(name='say', description='make bot say smth')
-async def _speak(ctx, *, text):
-    message = ctx.message
-    await message.delete()
 
-    await ctx.send(f"{text}")
 
-@bot.command(name='image', description='Get Images')
-@commands.is_nsfw()
-async def _image(ctx, image):
-    img = image
-    r = requests.get("https://nekos.life/api/v2/img/{}".format(image))
-    res = r.json()
-    em = discord.Embed()
-    em.set_image(url=res['url'])
-    await ctx.send(embed=em)
-@bot.command(name='robloxinfo', description='Get Roblox Game Info')
-async def _robloxinfo(ctx, *, placeid):
+class nsfw(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+    @commands.command(name='image', description='Get Images')
+    @commands.is_nsfw()
+    async def _image(self, ctx, image):
+     img = image
+     r = requests.get("https://nekos.life/api/v2/img/{}".format(image))
+     res = r.json()
+     em = discord.Embed()
+     em.set_image(url=res['url'])
+     await ctx.send(embed=em)
+
+class Other(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command(name='avatar', description='get someone avatar (avatar copy)')
+    async def _avatar(self, ctx, avamember : discord.Member):
+       userAvatarUrl = avamember.avatar.url
+       await ctx.send(userAvatarUrl)
+
+    @commands.command(name='say', description='say smth')
+    async def _speak(self, ctx, *, text):
+     message = ctx.message
+     await message.delete()
+
+     await ctx.send(f"{text}")
+
+    @commands.command(name='robloxinfo', description='Get Roblox Game Info')
+    async def _robloxinfo(self, ctx, *, placeid):
    # First we gonna get Universe ID, Because Roblox Only Allow show game with it
-   uidget = requests.get('https://api.roblox.com/universes/get-universe-containing-place?placeid={}'.format(placeid))
-   universeload = uidget.json()
-   load = json.dumps(universeload)
-   getid = json.loads(load)
+     uidget = requests.get('https://api.roblox.com/universes/get-universe-containing-place?placeid={}'.format(placeid))
+     universeload = uidget.json()
+     load = json.dumps(universeload)
+     getid = json.loads(load)
 # and finally, post your universe id into roblox
-   robloxgame = requests.get('https://games.roblox.com/v1/games?universeIds={}'.format(getid['UniverseId']))
-   returngame = robloxgame.json()
-   getinfogame = json.dumps(returngame, indent=4, sort_keys=True)
+     robloxgame = requests.get('https://games.roblox.com/v1/games?universeIds={}'.format(getid['UniverseId']))
+     returngame = robloxgame.json()
+     getinfogame = json.dumps(returngame, indent=4, sort_keys=True)
   # send it as json because this is for developer
-   jsonroblox = '```'
-   await ctx.send('```json\n{}\n{}'.format(getinfogame, jsonroblox))
+     jsonroblox = '```'
+     await ctx.send(f'```json\n{ getinfogame }\n```')
 
-@bot.command(name='purge', description='Purge Old Messages', pass_context=True)
-@commands.has_permissions(manage_messages=True)
-async def _purge(ctx, limit: int):
-        await ctx.channel.purge(limit=limit)
-        await ctx.send("Purged by {}".format(ctx.author.mention), delete_after=5)
-        await ctx.message.delete()
+    @commands.command(name='upload', description='Upload Files Into transfer.sh')
+    async def upfile(self, ctx):
+     bonk = ctx.message.attachments[0]
+     url = bonk.url
+     local_filename = url.split('/')[-1]
+     # NOTE the stream=True parameter below
+     with requests.get(url, stream=True) as r:
+        r.raise_for_status()
+        with open(local_filename, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=8192): 
+                # If you have chunk encoded response uncomment if
+                # and set chunk_size parameter to None.
+                #if chunk: 
+                f.write(chunk)
+     files = {'file': open(local_filename, 'rb')}
+     up = requests.post('https://transfer.sh', files=files)
+     print(up.text)
+     embed = discord.Embed(title='Result', description=up.text)
+     embed.set_footer(text="Powered by https://transfer.sh")
+     await ctx.send(embed=embed)
+     # Because it already done lets remove it
+     os.remove(local_filename)
 
-@_purge.error
-async def clear_error(ctx, error):
-    if isinstance(error, commands.MissingPermissions):
-        await ctx.send("You cant do that!")
+    @commands.command(name="donate", description="Donate using PayPal (Indonesia Only)")
+    async def donate(self, ctx):
+     embed=discord.Embed(title="Donate", description="")
+     embed.set_image(url="https://i.ibb.co/pn6LLZj/Donation.png")
+     await ctx.send(embed=embed)
 
-@bot.command(name='report', description='Report someone to Admin or Owner')
-@commands.cooldown(1, 600, commands.BucketType.user)
-async def _report(ctx, member: discord.Member, reason=None):
- owner = ctx.guild.owner
- await owner.send("This guy break the rules")
- await owner.send("Name: {}".format(member))
- await owner.send("Reason: {}".format(reason))
- await ctx.send("Reported to Owner, Please Calm Down")
+class Music(commands.Cog):
+    """Music commands"""
 
-# YouTube is a bitch and tries to disconnect our bot from its servers. Use this to reconnect instantly
-# (Because of this disconnect/reconnect cycle, sometimes you will listen a sudden and brief stop)
-FFMPEG_OPTIONS = {
-    'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+    def __init__(self, bot):
+        self.bot = bot
+        self.bot.loop.create_task(self.start_nodes())
 
-# List with all the sessions currently active.
-# TODO: Terminate season after X minutes have passed without interaction.
-sessions = []
+    def get_nodes(self):
+        return sorted(wavelink.NodePool._nodes.values(), key=lambda n: len(n.players))
 
+    async def play_track(self, ctx: commands.Context, query: str, provider=None):
+        player: DisPlayer = ctx.voice_client
 
-def check_session(ctx):
-    """
-    Checks if there is a session with the same characteristics (guild and channel) as ctx param.
+        if ctx.author.voice.channel.id != player.channel.id:
+            raise MustBeSameChannel(
+                "You must be in the same voice channel as the player."
+            )
 
-    :param ctx: discord.ext.commands.Context
+        track_providers = {
+            "yt": YouTubeTrack,
+            "ytpl": YouTubePlaylist,
+            "ytmusic": YouTubeMusicTrack,
+            "soundcloud": SoundCloudTrack,
+            "spotify": SpotifyTrack,
+        }
 
-    :return: session()
-    """
-    if len(sessions) > 0:
-        for i in sessions:
-            if i.guild == ctx.guild and i.channel == ctx.author.voice.channel:
-                return i
-        session = utilities.Session(
-            ctx.guild, ctx.author.voice.channel, id=len(sessions))
-        sessions.append(session)
-        return session
-    else:
-        session = utilities.Session(ctx.guild, ctx.author.voice.channel, id=0)
-        sessions.append(session)
-        return session
+        query = query.strip("<>")
+        msg = await ctx.send(f"Searching for `{query}` :mag_right:")
 
+        track_provider = provider if provider else player.track_provider
 
-def prepare_continue_queue(ctx):
-    """
-    Used to call next song in queue.
+        if track_provider == "yt" and "playlist" in query:
+            provider = "ytpl"
 
-    Because lambda functions cannot call async functions, I found this workaround in discord's api documentation
-    to let me continue playing the queue when the current song ends.
+        provider: Provider = (
+            track_providers.get(provider)
+            if provider
+            else track_providers.get(player.track_provider)
+        )
 
-    :param ctx: discord.ext.commands.Context
-    :return: None
-    """
-    fut = asyncio.run_coroutine_threadsafe(continue_queue(ctx), bot.loop)
-    try:
-        fut.result()
-    except Exception as e:
-        print(e)
+        nodes = self.get_nodes()
+        tracks = list()
 
+        for node in nodes:
+            try:
+                with async_timeout.timeout(20):
+                    tracks = await provider.search(query, node=node)
+                    break
+            except asyncio.TimeoutError:
+                self.bot.dispatch("dismusic_node_fail", node)
+                wavelink.NodePool._nodes.pop(node.identifier)
+                continue
+            except (LavalinkException, LoadTrackError):
+                continue
 
-async def continue_queue(ctx):
-    """
-    Check if there is a next in queue then proceeds to play the next song in queue.
+        if not tracks:
+            return await msg.send("No song/track found with given query.")
 
-    As you can see, in this method we create a recursive loop using the prepare_continue_queue to make sure we pass
-    through all songs in queue without any mistakes or interaction.
+        if isinstance(tracks, YouTubePlaylist):
+            tracks = tracks.tracks
+            for track in tracks:
+                await player.queue.put(track)
 
-    :param ctx: discord.ext.commands.Context
-    :return: None
-    """
-    session = check_session(ctx)
-    if not session.q.theres_next():
-        await ctx.send("Queue is over homie")
-        return
-
-    session.q.next()
-
-    voice = discord.utils.get(bot.voice_clients, guild=session.guild)
-    source = await discord.FFmpegOpusAudio.from_probe(session.q.current_music.url, **FFMPEG_OPTIONS)
-
-    if voice.is_playing():
-        voice.stop()
-
-    voice.play(source, after=lambda e: prepare_continue_queue(ctx))
-    await ctx.send(session.q.current_music.thumb)
-    await ctx.send(f"Playing now: {session.q.current_music.title}")
-
-
-@bot.command(name='play')
-async def play(ctx, *, arg):
-    """
-    Checks where the command's author is, searches for the music required, joins the same channel as the command's
-    author and then plays the audio directly from YouTube.
-
-    :param ctx: discord.ext.commands.Context
-    :param arg: str
-        arg can be url to video on YouTube or just as you would search it normally.
-    :return: None
-    """
-    try:
-        voice_channel = ctx.author.voice.channel
-
-    # If command's author isn't connected, return.
-    except AttributeError as e:
-        print(e)
-        await ctx.send("You're not connected to a voice channel homie, Connect first")
-        return
-
-    # Finds author's session.
-    session = check_session(ctx)
-
-    # Searches for the video
-    with youtube_dl.YoutubeDL({'format': 'bestaudio', 'noplaylist': 'True'}) as ydl:
-        try:
-            requests.get(arg)
-        except Exception as e:
-            print(e)
-            info = ydl.extract_info(f"ytsearch:{arg}", download=False)[
-                'entries'][0]
+            await msg.edit(content=f"Added `{len(tracks)}` songs to queue. ")
         else:
-            info = ydl.extract_info(arg, download=False)
+            track = tracks[0]
 
-    url = info['formats'][0]['url']
-    thumb = info['thumbnails'][0]['url']
-    title = info['title']
+            await msg.edit(content=f"Added `{track.title}` to queue. ")
+            await player.queue.put(track)
 
-    session.q.enqueue(title, url, thumb)
+        if not player.is_playing():
+            await player.do_next()
 
-    # Finds an available voice client for the bot.
-    voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
-    if not voice:
-        await voice_channel.connect()
-        voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
+    async def start_nodes(self):
+        await self.bot.wait_until_ready()
+        spotify_credential = getattr(
+            self.bot, "spotify_credentials", {"client_id": "", "client_secret": ""}
+        )
 
-    # If it is already playing something, adds to the queue
-    if voice.is_playing():
-        await ctx.send(thumb)
-        await ctx.send(f"Added to queue: {title}")
-        return
-    else:
-        await ctx.send(thumb)
-        await ctx.send(f"Playing now: {title}")
+        for config in self.bot.lavalink_nodes:
+            try:
+                node: wavelink.Node = await wavelink.NodePool.create_node(
+                    bot=self.bot,
+                    **config,
+                    spotify_client=spotify.SpotifyClient(**spotify_credential),
+                )
+                print(f"[dismusic] INFO - Created node: {node.identifier}")
+            except Exception:
+                print(
+                    f"[dismusic] ERROR - Failed to create node {config['host']}:{config['port']}"
+                )
 
-        # Guarantees that the requested music is the current music.
-        session.q.set_last_as_current()
+    @commands.command(aliases=["con"])
+    @voice_connected()
+    async def connect(self, ctx: commands.Context):
+        """Connect the player"""
+        if ctx.voice_client:
+            return
 
-        source = await discord.FFmpegOpusAudio.from_probe(url, **FFMPEG_OPTIONS)
-        voice.play(source, after=lambda ee: prepare_continue_queue(ctx))
+        msg = await ctx.send(f"Connecting to **`{ctx.author.voice.channel}`**")
 
+        try:
+            player: DisPlayer = await ctx.author.voice.channel.connect(cls=DisPlayer)
+            self.bot.dispatch("dismusic_player_connect", player)
+        except (asyncio.TimeoutError, ClientException):
+            return await msg.edit(content="Failed to connect to voice channel.")
 
-@bot.command(name='next', aliases=['skip'])
-async def skip(ctx):
-    """
-    Skips the current song, playing the next one in queue if there is one.
+        player.bound_channel = ctx.channel
+        player.bot = self.bot
 
-    :param ctx: discord.ext.commands.Context
-    :return: None
-    """
-    # Finds author's session.
-    session = check_session(ctx)
-    # If there isn't any song to be played next, return.
-    if not session.q.theres_next():
-        await ctx.send("There nothing in the queue, homie")
-        return
+        await msg.edit(content=f"Connected to **`{player.channel.name}`**")
 
-    # Finds an available voice client for the bot.
-    voice = discord.utils.get(bot.voice_clients, guild=session.guild)
+    @commands.group(aliases=["p"], invoke_without_command=True)
+    @voice_connected()
+    async def play(self, ctx: commands.Context, *, query: str):
+        """Play or add song to queue (Defaults to YouTube)"""
+        await ctx.invoke(self.connect)
+        await self.play_track(ctx, query)
 
-    # If it is playing something, stops it. This works because of the "after" argument when calling voice.play as it is
-    # a recursive loop and the current song is already going to play the next song when it stops.
-    if voice.is_playing():
-        voice.stop()
-        return
-    else:
-        # If nothing is playing, finds the next song and starts playing it.
-        session.q.next()
-        source = await discord.FFmpegOpusAudio.from_probe(session.q.current_music.url, **FFMPEG_OPTIONS)
-        voice.play(source, after=lambda e: prepare_continue_queue(ctx))
-        return
+    @play.command(aliases=["yt"])
+    @voice_connected()
+    async def youtube(self, ctx: commands.Context, *, query: str):
+        """Play a YouTube track"""
+        await ctx.invoke(self.connect)
+        await self.play_track(ctx, query, "yt")
 
+    @play.command(aliases=["ytmusic"])
+    @voice_connected()
+    async def youtubemusic(self, ctx: commands.Context, *, query: str):
+        """Play a YouTubeMusic track"""
+        await ctx.invoke(self.connect)
+        await self.play_track(ctx, query, "ytmusic")
 
-@bot.command(name='print')
-async def print_info(ctx):
-    """
-    A debug command to find session id, what is current playing and what is on the queue.
-    :param ctx: discord.ext.commands.Context
-    :return: None
-    """
-    session = check_session(ctx)
-    await ctx.send(f"Session ID: {session.id}")
-    await ctx.send(f"Current music: {session.q.current_music.title}")
-    queue = [q[0] for q in session.q.queue]
-    await ctx.send(f"Queue: {queue}")
+    @play.command(aliases=["sc"])
+    @voice_connected()
+    async def soundcloud(self, ctx: commands.Context, *, query: str):
+        """Play a SoundCloud track"""
+        await ctx.invoke(self.connect)
+        await self.play_track(ctx, query, "soundcloud")
 
+    @play.command(aliases=["sp"])
+    @voice_connected()
+    async def spotify(self, ctx: commands.Context, *, query: str):
+        """play a spotify track"""
+        await ctx.invoke(self.connect)
+        await self.play_track(ctx, query, "spotify")
 
-@bot.command(name='leave')
-async def leave(ctx):
-    """
-    If bot is connected to a voice channel, it leaves it.
+    @commands.command(aliases=["vol"])
+    @voice_channel_player()
+    async def volume(self, ctx: commands.Context, vol: int, forced=False):
+        """Set volume"""
+        player: DisPlayer = ctx.voice_client
 
-    :param ctx: discord.ext.commands.Context
-    :return: None
-    """
-    voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
-    if voice.is_connected:
-        check_session(ctx).q.clear_queue()
-        await voice.disconnect()
-    else:
-        await ctx.send("Bot not connect, so it can't leave.")
+        if vol < 0:
+            return await ctx.send("Volume can't be less than 0")
 
+        if vol > 300 and not forced:
+            return await ctx.send("Volume can't greater than 100")
 
-@bot.command(name='pause')
-async def pause(ctx):
-    """
-    If playing audio, pause it.
+        await player.set_volume(vol)
+        await ctx.send(f"Volume set to {vol} :loud_sound:")
 
-    :param ctx: discord.ext.commands.Context
-    :return: None
-    """
-    voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
-    if voice.is_playing():
-        voice.pause()
-    else:
-        await ctx.send("It's not playing homie")
+    @commands.command(aliases=["disconnect", "dc"])
+    @voice_channel_player()
+    async def stop(self, ctx: commands.Context):
+        """Stop the player"""
+        player: DisPlayer = ctx.voice_client
 
+        await player.destroy()
+        await ctx.send("Stopped the player :stop_button: ")
+        self.bot.dispatch("dismusic_player_stop", player)
 
-@bot.command(name='resume')
-async def resume(ctx):
-    """
-    If audio is paused, resumes playing it.
+    @commands.command()
+    @voice_channel_player()
+    async def pause(self, ctx: commands.Context):
+        """Pause the player"""
+        player: DisPlayer = ctx.voice_client
 
-    :param ctx: discord.ext.commands.Context
-    :return: None
-    """
-    voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
-    if voice.is_paused:
-        voice.resume()
-    else:
-        await ctx.send("Already Paused, Play it Homie")
+        if player.is_playing():
+            if player.is_paused():
+                return await ctx.send("Player is already paused.")
 
+            await player.set_pause(pause=True)
+            self.bot.dispatch("dismusic_player_pause", player)
+            return await ctx.send("Paused :pause_button: ")
 
-@bot.command(name='stop')
-async def stop(ctx):
-    """
-    Stops playing audio and clears the session's queue.
+        await ctx.send("Player is not playing anything.")
 
-    :param ctx: discord.ext.commands.Context
-    :return: None
-    """
-    session = check_session(ctx)
-    voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
-    if voice.is_playing:
-        voice.stop()
-        session.q.clear_queue()
-    else:
-        await ctx.send("There's nothing playing homie.")
+    @commands.command()
+    @voice_channel_player()
+    async def resume(self, ctx: commands.Context):
+        """Resume the player"""
+        player: DisPlayer = ctx.voice_client
 
-@bot.command(name="volume", description='Set Volume While Playing')                          
-async def volume(ctx, volume: float):                   
-    voice = get(bot.voice_clients, guild=ctx.guild)  
+        if player.is_playing():
+            if not player.is_paused():
+                return await ctx.send("Player is already playing.")
 
-    if 0 <= volume <= 100:                              
-        if voice.is_playing():                          
-            new_volume = volume / 100                   
-            voice.source.volume = new_volume            
-        else:                                           
-            await ctx.reply("#")   
-    else:                                               
-        await ctx.reply("#")
+            await player.set_pause(pause=False)
+            self.bot.dispatch("dismusic_player_resume", player)
+            return await ctx.send("Resumed :musical_note: ")
 
-    await ctx.reply(f"Volume: {volume}")
+        await ctx.send("Player is not playing anything.")
+
+    @commands.command()
+    @voice_channel_player()
+    async def skip(self, ctx: commands.Context):
+        """Skip to next song in the queue."""
+        player: DisPlayer = ctx.voice_client
+
+        if player.loop == "CURRENT":
+            player.loop = "NONE"
+
+        await player.stop()
+
+        self.bot.dispatch("dismusic_track_skip", player)
+        await ctx.send("Skipped :track_next:")
+
+    @commands.command()
+    @voice_channel_player()
+    async def seek(self, ctx: commands.Context, seconds: int):
+        """Seek the player backward or forward"""
+        player: DisPlayer = ctx.voice_client
+
+        if player.is_playing():
+            old_position = player.position
+            position = old_position + seconds
+            if position > player.source.length:
+                return await ctx.send("Can't seek past the end of the track.")
+
+            if position < 0:
+                position = 0
+
+            await player.seek(position * 1000)
+            self.bot.dispatch("dismusic_player_seek", player, old_position, position)
+            return await ctx.send(f"Seeked {seconds} seconds :fast_forward: ")
+
+        await ctx.send("Player is not playing anything.")
+
+    @commands.command()
+    @voice_channel_player()
+    async def loop(self, ctx: commands.Context, loop_type: str = None):
+        """Set loop to `NONE`, `CURRENT` or `PLAYLIST`"""
+        player: DisPlayer = ctx.voice_client
+
+        result = await player.set_loop(loop_type)
+        await ctx.send(f"Loop has been set to {result} :repeat: ")
+
+    @commands.command(aliases=["q"])
+    @voice_channel_player()
+    async def queue(self, ctx: commands.Context):
+        """Player queue"""
+        player: DisPlayer = ctx.voice_client
+
+        if len(player.queue._queue) < 1:
+            return await ctx.send("Nothing is in the queue.")
+
+        paginator = Paginator(ctx, player)
+        await paginator.start()
+
+    @commands.command(aliases=["np"])
+    @voice_channel_player()
+    async def nowplaying(self, ctx: commands.Context):
+        """Currently playing song information"""
+        player: DisPlayer = ctx.voice_client
+        await player.invoke_player(ctx)
+    
+    @commands.command(name='lyrics', description='Genius Lyrics')
+    async def lyrics(self, ctx, artist, *, title):
+     try:
+      song = genius.search_song(title, artist)
+      lyric = song.lyrics
+      print(lyric[:lyric.rfind("Embed")])
+      embedgenius = discord.Embed(title=f"{song.title} by {song.artist}", description=f"\n{lyric[:lyric.rfind('Embed')]}")
+      await ctx.send(embed=embedgenius)
+     except Exception as e:
+      await ctx.send(f"Something wrong, Report this to !        from ender import bot#2105\n Logs: \n ```py\n{e}\n```")
+
+bot.lavalink_nodes = [
+    {"host": "lava.link", "port": 80, "password": "dismusic"},
+]
 
 token = os.getenv("TOKEN")
+
+@bot.command()
+@commands.guild_only()
+async def sync(
+  ctx: commands.Context, guilds: commands.Greedy[discord.Object], spec: typing.Optional[typing.Literal["~", "*", "^"]] = None) -> None:
+    if not guilds:
+        if spec == "~":
+            synced = await ctx.bot.tree.sync(guild=ctx.guild)
+        elif spec == "*":
+            ctx.bot.tree.copy_global_to(guild=ctx.guild)
+            synced = await ctx.bot.tree.sync(guild=ctx.guild)
+        elif spec == "^":
+            ctx.bot.tree.clear_commands(guild=ctx.guild)
+            await ctx.bot.tree.sync(guild=ctx.guild)
+            synced = []
+        else:
+            synced = await ctx.bot.tree.sync()
+
+        await ctx.send(
+            f"Synced {len(synced)} commands {'globally' if spec is None else 'to the current guild.'}"
+        )
+        return
+
+    ret = 0
+    for guild in guilds:
+        try:
+            await ctx.bot.tree.sync(guild=guild)
+        except discord.HTTPException:
+            pass
+        else:
+            ret += 1
+
+    await ctx.send(f"Synced the tree to {ret}/{len(guilds)}.")
+
 
 
 bot.run(token)

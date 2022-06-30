@@ -4,3 +4,4 @@ pynacl
 python-dotenv
 requests
 akinator.py
+git+https://github.com/johnwmillr/LyricsGenius.git

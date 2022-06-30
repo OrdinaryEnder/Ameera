@@ -7,6 +7,10 @@
             "description": "What is your Discord bot's token? Without it You have no Bot Lmao",
             "required": true
         }
+        "GENIUS_ACCESS_TOKEN": {
+            "description": "Get it at https://genius.com/api-clients",
+            "required": true
+        }
     },
     "buildpacks": [
     {
