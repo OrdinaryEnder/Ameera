@@ -17,6 +17,7 @@ from discord.ext import tasks
 import json
 from botmod import bypass
 import youtube_dl
+import aiohttp
 import asyncio
 import time
 import datetime
@@ -199,6 +200,15 @@ class Fun(commands.Cog):
      embed.set_footer(text="Be Smart Next Time!")
      await ctx.send(embed=embed)
 
+    @commands.command(name="meme", description="Reddit Memes")
+    async def meme(self, ctx):
+      async with aiohttp.ClientSession() as cs:
+        async with cs.get('https://www.reddit.com/r/dankmemes/new.json?sort=hot') as r:
+            res = await r.json()
+            embed=discord.Embed(title="Memes", description=" ")
+            embed.set_image(url=res['data']['children'] [random.randint(0, 25)]['data']['url'])
+
+            await ctx.send(embed=embed)
 class Owner(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -417,6 +427,8 @@ class Other(commands.Cog):
      embed=discord.Embed(title="Donate", description="")
      embed.set_image(url="https://i.ibb.co/pn6LLZj/Donation.png")
      await ctx.send(embed=embed)
+
+     
 
 class Music(commands.Cog):
     """Music commands"""
