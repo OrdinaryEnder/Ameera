@@ -12,11 +12,11 @@
             "required": true
         },
         "MUTED_ROLE": {
-            "description": "Your fella muted Role",
+            "description": "Your fella muted Role name",
             "required": true
         },
         "MEMBER_ROLE": {
-            "description": "Your holy members",
+            "description": "Your holy members role name",
             "required": true
         }
     },
