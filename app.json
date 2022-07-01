@@ -10,6 +10,14 @@
         "GENIUS_ACCESS_TOKEN": {
             "description": "Get it at https://genius.com/api-clients",
             "required": true
+        },
+        "MUTED_ROLE": {
+            "description": "Your fella muted Role",
+            "required": true
+        },
+        "MEMBER_ROLE": {
+            "description": "Your holy members",
+            "required": true
         }
     },
     "buildpacks": [
