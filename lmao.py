@@ -209,6 +209,38 @@ class Fun(commands.Cog):
             embed.set_image(url=res['data']['children'] [random.randint(0, 25)]['data']['url'])
 
             await ctx.send(embed=embed)
+    @commands.command(name="typerace", description="Lets see how fast your typing")
+    async def typerace(self,  message):
+        ##  no need for bot to reply to itself
+        
+            answer = 'Linux is a family of open-source Unix-like operating systems based on the Linux kernel, an operating system kernel first released on September 17, 1991, by Linus Torvalds. Linux is typically packaged in a Linux distribution.'
+            timer  = 10.5
+            await message.channel.send(f'You have {timer} seconds to type:  {answer}')
+
+            def is_correct(msg):
+                return msg.author == message.author
+
+            try:
+                guess = await bot.wait_for('message',  check=is_correct,  timeout=timer)
+            except asyncio.TimeoutError:
+                return await message.channel.send('Sorry, you took too long.')
+
+            if guess.content == answer:
+                await message.channel.send('Right on!')
+            else:
+                await message.channel.send('Oops.')
+
+    @commands.command(name="linusquotes", description="Get Better Motivation from Linus Torvalds!")
+    async def quotes(self, ctx):
+     r = requests.get("https://linusquote.com/quote")
+     load = r.json()
+     jsonload = json.dumps(load)
+     final = json.loads(jsonload)
+     print(final['body'])
+     embed = discord.Embed(title="Linus Torvalds Once Said:", description="ㅤ")
+     embed.add_field(name="ㅤ", value=f"{final['body']}")
+     await ctx.send(embed=embed)
+
 class Owner(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -294,30 +326,26 @@ class Moderation(commands.Cog):
 
     @commands.command(name='mute', description='Mute Whos Keep Spamming on ur Holy Server', pass_context = True)
     @commands.has_permissions(manage_messages=True)
-    async def _mute(self, ctx, member: discord.Member, duration: int, *, unit=None):
-         roleobject = discord.utils.get(ctx.guild.roles, name="Nameless Muted")
-         memberrole = discord.utils.get(ctx.guild.roles, name="Nameless Member")
-         await member.remove_roles(memberrole)
+    async def _mute(self, ctx, member: discord.Member, time, *, reason=None):
+         mutedrole = os.getenv("MUTED_ROLE")
+         mutedRole = discord.utils.get(ctx.guild.roles, name=mutedrole)
+         memrole = os.getenv("MEMBER_ROLE")
+         guild = ctx.guild
+         memberrole = discord.utils.get(ctx.guild.roles, name=memrole)
+         time_convert = {"s":1, "m":60, "h":3600, "d":86400, "w":604800, "mo":18144000, "y":31536000}
+         tempmute= int(time[:-1]) * time_convert[time[-1]]
+         for channel in guild.channels:
+          await channel.set_permissions(mutedRole, speak=False, send_messages=False, read_message_history=True, read_messages=False)
+          embed = discord.Embed(title="Muted!", description=f"{member.mention} was muted   for {time}, dont leave the server or you'll get banned! ", colour=discord.Colour.light_gray())
+          embed.add_field(name="Reason:", value=reason, inline=True)
+          await ctx.send(embed=embed)
+          await member.add_roles(mutedRole, reason=reason)
+          await asyncio.sleep(tempmute)
+          await member.send(f" you have been muted from: {guild.name} reason: {reason}")
+          await member.remove_roles(mutedRole)
+          break
 
-         if not roleobject:
-          roleobject = await ctx.guild.create_role("Nameless Muted", permissions=discord.Permissions(send_messages=False))
 
-         await ctx.send(f":white_check_mark: Muted {member} for {duration}{unit}")
-         await member.add_roles(roleobject)
-         if unit == "s":
-          wait = 1 * duration
-          await asyncio.sleep(wait)
-
-         elif unit == "m":
-          wait = 60 * duration
-          await asyncio.sleep(wait)
-
-         elif unit == "h":
-          wait = 3600 * duration
-          await asyncio.sleep(wait)
-
-          await member.remove_roles(roleobject)
-          await member.remove_roles(memberrole)
 
     @commands.command(name='unmute', description='Unmute')
     @commands.has_permissions(manage_messages=True)
