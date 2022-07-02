@@ -618,7 +618,7 @@ class Music(commands.Cog):
         """Set volume"""
         player: DisPlayer = ctx.voice_client
 
-        if 0 <= vol <= 100:                              
+        if 0 <= vol <= 300:                              
          if player.is_playing():                          
             new_volume = vol / 100                   
             player.source.volume = vol
