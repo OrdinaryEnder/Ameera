@@ -24,7 +24,7 @@ SODIUM_INSTALL=system pip install -r requirements.txt
 You can host this bot to make it stay online on Heroku.
 
 <a href="https://heroku.com/deploy?template=https://github.com/zairullahdev/Alexandra"><img src="https://www.herokucdn.com/deploy/button.svg" alt="Run your bot in Heroku"></a>
-
+[![Run on Repl.it](https://repl.it/badge/github/zairullahdev)](https://repl.it/github/zairullahdev/Alexandra)
 
 # Credit 
 ZairullahDeveloper - Code's
