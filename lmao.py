@@ -79,6 +79,13 @@ async def on_member_join(member):
        embed = discord.Embed(title=f"Welcome to {member.guild.name}, {member.name}!", description="By Joining, Your agree to the rules given in server")
        embed.timestamp = datetime.datetime.now()
        await member.send(embed=embed)
+
+@bot.event
+async def on_message(message):
+    if bot.user in message.mentions:
+        await message.channel.send(f"Hello {message.author.mention}, My prefix is {bot.command_prefix}")
+    else:
+        await bot.process_commands(message) # This line makes your other commands work.
 """
 ZairullahDeveloper once said: Being a developer isnt that easy, start from making mistakes
 """
@@ -514,7 +521,7 @@ class Music(commands.Cog):
                 continue
 
         if not tracks:
-            return await msg.send("No song/track found with given query.")
+            return await ctx.send("No song/track found with given query.")
 
         if isinstance(tracks, YouTubePlaylist):
             tracks = tracks.tracks
@@ -611,14 +618,11 @@ class Music(commands.Cog):
         """Set volume"""
         player: DisPlayer = ctx.voice_client
 
-        if vol < 0:
-            return await ctx.send("Volume can't be less than 0")
-
-        if vol > 300 and not forced:
-            return await ctx.send("Volume can't greater than 100")
-
-        await player.set_volume(vol)
-        await ctx.send(f"Volume set to {vol} :loud_sound:")
+        if 0 <= vol <= 100:                              
+         if player.is_playing():                          
+            new_volume = vol / 100                   
+            player.source.volume = vol
+            await ctx.send(f"Volume set to {vol} :loud_sound:")
 
     @commands.command(aliases=["disconnect", "dc"])
     @voice_channel_player()
@@ -738,6 +742,7 @@ class Music(commands.Cog):
 
 bot.lavalink_nodes = [
     {"host": "lava.link", "port": 80, "password": "dismusic"},
+    {"host": "lavalink-with-replit.endergaming3.repl.co", "port":443, "password": "youshallnotpass", "https": True}
 ]
 
 token = os.getenv("TOKEN")
