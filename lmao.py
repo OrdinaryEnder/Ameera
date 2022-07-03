@@ -463,7 +463,9 @@ class Other(commands.Cog):
      embed.set_image(url="https://i.ibb.co/pn6LLZj/Donation.png")
      await ctx.send(embed=embed)
 
-     
+    @commands.command(name="ping", description="Pong! <3")
+    async def ping(self, ctx):
+          await ctx.send(f"Pong!\nLatency: {bot.latency}")
 
 class Music(commands.Cog):
     """Music commands"""
