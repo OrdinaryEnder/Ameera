@@ -473,7 +473,7 @@ class Other(commands.Cog):
     async def ping(self, ctx):
           await ctx.send(f"Pong!\nLatency: {bot.latency}")
 
-    @commands.command(name="robloxuser" description="Check User By Id Or Username (ID is very accurate!)"
+    @commands.command(name="robloxuser", description="Check User By Id Or Username (ID is very accurate!)"
     async def rblxuser(self, ctx, user):
           if user.isdigit():
              r = requests.get(f"https://users.roblox.com/v1/users/{user}")
