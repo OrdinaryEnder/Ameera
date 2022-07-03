@@ -220,7 +220,7 @@ class Fun(commands.Cog):
     async def typerace(self,  message):
         ##  no need for bot to reply to itself
         
-            answer = 'Linux is a family of open-source Unix-like operating systems based on the Linux kernel, an operating system kernel first released on September 17, 1991, by Linus Torvalds. Linux is typically packaged in a Linux distribution.'
+            answer = 'Dryocampa rubicunda, the rosy maple moth, is a small North American moth in the family Saturniidae, also known as the great silk moths. It was first described by Johan Christian Fabricius in 1793. The species is known for its wooly body and pink and yellow coloration, which varies from cream or white to bright pink or yellow.[2] Males have bushier antennae than females, which allow them to sense female pheromones for mating'
             timer  = 10.5
             await message.channel.send(f'You have {timer} seconds to type:  {answer}')
 
