@@ -74,6 +74,7 @@ async def on_ready():
  await bot.add_cog(Owner(bot))
  await bot.add_cog(nsfw(bot))
  print("Powered by dismusic")
+
 @bot.event
 async def on_member_join(member):
        embed = discord.Embed(title=f"Welcome to {member.guild.name}, {member.name}!", description="By Joining, Your agree to the rules given in server")
@@ -86,6 +87,11 @@ async def on_message(message):
         await message.channel.send(f"Hello {message.author.mention}, My prefix is {bot.command_prefix}")
     else:
         await bot.process_commands(message) # This line makes your other commands work.
+
+@bot.event
+async def on_connect():
+      await bot.change_presence(activity=discord.Game(name="First Release: Codename : Opstober"))
+
 """
 ZairullahDeveloper once said: Being a developer isnt that easy, start from making mistakes
 """
@@ -220,7 +226,7 @@ class Fun(commands.Cog):
     async def typerace(self,  message):
         ##  no need for bot to reply to itself
         
-            answer = 'Dryocampa rubicunda, the rosy maple moth, is a small North American moth in the family Saturniidae, also known as the great silk moths. It was first described by Johan Christian Fabricius in 1793. The species is known for its wooly body and pink and yellow coloration, which varies from cream or white to bright pink or yellow.[2] Males have bushier antennae than females, which allow them to sense female pheromones for mating'
+            answer = 'Linux is a family of open-source Unix-like operating systems based on the Linux kernel, an operating system kernel first released on September 17, 1991, by Linus Torvalds. Linux is typically packaged in a Linux distribution.'
             timer  = 10.5
             await message.channel.send(f'You have {timer} seconds to type:  {answer}')
 
@@ -466,6 +472,25 @@ class Other(commands.Cog):
     @commands.command(name="ping", description="Pong! <3")
     async def ping(self, ctx):
           await ctx.send(f"Pong!\nLatency: {bot.latency}")
+
+    @commands.command(name="robloxuser" description="Check User By Id Or Username (ID is very accurate!)"
+    async def rblxuser(self, ctx, user):
+          if user.isdigit():
+             r = requests.get(f"https://users.roblox.com/v1/users/{user}")
+             lmao = r.json()
+             jsondumps = json.dumps(lmao)
+             jsonloads = json.loads(jsondumps)
+             embed = discord.Embed(title="Result:", description="Finding Result:")
+             embed.add_field(name=f"Display Name = {jsonloads['displayName']}\nName: {jsonloads['name']}\n ID: {jsonloads['id']}" value=f"Description: {jsonloads['description']}\n Banned : {jsonloads['isBanned'}\n Created: {jsonloads['created']"
+             await ctx.send(embed=embed)
+          else:
+             r = requests.get(f"https://users.roblox.com/v1/users/{user}")
+             lmao = r.json()
+             jsondumps = json.dumps(lmao)
+             jsonloads = json.loads(jsondumps)
+             embed = discord.Embed(title="Result:", description="Finding Result:")
+             embed.add_field(name=f"Display Name = {jsonloads['displayName']}\nName: {jsonloads['name']}\n ID: {jsonloads['id']}" value=f"This is Not Completed, Use the ID")
+             await ctx.send(embed=embed)
 
 class Music(commands.Cog):
     """Music commands"""
