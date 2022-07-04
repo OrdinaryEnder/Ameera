@@ -1,3 +1,4 @@
+import urllib
 import typing
 from discord import app_commands
 from discord import ClientException
@@ -117,7 +118,7 @@ class Fun(commands.Cog):
      self.bot = bot
      super().__init__()
  
-    @commands.command(name='lvbypass', description='Bypass Linkvertise (example: ArceusX)')
+    @commands.command(name='lvbypass', description='Bypass Linkvertise')
     async def _lvbypass(self, ctx, url):
        link = bypass(url)
        loadlink = json.dumps(link)
@@ -473,22 +474,16 @@ class Other(commands.Cog):
     async def ping(self, ctx):
           await ctx.send(f"Pong!\nLatency: {bot.latency}")
 
-    @commands.command(name="robloxuser", description="Check User of roblox!")
-    async def robloxuser(self, ctx, user):
-
-             r = requests.get(f"https://users.roblox.com/v1/users/search?keyword={user}%20&limit=1")
-             lmao = r.json()
-             jsondumps = json.dumps(lmao)
-             jsonloads = json.loads(jsondumps)
-             robloxid = jsonloads['id']
-             rblxuser = requests.get(f"https://users.roblox.com/v1/users/{robloxid}")
-             loadrblx = rblxuser.json()
-             jsonrblx = json.dumps(loadrblx)
-             rblxjson = json.loads(jsonrblx)
-             embed = discord.Embed(title="Result:", description="Finding Result:")
-             embed.add_field(name=f"Display Name = {rblxjson['displayName']}\nName: {rblxuser['name']}\n ID: {rblxuser['id']}", value=f"Description: {rblxjson['description']}\n Banned : {rblxjson['isBanned']}\n Created: {rblxjson['created']}")
-             await ctx.send(embed=embed)
-
+    @commands.command(name="search", description="Search Youtube Videos")
+    async def yt(self, ctx, *, search):
+     query_string = urllib.parse.urlencode({
+        "search_query": search
+     })
+     html_content = urllib.request.urlopen(
+        "http://www.youtube.com/results?" + query_string
+     )
+     search_results = re.findall(r"watch\?v=(\S{11})", html_content.read().decode())
+     await ctx.send("http://www.youtube.com/watch?v=" + search_results[0])
 
 class Music(commands.Cog):
     """Music commands"""
