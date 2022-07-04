@@ -117,7 +117,7 @@ class Fun(commands.Cog):
      self.bot = bot
      super().__init__()
  
-    @commands.command(name='lvbypass', description='Bypass Linkvertise')
+    @commands.command(name='lvbypass', description='Bypass Linkvertise (example: ArceusX)')
     async def _lvbypass(self, ctx, url):
        link = bypass(url)
        loadlink = json.dumps(link)
