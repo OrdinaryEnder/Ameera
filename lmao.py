@@ -473,24 +473,22 @@ class Other(commands.Cog):
     async def ping(self, ctx):
           await ctx.send(f"Pong!\nLatency: {bot.latency}")
 
-    @commands.command(name="robloxuser", description="Check User By Id Or Username (ID is very accurate!)"
-    async def rblxuser(self, ctx, user):
-          if user.isdigit():
-             r = requests.get(f"https://users.roblox.com/v1/users/{user}")
+    @commands.command(name="robloxuser", description="Check User of roblox!")
+    async def robloxuser(self, ctx, user):
+
+             r = requests.get(f"https://users.roblox.com/v1/users/search?keyword={user}%20&limit=1")
              lmao = r.json()
              jsondumps = json.dumps(lmao)
              jsonloads = json.loads(jsondumps)
+             robloxid = jsonloads['id']
+             rblxuser = requests.get(f"https://users.roblox.com/v1/users/{robloxid}")
+             loadrblx = rblxuser.json()
+             jsonrblx = json.dumps(loadrblx)
+             rblxjson = json.loads(jsonrblx)
              embed = discord.Embed(title="Result:", description="Finding Result:")
-             embed.add_field(name=f"Display Name = {jsonloads['displayName']}\nName: {jsonloads['name']}\n ID: {jsonloads['id']}" value=f"Description: {jsonloads['description']}\n Banned : {jsonloads['isBanned'}\n Created: {jsonloads['created']"
+             embed.add_field(name=f"Display Name = {rblxjson['displayName']}\nName: {rblxuser['name']}\n ID: {rblxuser['id']}", value=f"Description: {rblxjson['description']}\n Banned : {rblxjson['isBanned']}\n Created: {rblxjson['created']}")
              await ctx.send(embed=embed)
-          else:
-             r = requests.get(f"https://users.roblox.com/v1/users/{user}")
-             lmao = r.json()
-             jsondumps = json.dumps(lmao)
-             jsonloads = json.loads(jsondumps)
-             embed = discord.Embed(title="Result:", description="Finding Result:")
-             embed.add_field(name=f"Display Name = {jsonloads['displayName']}\nName: {jsonloads['name']}\n ID: {jsonloads['id']}" value=f"This is Not Completed, Use the ID")
-             await ctx.send(embed=embed)
+
 
 class Music(commands.Cog):
     """Music commands"""
