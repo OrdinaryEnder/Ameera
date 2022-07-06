@@ -380,16 +380,6 @@ class Moderation(commands.Cog):
          await ctx.send("Purged by {}".format(ctx.author.mention), delete_after=5)
          await ctx.message.delete()
 
-    @commands.command(name='report', description='Report someone to Admin or Owner')
-    @commands.cooldown(1, 600, commands.BucketType.user)
-    async def _report(self, ctx, member: discord.Member, reason=None):
-     channel = bot.get_channel(os.getenv("REPORT_CHANNEL")
-     embed = discord.Embed(title="Report", description=f"{ctx.author} Reported"
-     embed.add_field(name="Name" value=f"{member}")
-     embed.add_field(name="Reason" value=f"{reason}")
-     await channel.send(embed=embed)
-     await ctx.send("Reported to Owner, Please Calm Down")
-
     @commands.command(name='nick', description='Change Nickname of people')
     @commands.has_permissions(manage_nicknames=True)
     async def chnick(self, ctx, member: discord.Member, *, nick):
