@@ -105,7 +105,7 @@ class MyHelpCommand(commands.MinimalHelpCommand):
    embed=discord.Embed(title="Alexandra ", url="https://discord.com/api/oauth2/authorize?client_id=972459217548099584&permissions=0&scope=bot%20applications.commands", description="")
    embed.set_author(name="ZairullahDeveloper", url="https://github.com/zairullahdev", icon_url="https://i.ibb.co/9q6MYnM/Png.png")
    embed.set_thumbnail(url="https://camo.githubusercontent.com/51f16d28861eade2210bb6c5414a1d6b0096d0d8d56debc5fc64e8b88681c154/68747470733a2f2f656e637279707465642d74626e302e677374617469632e636f6d2f696d616765733f713d74626e3a414e6439476354664f54472d6d5268655674414b7164366430613774522d7157716b534e75464869767726757371703d434155")
-   embed.add_field(name='By OrdinaryEnder Feat ZairullahDeveloper', value='GPLv2 License')
+   embed.add_field(name='By OrdinaryEnder Feat ZairullahDeveloper', value='MIT License')
    embed.set_footer(text="Any suggestions contact ZairullahDeveloper in GitHub (zairullahdev)")
   for page in self.paginator.pages:
             embed.description += page
@@ -351,7 +351,7 @@ class Moderation(commands.Cog):
          for channel in guild.channels:
           await channel.set_permissions(mutedRole, speak=False, send_messages=False, read_message_history=True, read_messages=False)
           embed = discord.Embed(title="Muted!", description=f"{member.mention} was muted   for {time}, dont leave the server or you'll get banned! ", colour=discord.Colour.light_gray())
-          embed.add_field(name="Reason:", value=reason, inline=True)
+          embed.add_field(napme="Reason:", value=reason, inline=True)
           await ctx.send(embed=embed)
           await member.add_roles(mutedRole, reason=reason)
           await asyncio.sleep(tempmute)
@@ -383,10 +383,11 @@ class Moderation(commands.Cog):
     @commands.command(name='report', description='Report someone to Admin or Owner')
     @commands.cooldown(1, 600, commands.BucketType.user)
     async def _report(self, ctx, member: discord.Member, reason=None):
-     owner = ctx.guild.owner
-     await owner.send("This guy break the rules")
-     await owner.send("Name: {}".format(member))
-     await owner.send("Reason: {}".format(reason))
+     channel = bot.get_channel(os.getenv("REPORT_CHANNEL")
+     embed = discord.Embed(title="Report", description=f"{ctx.author} Reported"
+     embed.add_field(name="Name" value=f"{member}")
+     embed.add_field(name="Reason" value=f"{reason}")
+     await channel.send(embed=embed)
      await ctx.send("Reported to Owner, Please Calm Down")
 
     @commands.command(name='nick', description='Change Nickname of people')
@@ -394,7 +395,6 @@ class Moderation(commands.Cog):
     async def chnick(self, ctx, member: discord.Member, *, nick):
      await member.edit(nick=nick)
      await ctx.send(f'Nickname was changed for {member.mention} ')
-
 
 
 class nsfw(commands.Cog):
