@@ -1,3 +1,4 @@
+import ast
 import urllib
 import typing
 from discord import app_commands
@@ -44,6 +45,7 @@ from discord import NotFound
 import akinator
 import itertools
 from async_timeout import timeout
+from discord.gateway import DiscordWebSocket, _log
 from akinator.async_aki import Akinator
 from json import loads
 import wavelink
@@ -57,7 +59,6 @@ def restart_bot():
   os.execv(sys.executable, ['python'] + sys.argv)
 
 intents = discord.Intents().all()
-
 bot = commands.Bot(command_prefix='-', intents=intents)
 
 #
@@ -105,7 +106,7 @@ class MyHelpCommand(commands.MinimalHelpCommand):
    embed=discord.Embed(title="Alexandra ", url="https://discord.com/api/oauth2/authorize?client_id=972459217548099584&permissions=0&scope=bot%20applications.commands", description="")
    embed.set_author(name="ZairullahDeveloper", url="https://github.com/zairullahdev", icon_url="https://i.ibb.co/9q6MYnM/Png.png")
    embed.set_thumbnail(url="https://camo.githubusercontent.com/51f16d28861eade2210bb6c5414a1d6b0096d0d8d56debc5fc64e8b88681c154/68747470733a2f2f656e637279707465642d74626e302e677374617469632e636f6d2f696d616765733f713d74626e3a414e6439476354664f54472d6d5268655674414b7164366430613774522d7157716b534e75464869767726757371703d434155")
-   embed.add_field(name='By OrdinaryEnder Feat ZairullahDeveloper', value='MIT License')
+   embed.add_field(name='By OrdinaryEnder Feat ZairullahDeveloper', value='GPL-2.0 License')
    embed.set_footer(text="Any suggestions contact ZairullahDeveloper in GitHub (zairullahdev)")
   for page in self.paginator.pages:
             embed.description += page
@@ -302,7 +303,11 @@ class Owner(commands.Cog):
              await bot.change_presence(activity=discord.Streaming(name=name, url=twittch))
           elif type == 'sleep':
              await bot.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.listening, name = '24/7 Lo-fi'))
-
+    @commands.command(name="eval", description="Quick Eval")
+    @commands.is_owner()
+    async def eval(self, ctx, *, code):
+     codexec = await eval(code)
+     await ctx.send(f"```py\n { codexec } \n```")
 
 class Moderation(commands.Cog):
     def __init__(self, bot):
@@ -341,23 +346,23 @@ class Moderation(commands.Cog):
     @commands.command(name='mute', description='Mute Whos Keep Spamming on ur Holy Server', pass_context = True)
     @commands.has_permissions(manage_messages=True)
     async def _mute(self, ctx, member: discord.Member, time, *, reason=None):
-         mutedrole = os.getenv("MUTED_ROLE")
-         mutedRole = discord.utils.get(ctx.guild.roles, name=mutedrole)
-         memrole = os.getenv("MEMBER_ROLE")
-         guild = ctx.guild
-         memberrole = discord.utils.get(ctx.guild.roles, name=memrole)
-         time_convert = {"s":1, "m":60, "h":3600, "d":86400, "w":604800, "mo":18144000, "y":31536000}
-         tempmute= int(time[:-1]) * time_convert[time[-1]]
-         for channel in guild.channels:
-          await channel.set_permissions(mutedRole, speak=False, send_messages=False, read_message_history=True, read_messages=False)
-          embed = discord.Embed(title="Muted!", description=f"{member.mention} was muted   for {time}, dont leave the server or you'll get banned! ", colour=discord.Colour.light_gray())
-          embed.add_field(napme="Reason:", value=reason, inline=True)
-          await ctx.send(embed=embed)
-          await member.add_roles(mutedRole, reason=reason)
-          await asyncio.sleep(tempmute)
-          await member.send(f" you have been muted from: {guild.name} reason: {reason}")
-          await member.remove_roles(mutedRole)
-          break
+            mutedrole = os.getenv("MUTED_ROLE")
+            mutedRole = discord.utils.get(ctx.guild.roles, name=mutedrole)
+            memrole = os.getenv("MEMBER_ROLE")
+            guild = ctx.guild
+            memberrole = discord.utils.get(ctx.guild.roles, name=memrole)
+            time_convert = {"s":1, "m":60, "h":3600, "d":86400, "w":604800, "mo":18144000, "y":31536000}
+            tempmute= int(time[:-1]) * time_convert[time[-1]]
+            for channel in guild.channels:
+                await channel.set_permissions(mutedRole, speak=False, send_messages=False, read_message_history=True, read_messages=False)
+                embed = discord.Embed(title="Muted!", description=f"{member.mention} was muted   for {time}, dont leave the server or you'll get banned! ", colour=discord.Colour.light_gray())
+                embed.add_field(name="Reason:", value=reason, inline=True)
+                await ctx.send(embed=embed)
+                await member.add_roles(mutedRole, reason=reason)
+                await asyncio.sleep(tempmute)
+                await member.send(f"You have been unmuted from {guild.name}, Dont break rules again!")
+                await member.remove_roles(mutedRole)
+                break
 
 
 
@@ -756,40 +761,6 @@ bot.lavalink_nodes = [
 ]
 
 token = os.getenv("TOKEN")
-
-@bot.command()
-@commands.guild_only()
-async def sync(
-  ctx: commands.Context, guilds: commands.Greedy[discord.Object], spec: typing.Optional[typing.Literal["~", "*", "^"]] = None) -> None:
-    if not guilds:
-        if spec == "~":
-            synced = await ctx.bot.tree.sync(guild=ctx.guild)
-        elif spec == "*":
-            ctx.bot.tree.copy_global_to(guild=ctx.guild)
-            synced = await ctx.bot.tree.sync(guild=ctx.guild)
-        elif spec == "^":
-            ctx.bot.tree.clear_commands(guild=ctx.guild)
-            await ctx.bot.tree.sync(guild=ctx.guild)
-            synced = []
-        else:
-            synced = await ctx.bot.tree.sync()
-
-        await ctx.send(
-            f"Synced {len(synced)} commands {'globally' if spec is None else 'to the current guild.'}"
-        )
-        return
-
-    ret = 0
-    for guild in guilds:
-        try:
-            await ctx.bot.tree.sync(guild=guild)
-        except discord.HTTPException:
-            pass
-        else:
-            ret += 1
-
-    await ctx.send(f"Synced the tree to {ret}/{len(guilds)}.")
-
 
 
 bot.run(token)
