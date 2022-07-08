@@ -5,7 +5,7 @@ from discord import app_commands
 from discord import ClientException
 import re
 import os
-import subprocess 
+import subprocess
 import math
 import functools
 import sys
@@ -92,7 +92,7 @@ async def on_message(message):
 
 @bot.event
 async def on_connect():
-      await bot.change_presence(activity=discord.Game(name="First Release: Codename : Opstober"))
+      await bot.change_presence(activity=discord.Game(name="First Release: Codename : Captain Opstober"))
 
 """
 ZairullahDeveloper once said: Being a developer isnt that easy, start from making mistakes
@@ -123,8 +123,9 @@ class Fun(commands.Cog):
     async def _lvbypass(self, ctx, url):
        link = bypass(url)
        loadlink = json.dumps(link)
-       print(loadlink)
-       datalink = loadlink.get("destination")
+       finalink = json.loads(loadlink)
+       print(finalink)
+       datalink = finalink.get("destination")
        embed=discord.Embed(title="Result", description="Dont let your data get sold by Them!")
        embed.add_field(name="ㅤ", value=datalink)
        await ctx.send(embed=embed)
