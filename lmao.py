@@ -5,7 +5,7 @@ from discord import app_commands
 from discord import ClientException
 import re
 import os
-import subprocess
+import subprocess 
 import math
 import functools
 import sys
@@ -92,7 +92,7 @@ async def on_message(message):
 
 @bot.event
 async def on_connect():
-      await bot.change_presence(activity=discord.Game(name="First Release: Codename : Captain Opstober"))
+      await bot.change_presence(activity=discord.Game(name="First Release: Codename : Opstober"))
 
 """
 ZairullahDeveloper once said: Being a developer isnt that easy, start from making mistakes
@@ -468,7 +468,7 @@ class Other(commands.Cog):
 
     @commands.command(name="ping", description="Pong! <3")
     async def ping(self, ctx):
-          await ctx.send(f"Pong!\nLatency: {bot.latency}")
+          await ctx.send(f"Pong!\nLatency: {bot.latency * 1000}")
 
     @commands.command(name="search", description="Search Youtube Videos")
     async def yt(self, ctx, *, search):
