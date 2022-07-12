@@ -1,3 +1,4 @@
+import brainfuck
 import ast
 import urllib
 import typing
@@ -35,6 +36,7 @@ from utilities.checks import voice_channel_player, voice_connected
 from utilities.errors import MustBeSameChannel
 from utilities.paginator import Paginator
 from utilities.player import DisPlayer
+from utilities.events import *
 
 import requests
 from enum import Enum
@@ -304,11 +306,19 @@ class Owner(commands.Cog):
              await bot.change_presence(activity=discord.Streaming(name=name, url=twittch))
           elif type == 'sleep':
              await bot.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.listening, name = '24/7 Lo-fi'))
-    @commands.command(name="eval", description="Quick Eval")
+    @commands.command(name="eval", description="Quick Eval (Codeblock)")
     @commands.is_owner()
     async def eval(self, ctx, *, code):
-     codexec = await eval(code)
-     await ctx.send(f"```py\n { codexec } \n```")
+     try:
+      if "```" in code:
+       content = re.sub("```python|```py|```", "", code)
+       codexec = await eval(content)
+       await ctx.send(f"```py\n { codexec } \n```")
+      else:
+       codexec = await eval(code)
+       await ctx.send(f"```py\n { codexec } \n```")
+     except Exception as e:
+       await ctx.send(f"```css\n { e }\n```")
 
 class Moderation(commands.Cog):
     def __init__(self, bot):
@@ -420,7 +430,14 @@ class Other(commands.Cog):
      message = ctx.message
      await message.delete()
 
-     await ctx.send(f"{text}")
+     await ctx.send(f"<{text}>")
+
+    @commands.command(name='brainfuck', description='Yet another BrainFuck Interpreter In Discord')
+    async def _brainfuck(self, ctx, *, code):
+     content = re.sub("```brainfuck|```bf|```", "", code)
+     embed = discord.Embed(title="Result", description="Brainfuck Interpreter")
+     embed.add_field(name="Translate:", value=f"{brainfuck.evaluate(content)}")
+     await ctx.send(embed=embed)
 
     @commands.command(name='robloxinfo', description='Get Roblox Game Info')
     async def _robloxinfo(self, ctx, *, placeid):
@@ -468,7 +485,7 @@ class Other(commands.Cog):
 
     @commands.command(name="ping", description="Pong! <3")
     async def ping(self, ctx):
-          await ctx.send(f"Pong!\nLatency: {bot.latency * 1000}")
+          await ctx.send(f"Pong!\nLatency: {round(bot.latency * 1000)}")
 
     @commands.command(name="search", description="Search Youtube Videos")
     async def yt(self, ctx, *, search):
@@ -630,15 +647,33 @@ class Music(commands.Cog):
 
     @commands.command(aliases=["vol"])
     @voice_channel_player()
-    async def volume(self, ctx: commands.Context, vol: int, forced=False):
-        """Set volume"""
+    
+    @commands.command(name = "volume",
+                    usage="<0 to 200>",
+                    description = "Change the bot's volume.")
+    @commands.guild_only()
+    @commands.cooldown(1, 5, commands.BucketType.member)
+    async def volume(self, ctx, volume):
+
+        if not await Check().userInVoiceChannel(ctx, self.bot): return 
+        if not await Check().botInVoiceChannel(ctx, self.bot): return 
+        if not await Check().userAndBotInSameVoiceChannel(ctx, self.bot): return 
+
+        if (
+            (not volume.isdigit()) or 
+            (int(volume)) < 0 or 
+            (int(volume) > 200)
+        ):
+            return await ctx.send(f"{self.bot.emojiList.false} {ctx.author.mention} The volume have to be a number between 0 and 200!")
+
         player: DisPlayer = ctx.voice_client
 
-        if 0 <= vol <= 300:                              
-         if player.is_playing():                          
-            new_volume = vol / 100                   
-            player.source.volume = vol
-            await ctx.send(f"Volume set to {vol} :loud_sound:")
+        volume = int(volume)
+        await player.set_volume(volume)
+
+        embed=discord.Embed(title="Volume changed :", description=f"The volumed was changed to : ``{volume} %``", color=discord.Colour.random())
+        embed.set_footer(text=f"Requested by {ctx.author} | Open source", icon_url=ctx.author.avatar_url)
+        await ctx.send(embed=embed)
 
     @commands.command(aliases=["disconnect", "dc"])
     @voice_channel_player()
