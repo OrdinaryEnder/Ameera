@@ -7,7 +7,7 @@ from discord import app_commands
 from discord import ClientException
 import re
 import os
-import subprocess 
+import subprocess
 import math
 import functools
 import sys
