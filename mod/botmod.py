@@ -29,5 +29,7 @@ def track_end(bot):
       await vc.play(next_song)
       await ctx.send(f"Now playing: {next_song.title}")
     except wavelink.errors.QueueEmpty:
+      await ctx.send("There are no more track")
+      await asyncio.sleep(180)
       await vc.disconnect()
-      await ctx.send("There is no more music to play, Leaving.")
+      await ctx.send("There is no more music to play after 3min, Leaving. ( 24/7 Supported)")

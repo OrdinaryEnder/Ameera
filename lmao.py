@@ -1,4 +1,5 @@
 import brainfuck
+import qrcode
 import ast
 import urllib
 import typing
@@ -278,6 +279,16 @@ class Fun(commands.Cog):
      embed.add_field(name="ㅤ", value=f"{final['body']}")
      await ctx.send(embed=embed)
 
+    @commands.command(name="qrgen", description="Generates QR using Data (Can be URL or Anything")
+    async def qrgen(self, ctx, *, data):
+     img = qrcode.make(data)
+     img.save("temp.png")
+     embed = discord.Embed(title="Successfully Generated", description="Result")
+     file = discord.File("temp.png", filename="image.png")
+     embed.set_image(url="attachment://image.png")
+     await ctx.send(embed=embed, file=file)
+     os.remove("temp.png")
+
 class Owner(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -389,6 +400,7 @@ class Moderation(commands.Cog):
          await ctx.guild.unban(user)
          await ctx.send("Unbanned")
     @commands.command(name="idban", description="Ban using ID (For Unfair Leaver")
+    @commands.has_permissions(ban_members=True)
     async def _idban(self, ctx, id, reason=None):
         user = await bot.fetch_user(int(id))
         await ctx.guild.ban(user, reason=reason)

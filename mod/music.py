@@ -1,11 +1,14 @@
 import datetime
 import random
-
+from lyricsgenius import Genius
 import discord
 import wavelink
 from discord.ext import commands
+from dotenv import load_dotenv
 
+load_dotenv()
 
+genius = Genius()
 
 class Music(commands.Cog):
   def __init__(self, bot):
