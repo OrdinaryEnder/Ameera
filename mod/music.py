@@ -1,4 +1,5 @@
-# Music Module
+# Music Module by Ender
+
 import datetime
 import random
 from lyricsgenius import Genius
