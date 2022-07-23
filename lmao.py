@@ -60,7 +60,7 @@ with open('badwords.txt', 'r') as f:
 intents = discord.Intents().all()
 bot = commands.Bot(command_prefix='-', intents=intents)
 
-# Badword Test (haha lol)
+
 
 
 
