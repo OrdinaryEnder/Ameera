@@ -1,5 +1,6 @@
-# Music Module by Ender
 
+# Music Module by Ender
+import asyncio
 import datetime
 import random
 from lyricsgenius import Genius
