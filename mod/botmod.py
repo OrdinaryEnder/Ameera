@@ -1,3 +1,4 @@
+import asyncio
 import wavelink
 import ast
 import inspect
