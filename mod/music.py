@@ -87,7 +87,7 @@ class Music(commands.Cog):
       vc: wavelink.Player = ctx.voice_client
 
     await vc.disconnect()
-    await ctx.send(f"{ctx.message.author.mention} send me out :(")
+    await ctx.send(f"Leaving, Goodbye \n You can Checkout Other Commands or play another song in vc")
 
 
   @commands.command(name="loop", description="Loops the song")
@@ -141,10 +141,10 @@ class Music(commands.Cog):
     else:
       vc: wavelink.Player = ctx.voice_client
 
-    if volume > 100:
-      return await ctx.send("Thats to high...")
+    if volume > 200:
+      return await ctx.send("Thats too high...")
     elif volume < 0:
-      return await ctx.send("Thats to low...")
+      return await ctx.send("Thats too low...")
 
     await ctx.send(f"Set the volume to {volume}%")
     return await vc.set_volume(volume=volume)
