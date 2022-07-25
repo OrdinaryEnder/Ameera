@@ -1,5 +1,7 @@
 git+https://github.com/Rapptz/discord.py
 youtube-dl
+qrcode
+pillow
 pynacl
 python-dotenv
 requests
