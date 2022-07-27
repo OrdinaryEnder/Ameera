@@ -62,7 +62,25 @@ bot = commands.Bot(command_prefix='-', intents=intents)
 
 print("Heroku Version Is Now Released!")
 
+@bot.event
+async def on_message(message):
+    if message.author.bot:
+        return
 
+    for badwords in badword:
+
+       if badwords in message.content.lower().split(' '):
+            await message.delete()
+            webhook = await message.channel.create_webhook(name="dis webhook")
+            await webhook.send(username=f"{message.author.name}#{message.auth>
+            await webhook.delete()
+            return
+    await bot.process_commands(message)
+    return
+
+@bot.event
+async def on_wavelink_node_ready(node: wavelink.Node):
+    print(f"Node {node.identifier} is ready!")
 
 @bot.event
 async def on_ready():
@@ -72,7 +90,6 @@ async def on_ready():
  print("Adding Music cogs")
  await bot.load_extension('mod.music')
  await node_connect(bot)
- node_ready(bot)
  track_end(bot)
  print("Adding Fun Cogs")
  await bot.add_cog(Fun(bot))
@@ -94,23 +111,7 @@ async def on_member_join(member):
        await member.add_roles(member.guild.get_role(os.getenv("MEMBER_ROLE")))
 
 
-@bot.event
-async def on_message(message):
-    if message.author.bot:
-        return
 
-    for badwords in badword:
-       if badwords in (message.content.lower()).split(' '):
-            await message.delete()
-            await message.channel.send("meow no swer")
-            await bot.process_commands(message)
-            break
-       else:
-            print("Checked")
-            await bot.process_commands(message)
-            return
-     
-6
 @bot.event
 async def on_connect():
       await bot.change_presence(activity=discord.Game(name="Testing"))

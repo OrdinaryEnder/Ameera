@@ -6,6 +6,6 @@ pynacl
 python-dotenv
 requests
 akinator.py
-wavelink
+git+https://github.com/PythonistaGuild/Wavelink
 lavalink
 git+https://github.com/johnwmillr/LyricsGenius.git
