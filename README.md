@@ -26,6 +26,27 @@ You can host this bot to make it stay online on these online hostings.
 
 [![Run on Repl.it](https://repl.it/badge/github/zairullahdev/Alexandra)](https://repl.it/github/zairullahdev/Alexandra)
 
+- Docker
+
+Docker now supported, available at docker hub
+
+```
+docker pull ender1458docker/alexandra
+```
+Note: your need edit .env inside container before running
+
+```
+# docker exec -it <container> bash
+```
+Install Vim (or nano)
+```
+# apt install vim # apt install nano if your a nano user
+```
+then edit
+```
+# cd /app
+# nano .env
+```
 
 # Credit 
 ZairullahDeveloper - Code's
