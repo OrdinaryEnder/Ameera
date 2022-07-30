@@ -16,8 +16,7 @@ Note For Windows user, Please follow these Steps to Install Libsodium due requir
 
 Termux (Android, Not recommended using Data)
 ```
-pkg update && pkg install clang python libffi openssl libsodium
-SODIUM_INSTALL=system pip install -r requirements.txt
+bash termuxsetup.sh
 ```
 
 ### Online Hosting
