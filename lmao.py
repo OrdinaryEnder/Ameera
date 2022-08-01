@@ -1,13 +1,15 @@
+# big boi tryna reach world record
 import brainfuck
 import qrcode
-import ast
+import colorama
+from colorama import Fore, Back, Style
 import urllib
 import typing
 from discord import app_commands
 from discord import ClientException
 import re
 import os
-import subprocess
+import subprocess 
 import math
 import functools
 import sys
@@ -47,6 +49,7 @@ import wavelink
 import async_timeout
 
 load_dotenv()
+colorama.init(autoreset=True)
 
 genius = Genius()
 
@@ -59,24 +62,7 @@ with open('badwords.txt', 'r') as f:
 
 intents = discord.Intents().all()
 bot = commands.Bot(command_prefix='-', intents=intents)
-
-print("Heroku Version Is Now Released!")
-
-@bot.event
-async def on_message(message):
-    if message.author.bot:
-        return
-
-    for badwords in badword:
-
-       if "furry" in message.content.lower().split(' '):
-            await message.delete()
-            webhook = await message.channel.create_webhook(name="dis webhook")
-            await webhook.send(username=f"{message.author.name}#{message.author.discriminator}", avatar_url=message.author.avatar, content=f"{ '#' * len(message.content)}")
-            await webhook.delete()
-            return
-    await bot.process_commands(message)
-    return
+# Badword Test (haha lol)
 
 @bot.event
 async def on_wavelink_node_ready(node: wavelink.Node):
@@ -84,25 +70,24 @@ async def on_wavelink_node_ready(node: wavelink.Node):
 
 @bot.event
 async def on_ready():
- print("Logged As")
- print(f"@{bot.user.name}#{bot.user.discriminator}")
- print("Registering Commands (Wont take long time)....")
- print("Adding Music cogs")
- await bot.load_extension('mod.music')
+ print(Back.RED + Fore.BLACK + "Logged As")
+ print(Back.WHITE + Fore.BLACK + f"@{bot.user.name}#{bot.user.discriminator}")
+ print(Fore.BLUE + "Registering Commands (Wont take long time)....")
+ print(Fore.YELLOW + Fore.RED + "Adding Music cogs")
+ await bot.add_cog(Music(bot))
  await node_connect(bot)
  track_end(bot)
- print("Adding Fun Cogs")
+ print(Fore.GREEN + "Adding Fun Cogs")
  await bot.add_cog(Fun(bot))
- print("Adding Moderation Cogs")
+ print(Fore.BLUE + "Adding Moderation Cogs ")
  await bot.add_cog(Moderation(bot))
- print("Adding Other Cogs")
+ print(Fore.MAGENTA + "Adding Other Cogs")
  await bot.add_cog(Other(bot))
- print("Adding Owner Cogs")
+ print(Fore.YELLOW + "Adding Owner Cogs")
  await bot.add_cog(Owner(bot))
- print("Adding Nsfw Cogs")
+ print(Fore.RED + "Adding Nsfw Cogs")
  await bot.add_cog(nsfw(bot))
- print("Support us at https://github.com/zairullahdev/Alexandra")
-
+ print(Back.WHITE + Fore.RED + "Support" + Fore.YELLOW + " us" + Fore.BLUE + " at" + Fore.GREEN + " https://github.com/zairullahdev/Alexandra")
 @bot.event
 async def on_member_join(member):
        embed = discord.Embed(title=f"Welcome to {member.guild.name}, {member.name}!", description="By Joining, Your agree to the rules given in server")
@@ -111,11 +96,34 @@ async def on_member_join(member):
        await member.add_roles(member.guild.get_role(os.getenv("MEMBER_ROLE")))
 
 
+@bot.event
+async def on_message(message):
+    if message.author.bot:
+        return
+
+    for badwords in badword:
+
+       if "alexandra" in message.content.lower().strip():
+            await message.delete()
+            webhook = await message.channel.create_webhook(name="dis webhook")
+            await webhook.send(username=f"{message.author.name}#{message.author.discriminator}", avatar_url=message.author.avatar, content=f"{ '#' * len(message.content)}")
+            await webhook.delete()
+            return
+       elif "atd game link?" in message.content.lower():
+            await message.channel.send("https://web.roblox.com/games/9998645781/Accurate-Tower-Defense 😉")
+            return
+       elif message.author.guild.owner.mention in message.content.lower().split(' '):
+            await message.author.timeout(datetime.timedelta(seconds=300))
+            await message.delete()
+            await message.channel.send(f"{message.author.mention} Has Been Timed out for 5 minute \n Reason : pinging owner")
+            return
+    await bot.process_commands(message)
+    return
+     
 
 @bot.event
 async def on_connect():
       await bot.change_presence(activity=discord.Game(name="Testing"))
-
 """
 ZairullahDeveloper once said: Being a developer isnt that easy, start from making mistakes
 """
@@ -126,8 +134,8 @@ class MyHelpCommand(commands.MinimalHelpCommand):
   destination = self.get_destination()
   for command in bot.commands:
    embed=discord.Embed(title="Alexandra ", url="https://discord.com/api/oauth2/authorize?client_id=972459217548099584&permissions=0&scope=bot%20applications.commands", description="")
-   embed.set_author(name="ZairullahDeveloper", url="https://github.com/zairullahdev", icon_url="https://i.ibb.co/9q6MYnM/Png.png")
-   embed.set_thumbnail(url="https://camo.githubusercontent.com/51f16d28861eade2210bb6c5414a1d6b0096d0d8d56debc5fc64e8b88681c154/68747470733a2f2f656e637279707465642d74626e302e677374617469632e636f6d2f696d616765733f713d74626e3a414e6439476354664f54472d6d5268655674414b7164366430613774522d7157716b534e75464869767726757371703d434155")
+   embed.set_author(name="ZairullahDeveloper", url="https://github.com/zairullahdev", icon_url="https://i.ibb.co/gD6mLh7/Png.png")
+   embed.set_thumbnail(url="https://i.ibb.co/fp247vT/Untitled1-20220728065509.png")
    embed.add_field(name='By OrdinaryEnder Feat ZairullahDeveloper', value='GPL-2.0 License')
    embed.set_footer(text="Any suggestions contact ZairullahDeveloper in GitHub (zairullahdev)")
   for page in self.paginator.pages:
@@ -195,21 +203,21 @@ class Fun(commands.Cog):
                  try:
                      q=aki.back()
                  except aki.CantGoBackAnyFurther:
-                     await interaction.response.send_message(e)
+                     await ctx.send(e)
                      continue
              else:
                  try:
                      q = aki.answer(msg.content.lower())
                  except aki.InvalidAnswerError as e:
-                     await interaction.response.send_message(e)
+                     await ctx.send(e)
                      continue
          aki.win()
          await ctx.send(f"It's {aki.first_guess['name']} ({aki.first_guess['description']})! Was I correct?(y/n)\n{aki.first_guess['absolute_picture_path']}\n\t")
          correct = await bot.wait_for("message", check=check)
          if correct.content.lower() == "y":
-             await interaction.response.send_message("Yay\n")
+             await ctx.send("Yay\n")
          else:
-             await interaction.response.send_message("Oof\n")
+             await ctx.send("Oof\n")
      except Exception as e:
          await interaction.response.send_message(e)
     
@@ -269,6 +277,11 @@ class Fun(commands.Cog):
             else:
                 await message.channel.send('Oops.')
 
+    @commands.command(name="meow", description="meow", hidden=True)
+    async def meow(self, ctx):
+     embed = discord.Embed(title="Ender was here", description="He say meow (hi!) to you!")
+     embed.set_author(name="Your found ender!", url="https://github.com/OrdinaryEnder", icon_url="https://i.ibb.co/qgFpJzF/Png-1.png")
+     await ctx.send(embed=embed)
     @commands.command(name="linusquotes", description="Get Better Motivation from Linus Torvalds!")
     async def quotes(self, ctx):
      r = requests.get("https://linusquote.com/quote")
@@ -343,10 +356,10 @@ class Owner(commands.Cog):
      try:
       if "```" in code:
        content = re.sub("```python|```py|```", "", code)
-       codexec = await eval(content)
+       codexec = exec(content)
        await ctx.send(f"```py\n { codexec } \n```")
       else:
-       codexec = await eval(code)
+       codexec = exec(code)
        await ctx.send(f"```py\n { codexec } \n```")
      except Exception as e:
        await ctx.send(f"```css\n { e }\n```")
@@ -372,12 +385,12 @@ class Moderation(commands.Cog):
 
     @commands.command(name='kick', description='Kick Dumbass from Your Holy Server')
     @commands.has_permissions(kick_members=True)
-    async def _kick(self, ctx, Member: discord.Member):
-        if ctx.author.top_role < user.top_role:
+    async def _kick(self, ctx, Member: discord.Member, reason=None):
+        if ctx.author.top_role < Member.top_role:
                 return await ctx.send("**You don't have enough permission**")
-        if ctx.author.top_role > user.top_role:
-                return await bot.kick(Member)
-                return await ctx.send(f"{user} Successfully Banned by {ctx.author.mention}")
+        if ctx.author.top_role > Member.top_role:
+                return await ctx.guild.kick(Member, reason=reason)
+                return await ctx.send(f"{Member} Successfully Banned by {ctx.author.mention}")
     @_kick.error
     async def kick_error(ctx, error):
      if isinstance(error, discord.ext.commands.BadArgument):
@@ -402,7 +415,7 @@ class Moderation(commands.Cog):
          await ctx.send("Unbanned")
     @commands.command(name="idban", description="Ban using ID (For Unfair Leaver")
     @commands.has_permissions(ban_members=True)
-    async def _idban(self, ctx, id, reason=None):
+    async def _idban(self, ctx, id, *, reason=None):
         user = await bot.fetch_user(int(id))
         await ctx.guild.ban(user, reason=reason)
         await ctx.send(f"Banned @{user.name}#{user.discriminator}, Reason = {reason}")
@@ -418,7 +431,7 @@ class Moderation(commands.Cog):
             time_convert = {"s":1, "m":60, "h":3600, "d":86400, "w":604800, "mo":18144000, "y":31536000}
             tempmute= int(time[:-1]) * time_convert[time[-1]]
             for channel in guild.channels:
-                await channel.set_permissions(mutedRole, speak=False, send_messages=False, read_message_history=True, read_messages=False)
+                await channel.set_permissions(mutedRole, speak=False, send_messages=False, read_message_history=True)
                 embed = discord.Embed(title="Muted!", description=f"{member.mention} was muted   for {time}, dont leave the server or you'll get banned! ", colour=discord.Colour.light_gray())
                 embed.add_field(name="Reason:", value=reason, inline=True)
                 await ctx.send(embed=embed)
@@ -426,7 +439,7 @@ class Moderation(commands.Cog):
                 await asyncio.sleep(tempmute)
                 await member.send(f"You have been unmuted from {guild.name}, Dont break rules again!")
                 await member.remove_roles(mutedRole)
-                break
+                return
 
 
 
@@ -483,6 +496,14 @@ class Other(commands.Cog):
           await message.delete()
           await ctx.send(f"{text}")
           return
+
+    @commands.command(name="runpython", description="Run Python Codes")
+    async def pycode(self, ctx, *, content):
+     code = re.sub("```python|```py|```", "", content)
+     async with aiohttp.ClientSession() as session:
+      async with session.post("https://linksafe.repl.co/api/eval/", data=b"{code}", raise_for_status=True) as response:
+           embed = discord.Embed(title="Result", description=f"Here your code result {ctx.author.mention} \n {response.json()}")
+           return await ctx.send(embed=embed)
 
     @commands.command(name='brainfuck', description='Yet another BrainFuck Interpreter In Discord')
     async def _brainfuck(self, ctx, *, code):
@@ -549,18 +570,282 @@ class Other(commands.Cog):
      )
      search_results = re.findall(r"watch\?v=(\S{11})", html_content.read().decode())
      await ctx.send("http://www.youtube.com/watch?v=" + search_results[0])
+
+    @commands.command(name="webhookspawn")
+    async def webhookspawn(self, ctx, *, name):
+     await ctx.channel.create_webhook(name=name)
 # New Music Player, DisMusic Has been deprecated for this bot, Codename : Bullet
 # Moved to music.py
 # Why i put them in here?, becuz why not
+class Music(commands.Cog):
+  def __init__(self, bot):
+   self.bot = bot
+
+  @commands.command(name="connect", description="Connect to Your Voice")
+  async def join(self, ctx):
+    if ctx.author.voice is None:
+      return await ctx.send("You are not connected to a voice channel")
+    else:
+      channel = ctx.author.voice.channel
+      vc: wavelink.Player = channel
+      await vc.connect(cls=wavelink.Player)
+      await ctx.send(f"Connected to voice channel: '{channel}'")
+
+
+  @commands.command(name="playsc", description="Play SoundCloud (Powered by WaveLink)")
+  async def playsc(self, ctx, *, search: str):
+    if not ctx.voice_client:
+      vc: wavelink.Player = await ctx.author.voice.channel.connect(cls=wavelink.Player)
+    elif not getattr(ctx.author.voice, "channel", None):
+      return await ctx.send(f"Hey, {ctx.message.author.mention}You are not connected to a voice channel")
+    else:
+      vc: wavelink.Player = ctx.voice_client
+     
+    if vc.queue.is_empty and not vc.is_playing():
+      track = await wavelink.SoundCloudTrack.search(query=search)
+      await vc.play(track[0])
+      embed = discord.Embed(title="Now playing", description=f"{track[0].title} \n \n Author: {track[0].author}")
+      embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
+      await ctx.send(embed=embed)
+    else:
+      track = await wavelink.SoundCloudTrack.search(query=search)
+      await vc.queue.put_wait(track[0])
+      await ctx.send(f"Added {search} to the queue")
+    vc.ctx = ctx
+    setattr(vc, "loop", False)
+
+  @commands.command(name="play", description="Play a music from Youtube (Powered by WaveLink)")
+  async def play(self, ctx, *, search: wavelink.YouTubeTrack):
+    if not ctx.voice_client:
+      vc: wavelink.Player = await ctx.author.voice.channel.connect(cls=wavelink.Player)
+    elif not getattr(ctx.author.voice, "channel", None):
+      return await ctx.send(f"Hey, {ctx.message.author.mention}You are not connected to a voice channel")
+    else:
+      vc: wavelink.Player = ctx.voice_client
+
+    if vc.queue.is_empty and not vc.is_playing():
+      await vc.play(search)
+      embed = discord.Embed(title="Now playing", description=f"{search.title}\n \n Artist: {search.author}")
+      embed.set_thumbnail(url=search.thumbnail)
+      embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
+      await ctx.send(embed=embed)
+    else:
+      await vc.queue.put_wait(search)
+      await ctx.send(f"Added {search.title} to the queue")
+    vc.ctx = ctx
+    setattr(vc, "loop", False)
+
+
+  @commands.command(name="pause", description="Pause song")
+  async def pause(self, ctx):
+    if not ctx.voice_client:
+      return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
+    elif not getattr(ctx.author.voice, "channel", None):
+      return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
+    else:
+      vc: wavelink.Player = ctx.voice_client
+
+    await vc.pause()
+    await ctx.send(f"Music paused by {ctx.message.author.mention}")
+
+
+  @commands.command(name="resume", description="Resume playing")
+  async def resume(self, ctx):
+    if not ctx.voice_client:
+      return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
+    elif not getattr(ctx.author.voice, "channel", None):
+      return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
+    else:
+      vc: wavelink.Player = ctx.voice_client
+
+    await vc.resume()
+    await ctx.send(f"Music is back! by {ctx.message.author.mention}")
+
+
+  @commands.command(name="stop", description="Stop Player")
+  async def stop(self, ctx):
+    if not ctx.voice_client:
+      return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
+    elif not getattr(ctx.author.voice, "channel", None):
+      return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
+    else:
+      vc: wavelink.Player = ctx.voice_client
+
+    await vc.stop()
+    await ctx.send(f"{ctx.message.author.mention} stopped the music.")
+  @commands.command(name="cleareffect", description="Clear any effect")
+  async def effclean(self, ctx):
+    if not ctx.voice_client:
+      return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")
+    elif not getattr(ctx.author.voice, "channel", None):
+      return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
+    else:
+      vc: wavelink.Player = ctx.voice_client
+      await vc.set_filter(None)
+      message = await ctx.send("Clearing")
+      await asyncio.sleep(5)
+      await message.edit(content="Cleared The Filter")
+
+  @commands.command(name="nightcore", description="Apply NightCore") 
+  async def nightcore(self, ctx):
+    if not ctx.voice_client:
+      return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")
+    elif not getattr(ctx.author.voice, "channel", None):
+      return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
+    else:
+      vc: wavelink.Player = ctx.voice_client
+
+      await vc.set_filter(wavelink.Filter(timescale=wavelink.Timescale(speed=1.05, pitch=1.2, rate=1.0)))
+      await ctx.send("Applied Nightcore (Require 5 sec)")
+
+
+  @commands.command(name="disconnect", description="Disconnect the Bot from VC")
+  async def disconnect(self, ctx):
+    if not ctx.voice_client:
+      return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
+    elif not getattr(ctx.author.voice, "channel", None):
+      return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
+    else:
+      vc: wavelink.Player = ctx.voice_client
+
+    await vc.disconnect()
+    await ctx.send(f"{ctx.message.author.mention} send me out :(")
+
+
+  @commands.command(name="loop", description="Loops the song")
+  async def loop(self, ctx):
+    if not ctx.voice_client:
+      return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
+    elif not getattr(ctx.author.voice, "channel", None):
+      return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
+    else:
+      vc: wavelink.Player = ctx.voice_client
+
+    try:
+      vc.loop ^= True
+    except Exception:
+      setattr(vc, "loop", False)
+
+    if vc.loop:
+      return await ctx.send("Loop is now Enabled!")
+    else:
+      return await ctx.send("Loop is now Disabled!")
+
+
+  @commands.command(name="queue", description="Show Queues")
+  async def queue(self, ctx):
+    if not ctx.voice_client:
+      return await ctx.send(f"Hey {ctx.message.author.mention}, im not connected to a voice channel")   
+    elif not ctx.author.voice:
+      return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")
+    else:
+      vc: wavelink.Player = ctx.voice_client
+
+    if vc.queue.is_empty:
+      return await ctx.send("Queue is empty!")
+
+    em = discord.Embed(color=0x1A2382, title="Queue")
+    copy = vc.queue.copy()
+    count = 0
+    for song in copy:
+      count += 1
+      em.add_field(name=f"Position {count}", value=f"`{song.title}`")
+
+    return await ctx.send(embed=em)
+
+
+  @commands.command(name="volume", description="Volume")
+  async def volume(self, ctx, volume: int):
+    if not ctx.voice_client:
+      return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
+    elif not getattr(ctx.author.voice, "channel", None):
+      return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
+    else:
+      vc: wavelink.Player = ctx.voice_client
+
+    if volume > 300:
+      return await ctx.send("Thats to high...")
+    elif volume < 0:
+      return await ctx.send("Thats to low...")
+      
+    await vc.set_volume(volume=volume)
+    return await ctx.send(f"Set the volume to {volume}%")
+
+
+  @commands.command(name="nowplaying", description="Show what playing now", aliases=['np'])
+  async def playing(self, ctx):
+    if not ctx.voice_client:
+      return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
+    elif not getattr(ctx.author.voice, "channel", None):
+      return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
+    else:
+      vc: wavelink.Player = ctx.voice_client
+    
+    if not vc.is_playing():
+      return await ctx.send("Nothing is playing")
+
+    em = discord.Embed(title=f"Now playing {vc.track}", description=f"Artist: {vc.track.author}")
+    em.add_field(name="Duration", value=f"`{datetime.timedelta(seconds=vc.track.length)}`")
+    em.add_field(name="Extra info", value=f"Song URL: [Click Me]({str(vc.track.uri)})")
+    return await ctx.send(embed=em)
+
+
+
+  @commands.command(name="skip", description="Skip a song")
+  async def skip(self, ctx):
+    if not ctx.voice_client:
+      return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
+    elif not getattr(ctx.author.voice, "channel", None):
+      return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
+    else:
+      vc: wavelink.Player = ctx.voice_client
+
+    await vc.stop()
+    return await ctx.send(f"{ctx.message.author.mention} skipped the actual music.")
+
+
+  @commands.command(name="remove", description="Remove amount of queue")
+  async def remove(self, ctx, index: int):
+    if not ctx.voice_client:
+      return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
+    elif not getattr(ctx.author.voice, "channel", None):
+      return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
+    else:
+      vc: wavelink.Player = ctx.voice_client
+
+    if index > len(vc.queue) or index < 1:
+      return await ctx.send(f"Index must be between 1 and {len(vc.queue)}")
+
+    removed = vc.queue.pop(index - 1)
+
+    await ctx.send(f"{ctx.message.author.mention} removed `{removed.title}` from the queue")
+
+  @commands.command(name="qclean", description="Clear queue")
+  async def qclear(self, ctx):
+    if not ctx.voice_client:
+      return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
+    elif not getattr(ctx.author.voice, "channel", None):
+      return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
+    else:
+      vc: wavelink.Player = ctx.voice_client
+
+    await vc.queue.clear()
+    return await ctx.send(f"{ctx.message.author.mention} cleared the queue.")
+   
+  @commands.command(name='lyrics', description='Genius Lyrics')
+  async def lyrics(self, ctx, artist, *, title):
+     try:
+      song = genius.search_song(title, artist)
+      lyric = song.lyrics
+      print(lyric[:lyric.rfind("Embed")])
+      embedgenius = discord.Embed(title=f"{song.title} by {song.artist}", description=f"\n{lyric[:lyric.rfind('Embed')]}")
+      await ctx.send(embed=embedgenius)
+     except Exception as e:
+      await ctx.send(f"Something wrong, Report this to !        from ender import bot#2105\n Logs: \n ```py\n{e}\n```")
 
 async def node_connect(bot):
   await bot.wait_until_ready()
-  await wavelink.NodePool.create_node(bot=bot, host='lava.link', port=80, password='alexandra', https=False)
-
-def node_ready(bot):
-  @bot.event
-  async def on_wavelink_node_ready(node: wavelink.Node):
-    print(f"Node {node.identifier} is ready!")
+  await wavelink.NodePool.create_node(bot=bot, host="lavalink.oops.wtf", port=443, password="www.freelavalink.ga", https=True)
 
 
 token = os.getenv("TOKEN")
