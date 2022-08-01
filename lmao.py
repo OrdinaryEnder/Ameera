@@ -72,7 +72,7 @@ async def on_message(message):
        if badwords in message.content.lower().split(' '):
             await message.delete()
             webhook = await message.channel.create_webhook(name="dis webhook")
-            await webhook.send(username=f"{message.author.name}#{message.auth>
+            await webhook.send(username=f"{message.author.name}#{message.author.discriminator}", avatar_url=message.author.avatar, content=f"{ '#' * len(message.content)}")
             await webhook.delete()
             return
     await bot.process_commands(message)
