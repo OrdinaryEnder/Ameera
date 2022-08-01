@@ -16,3 +16,5 @@ elif [[ $arch == arm64 ]]; then
 else
     pip install -r requirements.txt
 fi
+
+echo "Installed"
