@@ -1,4 +1,3 @@
-# big boi tryna reach world record
 import brainfuck
 import qrcode
 import colorama
