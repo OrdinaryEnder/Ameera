@@ -102,7 +102,7 @@ async def on_message(message):
 
     for badwords in badword:
 
-       if "alexandra" in message.content.lower().strip():
+       if badwords in message.content.lower().strip():
             await message.delete()
             webhook = await message.channel.create_webhook(name="dis webhook")
             await webhook.send(username=f"{message.author.name}#{message.author.discriminator}", avatar_url=message.author.avatar, content=f"{ '#' * len(message.content)}")
@@ -379,7 +379,7 @@ class Moderation(commands.Cog):
     @commands.has_permissions(kick_members=True)
     async def untimeout(self, ctx, member: discord.Member):
      await member.timeout(None)
-     embed = discord.Embed(title="Untimed out", description="Untimed out {member.mention}", color=0x2ecc71)
+     embed = discord.Embed(title="Untimed out", description=f"Untimed out {member.mention}", color=0x2ecc71)
      await ctx.send(embed=embed)
 
     @commands.command(name='kick', description='Kick Dumbass from Your Holy Server')
