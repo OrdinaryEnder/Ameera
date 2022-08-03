@@ -470,7 +470,8 @@ class Moderation(commands.Cog):
 class nsfw(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    @app_commands.command(name='image', description='Get Images (NSFW!!!!!)\n Current Possible:\n hass, hmidriff, pgif, 4k, hentai, holo, hneko, neko, hkitsune, kemonomimi, anal, hanal, gonewild, kanna, ass, pussy, thigh, hthigh, gah, coffee, food, paizuri, tentacle, boobs, hboobs, yaoi')
+    @commands.command(name='image', description='Get Images (NSFW!!!!!)\n Current Possible:\n hass, hmidriff, pgif, 4k, hentai, holo, hneko, neko, hkitsune, kemonomimi, anal, hanal, gonewild, kanna, ass, pussy, thigh, hthigh, gah, coffee, food, paizuri, tentacle, boobs, hboobs, yaoi')
+    @commands.is_nsfw()
     async def _image(self, ctx, image):
      img = image
      r = requests.get(f"https://nekobot.xyz/api/image?type={image}")
