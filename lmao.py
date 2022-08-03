@@ -102,7 +102,7 @@ async def on_message(message):
 
     for badwords in badword:
 
-       if "sex" in message.content.lower().strip():
+       if badwords in message.content.lower().strip():
             await message.delete()
             webhook = await message.channel.create_webhook(name="dis webhook")
             await webhook.send(username=f"{message.author.name}#{message.author.discriminator}", avatar_url=message.author.avatar, content=f"{ '#' * len(message.content)}")
@@ -393,7 +393,7 @@ class Moderation(commands.Cog):
     @_kick.error
     async def kick_error(ctx, error):
      if isinstance(error, discord.ext.commands.BadArgument):
-        await bot.say('Could not recognize user')
+        await ctx.send('Could not recognize user')
 
     @commands.command(name='ban', description='Ban dumbass from your Holy Server')
     @commands.has_permissions(ban_members=True)
@@ -500,7 +500,7 @@ class Other(commands.Cog):
     async def pycode(self, ctx, *, content):
      code = re.sub("```python|```py|```", "", content)
      async with aiohttp.ClientSession() as session:
-      async with session.post("https://linksafe.repl.co/api/eval/", data=b"{code}", raise_for_status=True) as response:
+      async with session.post("https://linksafe.repl.co/api/eval/", body=code, raise_for_status=True) as response:
            embed = discord.Embed(title="Result", description=f"Here your code result {ctx.author.mention} \n {response.json()}")
            return await ctx.send(embed=embed)
 
