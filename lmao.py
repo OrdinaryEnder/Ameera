@@ -102,7 +102,7 @@ async def on_message(message):
 
     for badwords in badword:
 
-       if badwords in message.content.lower().strip():
+       if "sex" in message.content.lower().strip():
             await message.delete()
             webhook = await message.channel.create_webhook(name="dis webhook")
             await webhook.send(username=f"{message.author.name}#{message.author.discriminator}", avatar_url=message.author.avatar, content=f"{ '#' * len(message.content)}")
@@ -500,7 +500,7 @@ class Other(commands.Cog):
     async def pycode(self, ctx, *, content):
      code = re.sub("```python|```py|```", "", content)
      async with aiohttp.ClientSession() as session:
-      async with session.post("https://linksafe.repl.co/api/eval/", body=code, raise_for_status=True) as response:
+      async with session.post("https://linksafe.repl.co/api/eval/", data=code, raise_for_status=True) as response:
            embed = discord.Embed(title="Result", description=f"Here your code result {ctx.author.mention} \n {response.json()}")
            return await ctx.send(embed=embed)
 
