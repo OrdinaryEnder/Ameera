@@ -378,8 +378,8 @@ class Moderation(commands.Cog):
 
     @commands.command(name='unban', description='Unban people who have repented')
     @commands.has_permissions(ban_members=True)
-    async def _unban(ctx, id: int):
-         user = await bot.fetch_user(id)
+    async def _unban(self, ctx, id):
+         user = await bot.fetch_user(int(id))
          await ctx.guild.unban(user)
          await ctx.send("Unbanned")
     @commands.command(name="idban", description="Ban using ID (For Unfair Leaver")
