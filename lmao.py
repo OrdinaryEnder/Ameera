@@ -248,8 +248,17 @@ class Fun(commands.Cog):
 
     @commands.command(name="meme", description="Reddit Memes")
     async def meme(self, ctx):
+      pages=["memes",
+             "dankmemes",
+             "PrequelMemes",
+             "terriblefacebookmemes",
+             "funny",
+             "wholesomememes",
+             "okbuddyretard",
+             "historymemes",
+             "raimimemes"]
       async with aiohttp.ClientSession() as cs:
-        async with cs.get('https://www.reddit.com/r/dankmemes/new.json?sort=hot') as r:
+        async with cs.get(f'https://www.reddit.com/r/{random.choice(pages)}/new.json?sort=hot') as r:
             res = await r.json()
             embed=discord.Embed(title="Memes", description=" ")
             embed.set_image(url=res['data']['children'] [random.randint(0, 25)]['data']['url'])
