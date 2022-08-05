@@ -188,38 +188,9 @@ class Fun(commands.Cog):
 
     @commands.command(name='akinator', description="Lemme guess ur character")
     async def akinator(self, ctx):
-     await ctx.send("Akinator is here to guess!")
-     def check(msg):
-         return msg.author == ctx.author and msg.channel == ctx.channel and msg.content.lower() in ["y", "n","p","b"]
-     try:
-         aki = akinator.Akinator()
-         q = aki.start_game()
-         while aki.progression < 80:
-             await ctx.send(q)
-             await ctx.send("Your answer:(y/n/p/b)")
-             msg = await bot.wait_for("message", check=check)
-             if msg.content.lower() == "b":
-                 try:
-                     q=aki.back()
-                 except aki.CantGoBackAnyFurther:
-                     await ctx.send(e)
-                     continue
-             else:
-                 try:
-                     q = aki.answer(msg.content.lower())
-                 except aki.InvalidAnswerError as e:
-                     await ctx.send(e)
-                     continue
-         aki.win()
-         await ctx.send(f"It's {aki.first_guess['name']} ({aki.first_guess['description']})! Was I correct?(y/n)\n{aki.first_guess['absolute_picture_path']}\n\t")
-         correct = await bot.wait_for("message", check=check)
-         if correct.content.lower() == "y":
-             await ctx.send("Yay\n")
-         else:
-             await ctx.send("Oof\n")
-     except Exception as e:
-         await interaction.response.send_message(e)
-    
+     await ctx.send("Akinator is disabled for sone reason")
+     
+
     @commands.command(name="date", description="Show today date")
     async def __date(self, ctx):
      date = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -231,16 +202,8 @@ class Fun(commands.Cog):
      await ctx.send(embed=embed)
 
     @commands.command(name="math", description="Math")
-    async def __math(self, ctx, num1: float, op: str, num2: float):
-     if op == "+":
-      result = num1 + num2
-     elif op == "-":
-      result = num1 - num2
-     elif op == "*":
-      result =num1 * num2
-     elif op == "/":
-      result = num1 / num2
-      
+    async def __math(self, ctx, num1: int, op: str, num2: int):
+ 
      embed = discord.Embed(title="Result", description="ㅤ", color=discord.Color.from_rgb(0, 0, 0))
      embed.add_field(name="Result Of Your Math:", value=f"{num1} {op} {num2} = {result}")
      embed.set_footer(text="Be Smart Next Time!")
@@ -610,8 +573,7 @@ class Music(commands.Cog):
     if vc.queue.is_empty and not vc.is_playing():
       track = await wavelink.SoundCloudTrack.search(query=search)
       await vc.play(track[0])
-      embed = discord.Embed(title="Now playing", description=f"{track[0].title} \n \n Author: {track[0].author}")
-      embed.set_thumbnail(url=track[0].thumbnail)
+      embed = discord.Embed(title="Now playing", description=f"[{track[0].title}]({track[0].uri}) \n \n Author: {track[0].author}")
       embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
       await ctx.send(embed=embed)
     else:
@@ -632,7 +594,7 @@ class Music(commands.Cog):
 
     if vc.queue.is_empty and not vc.is_playing():
       await vc.play(search)
-      embed = discord.Embed(title="Now playing", description=f"{search.title}\n \n Uploader: {search.author}")
+      embed = discord.Embed(title="Now playing", description=f"[{search.title}]({search.uri})\n \n Uploader: {search.author}")
       embed.set_thumbnail(url=search.thumbnail)
       embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
       await ctx.send(embed=embed)
