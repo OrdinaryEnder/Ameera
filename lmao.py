@@ -381,7 +381,7 @@ class Moderation(commands.Cog):
     async def _unban(self, ctx, id):
          user = await bot.fetch_user(int(id))
          await ctx.guild.unban(user)
-         await ctx.send("Unbanned")
+         await ctx.send(f"Unbanned @{user.name}#{user.discriminator}")
     @commands.command(name="idban", description="Ban using ID (For Unfair Leaver")
     @commands.has_permissions(ban_members=True)
     async def _idban(self, ctx, id, *, reason=None):
