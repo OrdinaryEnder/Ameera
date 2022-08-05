@@ -28,7 +28,10 @@ def track_end(bot):
     try:
       next_song = vc.queue.get()
       await vc.play(next_song)
-      await ctx.send(f"Now playing: {next_song.title}")
+      embed = discord.Embed(title="Now playing", description=f"{next_song.title}\n \n Uploader: {next_song.author}")
+      embed.set_thumbnail(url=next_song.thumbnail)
+      embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
+      await ctx.send(embed=embed)
     except wavelink.errors.QueueEmpty:
       await ctx.send("There are no more track")
       await vc.disconnect()

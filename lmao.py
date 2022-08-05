@@ -65,7 +65,7 @@ bot = commands.Bot(command_prefix='-', intents=intents)
 
 @bot.event
 async def on_wavelink_node_ready(node: wavelink.Node):
-    print(f"Node {node.identifier} is ready!")
+    print(Fore.GREEN + f"Node {node.identifier} is ready!")
 
 @bot.event
 async def on_ready():
@@ -604,6 +604,7 @@ class Music(commands.Cog):
       track = await wavelink.SoundCloudTrack.search(query=search)
       await vc.play(track[0])
       embed = discord.Embed(title="Now playing", description=f"{track[0].title} \n \n Author: {track[0].author}")
+      embed.set_thumbnail(url=track[0].thumbnail)
       embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
       await ctx.send(embed=embed)
     else:
@@ -624,7 +625,7 @@ class Music(commands.Cog):
 
     if vc.queue.is_empty and not vc.is_playing():
       await vc.play(search)
-      embed = discord.Embed(title="Now playing", description=f"{search.title}\n \n Artist: {search.author}")
+      embed = discord.Embed(title="Now playing", description=f"{search.title}\n \n Uploader: {search.author}")
       embed.set_thumbnail(url=search.thumbnail)
       embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
       await ctx.send(embed=embed)
