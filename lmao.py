@@ -252,9 +252,7 @@ class Fun(commands.Cog):
              "dankmemes",
              "PrequelMemes",
              "terriblefacebookmemes",
-             "funny",
              "wholesomememes",
-             "okbuddyretard",
              "historymemes",
              "raimimemes"]
       async with aiohttp.ClientSession() as cs:
