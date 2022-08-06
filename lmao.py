@@ -109,7 +109,7 @@ async def on_message(message):
             await webhook.delete()
             return
        elif "atd game link?" in message.content.lower():
-            await message.channel.send("Roblox Deleted ATD\n Q: Why? \n A: Zach accidentally update the game with a map that has R34 in it \n Q: Would it Back Soon? \n A: We didnt know, Wait until Further Notice ☺️")
+            await message.channel.send("Roblox Deleted ATD\n Q: Why? \n A: Zach accidentally update the game with a map that has R34 in it, then roblox terminate zach account \n \n Q: Would it Back Soon? \n A: We didnt know, Wait until Further Notice ☺️")
             return
        elif message.author.guild.owner.mention in message.content.lower().split(' '):
             await message.author.timeout(datetime.timedelta(seconds=300))
