@@ -1,5 +1,6 @@
 import brainfuck
 import qrcode
+import gc
 import colorama
 from colorama import Fore, Back, Style
 import urllib
@@ -275,6 +276,11 @@ class Fun(commands.Cog):
 class Owner(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.command(name="gcclean")
+    @commands.is_owner()
+    async def gc(self, ctx):
+     await ctx.send(f"Cleaned {gc.collect()} Garbage Collections")
 
     @commands.command()
     @commands.is_owner()
