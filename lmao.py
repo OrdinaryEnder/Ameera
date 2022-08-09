@@ -550,7 +550,7 @@ class Other(commands.Cog):
     @commands.has_permissions(manage_webhooks=True)
     async def webhookspawn(self, ctx, *, name):
      webhook = await ctx.channel.create_webhook(name=name)
-     await ctx.author.send(f"Heres your webhook \n {webhook.Webhook_Url}")
+     await ctx.author.send(f"Heres your webhook \n {webhook.url}")
 # New Music Player, DisMusic Has been deprecated for this bot, Codename : Bullet
 # Moved to music.py
 # Why i put them in here?, becuz why not
