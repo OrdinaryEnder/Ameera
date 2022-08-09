@@ -103,7 +103,7 @@ async def on_message(message):
 
     for badwords in badword:
 
-       if "sex" in message.content.lower().strip():
+       if ("sex", "fuck", "shit", "gay", "luzer sucks", "happylemon suck", "zach suck", "sh^t", "yo mama", "deez nut") in message.content.lower().strip():
             await message.delete()
             webhook = await message.channel.create_webhook(name="dis webhook")
             await webhook.send(username=f"{message.author.name}#{message.author.discriminator}", avatar_url=message.author.avatar, content=f"{ '#' * len(message.content)}")
