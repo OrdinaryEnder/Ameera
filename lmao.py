@@ -822,7 +822,7 @@ class Music(commands.Cog):
 
 async def node_connect(bot):
   await bot.wait_until_ready()
-  await wavelink.NodePool.create_node(bot=bot, host="lavalink.oops.wtf", port=443, password="www.freelavalink.ga", https=True)
+  await wavelink.NodePool.create_node(bot=bot, host="51.161.130.134", port=10436, password="youshallnotpass")
 
 
 token = os.getenv("TOKEN")
