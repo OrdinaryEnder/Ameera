@@ -53,8 +53,7 @@ colorama.init(autoreset=True)
 
 genius = Genius()
 
-list = ["sex", "fuck", "shit", "gay", "luzer sucks", "happylemon suck", "za
-ch suck", "sh^t", "yo mama", "deez nut"]
+list = ["sex", "fuck", "shit", "gay", "luzer sucks", "happylemon suck", "zach suck", "sh^t", "yo mama", "deez nut"]
 
 def restart_bot(): 
   os.execv(sys.executable, ['python'] + sys.argv)
