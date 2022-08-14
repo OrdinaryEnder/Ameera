@@ -43,7 +43,6 @@ import akinator
 import itertools
 from async_timeout import timeout
 from discord.gateway import DiscordWebSocket, _log
-from akinator.async_aki import Akinator
 from json import loads
 import wavelink
 import async_timeout
