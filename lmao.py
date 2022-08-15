@@ -39,7 +39,6 @@ import lavalink
 from dotenv import load_dotenv
 from discord.utils import get
 from discord import NotFound
-import akinator
 import itertools
 from async_timeout import timeout
 from discord.gateway import DiscordWebSocket, _log
@@ -219,7 +218,8 @@ class Fun(commands.Cog):
              "terriblefacebookmemes",
              "wholesomememes",
              "historymemes",
-             "raimimemes"]
+             "raimimemes",
+             "linuxmemes"]
       async with aiohttp.ClientSession() as cs:
         async with cs.get(f'https://www.reddit.com/r/{random.choice(pages)}/new.json?sort=hot') as r:
             res = await r.json()

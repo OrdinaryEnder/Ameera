@@ -1,6 +1,6 @@
 apt update && apt upgrade
 
-apt install clang python libjpeg-turbo libpng libsodium libffi openssl
+apt install clang python libjpeg-turbo libpng libsodium libffi openssl binutils cmake
 export SODIUM_INSTALL=system 
 
 arch=$(uname -m)
