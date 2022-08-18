@@ -1,4 +1,6 @@
+import platform
 import aiofiles
+import traceback
 import brainfuck
 import qrcode
 import gc
@@ -51,7 +53,7 @@ colorama.init(autoreset=True)
 
 genius = Genius()
 
-list = ["sex", "fuck", "shit", "gay", "luzer sucks", "happylemon suck", "zach suck", "sh^t", "yo mama", "deez nut"]
+badlist = ["sex", "fuck", "shit", "gay", "luzer sucks", "happylemon suck", "zach suck", "sh^t", "yo mama", "deez nut"]
 
 def restart_bot(): 
   os.execv(sys.executable, ['python'] + sys.argv)
@@ -88,6 +90,9 @@ async def on_ready():
  print(Fore.RED + "Adding Nsfw Cogs")
  await bot.add_cog(nsfw(bot))
  print(Back.WHITE + Fore.RED + "Support" + Fore.YELLOW + " us" + Fore.BLUE + " at" + Fore.GREEN + " https://github.com/zairullahdev/Alexandra")
+ global startTime
+ startTime = time.time()
+
 @bot.event
 async def on_member_join(member):
        embed = discord.Embed(title=f"Welcome to {member.guild.name}, {member.name}!", description="By Joining, Your agree to the rules given in server")
@@ -103,14 +108,14 @@ async def on_message(message):
 
     for badwords in badword:
 
-       if list in message.content.lower().split():
+       if badlist in message.content.lower().split():
             await message.delete()
             webhook = await message.channel.create_webhook(name="dis webhook")
             await webhook.send(username=f"{message.author.name}#{message.author.discriminator}", avatar_url=message.author.avatar, content=f"{ '#' * len(message.content)}")
             await webhook.delete()
             return
        elif "atd game link?" in message.content.lower():
-            await message.channel.send("Roblox Deleted ATD\n Q: Why? \n A: Zach accidentally update the game with a map that has R34 in it, then roblox terminate zach account \n \n Q: Would it Back Soon? \n A: We didnt know, Wait until Further Notice ☺️")
+           await message.channel.send("https://web.roblox.com/games/10575853586/Loadout-Working-Acurate-Tower-Defense \n ATD is Back Boi")
             return
        elif message.author.guild.owner.mention in message.content.lower().split(' '):
             await message.author.timeout(datetime.timedelta(seconds=300))
@@ -452,14 +457,16 @@ class nsfw(commands.Cog):
     @commands.command(name='image', description='Get Images (NSFW!!!!!)\n Current Possible:\n hass, hmidriff, pgif, 4k, hentai, holo, hneko, neko, hkitsune, kemonomimi, anal, hanal, gonewild, kanna, ass, pussy, thigh, hthigh, gah, coffee, food, paizuri, tentacle, boobs, hboobs, yaoi')
     @commands.is_nsfw()
     async def _image(self, ctx, image):
-     img = image                                                            
-     async with aiohttp.ClientSession() as session:
-         async with session.get(f"https://nekobot.xyz/api/image?type={image}") as r:
-          res = await r.json()
-          em = discord.Embed()
-          em.set_image(url=res['message'])
-          await ctx.send(embed=em)
-
+     try:
+      img = image                                                            
+      async with aiohttp.ClientSession() as session:
+          async with session.get(f"https://nekobot.xyz/api/image?type={image}") as r:
+           res = await r.json()
+           em = discord.Embed()
+           em.set_image(url=res['message'])
+           await ctx.send(embed=em)
+     except:
+        await ctx.send(traceback.print_exc())
 class Other(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -542,6 +549,14 @@ class Other(commands.Cog):
     @commands.command(name="ping", description="Pong! <3")
     async def ping(self, ctx):
           await ctx.send(f"Pong!\nLatency: {round(bot.latency * 1000)}")
+    @commands.command(name="stats", description="bot stats")
+    async def stats(self, ctx):
+      embed = discord.Embed(title=f"Bot stats of {bot.user}", description="Stats:")
+      embed.add_field(name="Platform:", value=f"```css \n {platform.system()} {platform.release()} {platform.machine()} \n ```")
+      embed.add_field(name="Timezone", value=f"```css \n {datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo} \n```")
+      embed.add_field(name="Latency", value=f"```css \n{bot.latency * 1000} \n ```")
+      embed.add_field(name="Uptime", value=f"```css \n {str(datetime.timedelta(seconds=int(round(time.time()-startTime))))} \n ```")
+      await ctx.send(embed=embed)
 
     @commands.command(name="search", description="Search Youtube Videos")
     async def yt(self, ctx, *, search):
