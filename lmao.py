@@ -116,7 +116,7 @@ async def on_message(message):
             return
        elif "atd game link?" in message.content.lower():
            await message.channel.send("https://web.roblox.com/games/10575853586/Loadout-Working-Acurate-Tower-Defense \n ATD is Back Boi")
-            return
+           return
        elif message.author.guild.owner.mention in message.content.lower().split(' '):
             await message.author.timeout(datetime.timedelta(seconds=300))
             await message.delete()
