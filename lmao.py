@@ -1,3 +1,4 @@
+import aiofiles
 import brainfuck
 import qrcode
 import gc
@@ -33,7 +34,6 @@ import typing as t
 from email.base64mime import body_encode
 import wavelink
 
-import requests
 from enum import Enum
 import lavalink
 from dotenv import load_dotenv
@@ -61,7 +61,7 @@ with open('badwords.txt', 'r') as f:
     badword = words.split()
 
 intents = discord.Intents().all()
-bot = commands.Bot(command_prefix='-', intents=intents)
+bot = commands.Bot(command_prefix='+', intents=intents)
 # Badword Test (haha lol)
 
 @bot.event
@@ -151,7 +151,7 @@ class Fun(commands.Cog):
  
     @commands.command(name='lvbypass', description='Bypass Linkvertise (powered by bypass.vip)')
     async def _lvbypass(self, ctx, url):
-       link = bypass(url)
+       link = await bypass(url)
        loadlink = json.dumps(link)
        finalink = json.loads(loadlink)
        print(finalink)
@@ -192,10 +192,10 @@ class Fun(commands.Cog):
      await ctx.send("Akinator is disabled for sone reason")
      
 
-    @commands.command(name="date", description="Show today date")
+    @commands.command(name="date", description="Show today date (UTC)")
     async def __date(self, ctx):
-     date = datetime.datetime.now().strftime("%Y-%m-%d")
-     time = datetime.datetime.now().strftime("%H:%M:%S")
+     date = datetime.datetime.utc().strftime("%Y-%m-%d")
+     time = datetime.datetime.utc().strftime("%H:%M:%S")
      embed=discord.Embed(title="Now", description=f"Today is")
      embed.add_field(name="Date", value=date)
      embed.add_field(name="Time", value=time)
@@ -255,14 +255,16 @@ class Fun(commands.Cog):
      await ctx.send(embed=embed)
     @commands.command(name="linusquotes", description="Get Better Motivation from Linus Torvalds!")
     async def quotes(self, ctx):
-     r = requests.get("https://linusquote.com/quote")
-     load = r.json()
-     jsonload = json.dumps(load)
-     final = json.loads(jsonload)
-     print(final['body'])
-     embed = discord.Embed(title="Linus Torvalds Once Said:", description="ㅤ")
-     embed.add_field(name="ㅤ", value=f"{final['body']}")
-     await ctx.send(embed=embed)
+     async with aiohttp.ClientSession() as session:
+         async with session.get('https://linusquote.com/quote') as r:
+ 
+          load = await r.json()
+          jsonload = json.dumps(load)
+          final = json.loads(jsonload)
+          print(final['body'])
+          embed = discord.Embed(title="Linus Torvalds Once Said:", description="ㅤ")
+          embed.add_field(name="ㅤ", value=f"{final['body']}")
+          await ctx.send(embed=embed)
 
     @commands.command(name="qrgen", description="Generates QR using Data (Can be URL or Anything")
     async def qrgen(self, ctx, *, data):
@@ -450,12 +452,13 @@ class nsfw(commands.Cog):
     @commands.command(name='image', description='Get Images (NSFW!!!!!)\n Current Possible:\n hass, hmidriff, pgif, 4k, hentai, holo, hneko, neko, hkitsune, kemonomimi, anal, hanal, gonewild, kanna, ass, pussy, thigh, hthigh, gah, coffee, food, paizuri, tentacle, boobs, hboobs, yaoi')
     @commands.is_nsfw()
     async def _image(self, ctx, image):
-     img = image
-     r = requests.get(f"https://nekobot.xyz/api/image?type={image}")
-     res = r.json()
-     em = discord.Embed()
-     em.set_image(url=res['message'])
-     await ctx.send(embed=em)
+     img = image                                                            
+     async with aiohttp.ClientSession() as session:
+         async with session.get(f"https://nekobot.xyz/api/image?type={image}") as r:
+          res = await r.json()
+          em = discord.Embed()
+          em.set_image(url=res['message'])
+          await ctx.send(embed=em)
 
 class Other(commands.Cog):
     def __init__(self, bot):
@@ -478,7 +481,7 @@ class Other(commands.Cog):
      code = re.sub("```python|```py|```", "", content)
      async with aiohttp.ClientSession() as session:
       async with session.post("https://linksafe.repl.co/api/eval/", data=code, raise_for_status=True) as response:
-           embed = discord.Embed(title="Result", description=f"Here your code result {ctx.author.mention} \n {response.json()}")
+           embed = discord.Embed(title="Result", description=f"Here your code result {ctx.author.mention} \n {await response.json()}")
            return await ctx.send(embed=embed)
 
     @commands.command(name='brainfuck', description='Yet another BrainFuck Interpreter In Discord')
@@ -491,14 +494,16 @@ class Other(commands.Cog):
     @commands.command(name='robloxinfo', description='Get Roblox Game Info')
     async def _robloxinfo(self, ctx, *, placeid):
    # First we gonna get Universe ID, Because Roblox Only Allow show game with it
-     uidget = requests.get('https://api.roblox.com/universes/get-universe-containing-place?placeid={}'.format(placeid))
-     universeload = uidget.json()
-     load = json.dumps(universeload)
-     getid = json.loads(load)
+     async with aiohttp.ClientSession() as session:
+         async with session.get(f'https://api.roblox.com/universes/get-universe-containing-place?placeid={placeid}') as uidget:
+          universeload = await uidget.json()
+          load = json.dumps(universeload)
+          getid = json.loads(load)
 # and finally, post your universe id into roblox
-     robloxgame = requests.get('https://games.roblox.com/v1/games?universeIds={}'.format(getid['UniverseId']))
-     returngame = robloxgame.json()
-     getinfogame = json.dumps(returngame, indent=4, sort_keys=True)
+     async with aiohttp.ClientSession() as session:
+         async with session.get(f"https://games.roblox.com/v1/games?universeIds={getid['UniverseId']}") as robloxgame:
+          returngame = await robloxgame.json()
+          getinfogame = json.dumps(returngame, indent=4, sort_keys=True)
   # send it as json because this is for developer
      jsonroblox = '```'
      await ctx.send(f'```json\n{ getinfogame }\n```')
@@ -508,21 +513,23 @@ class Other(commands.Cog):
      bonk = ctx.message.attachments[0]
      url = bonk.url
      local_filename = url.split('/')[-1]
-     # NOTE the stream=True parameter below
-     with requests.get(url, stream=True) as r:
-        r.raise_for_status()
-        with open(local_filename, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=8192): 
+     # NOTE: Changing to aiohttp due to discord.py requirements
+
+     async with aiohttp.ClientSession(raise_for_status=True) as session:
+       async with session.get(url) as r:
+                f = await aiofiles.open(local_filename, mode='wb') 
                 # If you have chunk encoded response uncomment if
                 # and set chunk_size parameter to None.
                 #if chunk: 
-                f.write(chunk)
+                await f.write(await r.read())
+                await f.close()
      files = {'file': open(local_filename, 'rb')}
-     up = requests.post('https://transfer.sh', files=files)
-     print(up.text)
-     embed = discord.Embed(title='Result', description=up.text)
-     embed.set_footer(text="Powered by https://transfer.sh")
-     await ctx.send(embed=embed)
+     async with aiohttp.ClientSession() as session:
+         async with session.post('https://transfer.sh', data=files) as up:
+          print(up.text())
+          embed = discord.Embed(title='Result', description=f"{await up.text()}")
+          embed.set_footer(text="Powered by https://transfer.sh")
+          await ctx.send(embed=embed)
      # Because it already done lets remove it
      os.remove(local_filename)
 
@@ -823,7 +830,7 @@ class Music(commands.Cog):
 
 async def node_connect(bot):
   await bot.wait_until_ready()
-  await wavelink.NodePool.create_node(bot=bot, host="51.161.130.134", port=10436, password="youshallnotpass")
+  await wavelink.NodePool.create_node(bot=bot, host="lavalink.oops.wtf", port=443, password="www.freelavalink.ga", https=True)
 
 
 token = os.getenv("TOKEN")

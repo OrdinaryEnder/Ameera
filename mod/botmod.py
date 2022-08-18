@@ -6,15 +6,16 @@ import re
 import discord
 import json
 import requests
+import aiohttp
 
-def bypass(url):
+async def bypass(url):
 
     payload = {
         "url": url,
     }
-
-    r = requests.post("https://api.bypass.vip/", data=payload)
-    return r.json()
+    async with aiohttp.ClientSession() as session:
+        async with session.post("https://api.bypass.vip/", data=payload) as r:
+            return await r.json()
 
 def track_end(bot):
   @bot.event
@@ -28,10 +29,7 @@ def track_end(bot):
     try:
       next_song = vc.queue.get()
       await vc.play(next_song)
-      embed = discord.Embed(title="Now playing", description=f"{next_song.title}\n \n Uploader: {next_song.author}")
-      embed.set_thumbnail(url=next_song.thumbnail)
-      embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
-      await ctx.send(embed=embed)
+      await ctx.send(f"Now Playing {next_song.title}")
     except wavelink.errors.QueueEmpty:
       await ctx.send("There are no more track")
       await vc.disconnect()
