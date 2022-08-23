@@ -115,7 +115,7 @@ async def on_message(message):
             await webhook.delete()
             return
        elif "atd game link?" in message.content.lower():
-           await message.channel.send("https://web.roblox.com/games/10575853586/Loadout-Working-Acurate-Tower-Defense \n ATD is Back Boi")
+           await message.channel.send("ATD is been discontinued.... \n \n Q: Why? \n A: Many devs are quitting, zach cant continue anymore \n \n More Info: https://discord.gg/B3uEenXMPV ")
            return
        elif message.author.guild.owner.mention in message.content.lower().split(' '):
             await message.author.timeout(datetime.timedelta(seconds=300))
