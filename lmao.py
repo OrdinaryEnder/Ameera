@@ -208,10 +208,12 @@ class Fun(commands.Cog):
      await ctx.send(embed=embed)
 
     @commands.command(name="math", description="Math")
-    async def __math(self, ctx, num1: int, op: str, num2: int):
- 
+    async def __math(self, ctx, num: int, operation, num2: int):
+     if operation not in ['+', '-', '*', '/']:
+         await ctx.send('Please type a valid operation type. (+ for summation ,- for subtraction , * for multiplication, ÷ for divine)')
+     var = f'{num} {operation} {num2}'
      embed = discord.Embed(title="Result", description="ㅤ", color=discord.Color.from_rgb(0, 0, 0))
-     embed.add_field(name="Result Of Your Math:", value=f"{num1} {op} {num2} = {result}")
+     embed.add_field(name="Result Of Your Math:", value=f"{var} = {eval(var)}")
      embed.set_footer(text="Be Smart Next Time!")
      await ctx.send(embed=embed)
 
@@ -228,16 +230,26 @@ class Fun(commands.Cog):
       async with aiohttp.ClientSession() as cs:
         async with cs.get(f'https://www.reddit.com/r/{random.choice(pages)}/new.json?sort=hot') as r:
             res = await r.json()
-            embed=discord.Embed(title="Memes", description=" ")
+            embed=discord.Embed(title="Daily Memes", description=" ")
             embed.set_image(url=res['data']['children'] [random.randint(0, 25)]['data']['url'])
 
             await ctx.send(embed=embed)
+    @commands.command(name="linuxmemes", description="Linux funny memes")
+    async def linuxmeme(self, ctx):
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(f"https://www.reddit.com/r/linuxmemes/new.json?sort=hot") as r:
+                res = await r.json()
+                embed=discord.Embed(title="Linux Memes", description=" ")
+                embed.set_image(url=res['data']['children'] [random.randint(0, 25)]['data']['url'])
+                await ctx.send(embed=embed)
+
+    
     @commands.command(name="typerace", description="Lets see how fast your typing")
     async def typerace(self,  message):
         ##  no need for bot to reply to itself
         
             answer = 'Linux is a family of open-source Unix-like operating systems based on the Linux kernel, an operating system kernel first released on September 17, 1991, by Linus Torvalds. Linux is typically packaged in a Linux distribution.'
-            timer  = 10.5
+            timer  = 15.0
             await message.channel.send(f'You have {timer} seconds to type:  {answer}')
 
             def is_correct(msg):
@@ -245,11 +257,12 @@ class Fun(commands.Cog):
 
             try:
                 guess = await bot.wait_for('message',  check=is_correct,  timeout=timer)
+                score = time.time()
             except asyncio.TimeoutError:
                 return await message.channel.send('Sorry, you took too long.')
 
             if guess.content == answer:
-                await message.channel.send('Right on!')
+                await message.channel.send(f'Right on!, your score was {str(datetime.timedelta(seconds=int(round(time.time()-startTime))))}')
             else:
                 await message.channel.send('Oops.')
 
@@ -258,6 +271,7 @@ class Fun(commands.Cog):
      embed = discord.Embed(title="Ender was here", description="He say meow (hi!) to you!")
      embed.set_author(name="Your found ender!", url="https://github.com/OrdinaryEnder", icon_url="https://i.ibb.co/qgFpJzF/Png-1.png")
      await ctx.send(embed=embed)
+
     @commands.command(name="linusquotes", description="Get Better Motivation from Linus Torvalds!")
     async def quotes(self, ctx):
      async with aiohttp.ClientSession() as session:
@@ -346,6 +360,20 @@ class Owner(commands.Cog):
        await ctx.send(f"```py\n { codexec } \n```")
      except Exception as e:
        await ctx.send(f"```css\n { e }\n```")
+
+    @commands.command(name="awaiteval", description="Await an eval")
+    async def awaiteval(self, ctx, *, code):
+     try:
+      if "```" in code:
+       content = re.sub("```python|```py|```", "", code)
+       codexec = await eval(content)
+       await ctx.send(f"```py\n { codexec } \n```")
+      else:
+       codexec = await eval(code)
+       await ctx.send(f"```py\n { codexec } \n```")
+     except Exception as e:
+       await ctx.send(f"```css\n { e }\n```")
+
 
 class Moderation(commands.Cog):
     def __init__(self, bot):
