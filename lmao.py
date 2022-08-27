@@ -354,12 +354,18 @@ class Owner(commands.Cog):
       if "```" in code:
        content = re.sub("```python|```py|```", "", code)
        codexec = exec(content)
-       await ctx.send(f"```py\n { codexec } \n```")
+       embed = discord.Embed(title="Eval", description=" ")
+       embed.add_field(name= " ", value=f"```py\n { codexec } \n```")
+       await ctx.send(embed=embed)
       else:
        codexec = exec(code)
-       await ctx.send(f"```py\n { codexec } \n```")
+       embed = discord.Embed(title="Eval", description=" ")
+       embed.add_field(name= " ", value=f"```py\n { codexec } \n```")
+       await ctx.send(embed=embed)
      except Exception as e:
-       await ctx.send(f"```css\n { e }\n```")
+         embed = discord.Embed(title="Eval", description=" ")
+         embed.add_field(name= " ", value=f"```py\n { e } \n```")
+         await ctx.send(embed=embed)
 
     @commands.command(name="awaiteval", description="Await an eval")
     async def awaiteval(self, ctx, *, code):
@@ -584,6 +590,8 @@ class Other(commands.Cog):
       embed.add_field(name="Timezone", value=f"```css \n {datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo} \n```")
       embed.add_field(name="Latency", value=f"```css \n{bot.latency * 1000} \n ```")
       embed.add_field(name="Uptime", value=f"```css \n {str(datetime.timedelta(seconds=int(round(time.time()-startTime))))} \n ```")
+      embed.add_field(name="Python Version", value=f"```css \n {sys.version} \n ```")
+      embed.add_field(name="Discord.py Version", value=f"```css \n {discord.__version__} \n ```")
       await ctx.send(embed=embed)
 
     @commands.command(name="search", description="Search Youtube Videos")
@@ -857,7 +865,7 @@ class Music(commands.Cog):
     else:
       vc: wavelink.Player = ctx.voice_client
 
-    await vc.queue.clear()
+      vc.queue.clear()
     return await ctx.send(f"{ctx.message.author.mention} cleared the queue.")
    
   @commands.command(name='lyrics', description='Genius Lyrics')

@@ -6,7 +6,9 @@ pillow
 pynacl
 python-dotenv
 requests
+akinator.py
 git+https://github.com/PythonistaGuild/Wavelink
 lavalink
 git+https://github.com/johnwmillr/LyricsGenius.git
 colorama
+aiofiles

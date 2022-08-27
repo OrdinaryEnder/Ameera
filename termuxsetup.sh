@@ -1,6 +1,8 @@
-apt update && apt upgrade
 
-apt install clang python libjpeg-turbo libpng libsodium libffi openssl binutils cmake
+
+apt update && apt upgrade -y
+
+apt install clang python libjpeg-turbo libpng libsodium libffi openssl -y
 export SODIUM_INSTALL=system 
 
 arch=$(uname -m)
@@ -17,4 +19,11 @@ else
     pip install -r requirements.txt
 fi
 
-echo "Installed"
+exit=$(echo $?)
+
+if [[ $exit == 0 ]]; then 
+	echo "Installer been running and installation been successful"
+else
+	echo "Did something kill it?"
+fi
+

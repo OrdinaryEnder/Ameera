@@ -29,7 +29,8 @@ def track_end(bot):
     try:
       next_song = vc.queue.get()
       await vc.play(next_song)
-      await ctx.send(f"Now Playing {next_song.title}")
+      embed = discord.Embed(title=" ", description=f"Start Playing **[{next_song.title}]({next_song.uri})**")
+      await ctx.send(embed=embed)
     except wavelink.errors.QueueEmpty:
       await ctx.send("There are no more track")
       await vc.disconnect()
