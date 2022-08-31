@@ -99,7 +99,7 @@ async def on_member_join(member):
        await member.add_roles(member.guild.get_role(os.getenv("MEMBER_ROLE")))
 
 @bot.event
-  async def on_wavelink_track_end(player: wavelink.Player, track: wavelink.Track, reason):
+async def on_wavelink_track_end(player: wavelink.Player, track: wavelink.Track, reason):
     ctx = player.ctx
     vc: player = ctx.voice_client
 
