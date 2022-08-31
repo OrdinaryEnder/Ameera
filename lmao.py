@@ -25,7 +25,6 @@ from discord.ext import commands
 from discord.ext import tasks
 import json
 from mod.botmod import bypass
-from mod.botmod import track_end
 import youtube_dl
 import aiohttp
 import asyncio
@@ -78,7 +77,6 @@ async def on_ready():
  print(Fore.YELLOW + Fore.RED + "Adding Music cogs")
  await bot.add_cog(Music(bot))
  await node_connect(bot)
- track_end(bot)
  print(Fore.GREEN + "Adding Fun Cogs")
  await bot.add_cog(Fun(bot))
  print(Fore.BLUE + "Adding Moderation Cogs ")
@@ -99,6 +97,23 @@ async def on_member_join(member):
        embed.timestamp = datetime.datetime.now()
        await member.send(embed=embed)
        await member.add_roles(member.guild.get_role(os.getenv("MEMBER_ROLE")))
+
+@bot.event
+  async def on_wavelink_track_end(player: wavelink.Player, track: wavelink.Track, reason):
+    ctx = player.ctx
+    vc: player = ctx.voice_client
+
+    if vc.loop:
+      return await vc.play(track)
+
+    try:
+      next_song = vc.queue.get()
+      await vc.play(next_song)
+      embed = discord.Embed(title=" ", description=f"Start Playing **[{next_song.title}]({next_song.uri})**")
+      await ctx.send(embed=embed)
+    except wavelink.errors.QueueEmpty:
+      await ctx.send("There are no more track")
+      await vc.disconnect()
 
 
 @bot.event
