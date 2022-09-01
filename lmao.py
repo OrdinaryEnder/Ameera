@@ -70,6 +70,23 @@ async def on_wavelink_node_ready(node: wavelink.Node):
     print(Fore.GREEN + f"Node {node.identifier} is ready!")
 
 @bot.event
+async def on_wavelink_track_end(player: wavelink.Player, track: wavelink.Track, reason):
+    ctx = player.ctx
+    vc: player = ctx.voice_client
+
+    if vc.loop:
+      return await vc.play(track)
+
+    try:
+      next_song = vc.queue.get()
+      await vc.play(next_song)
+      embed = discord.Embed(title=" ", description=f"Start Playing **[{next_song.title}]({next_song.uri})**")
+      await ctx.send(embed=embed)
+    except wavelink.errors.QueueEmpty:
+      await ctx.send("There are no more track")
+      await vc.disconnect()
+
+@bot.event
 async def on_ready():
  print(Back.RED + Fore.BLACK + "Logged As")
  print(Back.WHITE + Fore.BLACK + f"@{bot.user.name}#{bot.user.discriminator}")
@@ -97,23 +114,6 @@ async def on_member_join(member):
        embed.timestamp = datetime.datetime.now()
        await member.send(embed=embed)
        await member.add_roles(member.guild.get_role(os.getenv("MEMBER_ROLE")))
-
-@bot.event
-async def on_wavelink_track_end(player: wavelink.Player, track: wavelink.Track, reason):
-    ctx = player.ctx
-    vc: player = ctx.voice_client
-
-    if vc.loop:
-      return await vc.play(track)
-
-    try:
-      next_song = vc.queue.get()
-      await vc.play(next_song)
-      embed = discord.Embed(title=" ", description=f"Start Playing **[{next_song.title}]({next_song.uri})**")
-      await ctx.send(embed=embed)
-    except wavelink.errors.QueueEmpty:
-      await ctx.send("There are no more track")
-      await vc.disconnect()
 
 
 @bot.event
@@ -520,6 +520,13 @@ class Other(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.command(name="idavatar", description="Get avatar by ID")
+    async def _idavatar(self, ctx, id):
+      userid = int(id)
+      user = await bot.fetch_user(userid)
+      avatar = user.avatar.url
+      await ctx.send(avatar)
+
     @commands.command(name='avatar', description='get someone avatar (avatar copy)')
     async def _avatar(self, ctx, avamember : discord.Member):
        userAvatarUrl = avamember.avatar.url
@@ -732,10 +739,23 @@ class Music(commands.Cog):
       return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
     else:
       vc: wavelink.Player = ctx.voice_client
-      await vc.set_filter(None)
+      await vc.set_filter(wavelink.Filter(equalizer=wavelink.Equalizer.flat()))
       message = await ctx.send("Clearing")
       await asyncio.sleep(5)
       await message.edit(content="Cleared The Filter")
+
+  @commands.command(name="bassboost", description="Bass boost goes brr")
+  async def bassboost(self, ctx):
+    if not ctx.voice_client:
+      return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")
+    elif not getattr(ctx.author.voice, "channel", None):
+      return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
+    else:
+      vc: wavelink.Player = ctx.voice_client
+      await vc.set_filter(wavelink.Filter(equalizer=wavelink.Equalizer.boost()))
+      message = await ctx.send("Applying...")
+      await asyncio.sleep(5)
+      await message.edit(content="Applied")
 
   @commands.command(name="nightcore", description="Apply NightCore") 
   async def nightcore(self, ctx):
@@ -753,7 +773,7 @@ class Music(commands.Cog):
   @commands.command(name="disconnect", description="Disconnect the Bot from VC")
   async def disconnect(self, ctx):
     if not ctx.voice_client:
-      return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
+        return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
     elif not getattr(ctx.author.voice, "channel", None):
       return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
     else:
@@ -896,7 +916,7 @@ class Music(commands.Cog):
 
 async def node_connect(bot):
   await bot.wait_until_ready()
-  await wavelink.NodePool.create_node(bot=bot, host="lavalink.oops.wtf", port=443, password="www.freelavalink.ga", https=True)
+  await wavelink.NodePool.create_node(bot=bot, host="51.161.130.134", port=10436, password="youshallnotpass")
 
 
 token = os.getenv("TOKEN")
