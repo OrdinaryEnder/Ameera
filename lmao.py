@@ -576,8 +576,9 @@ class Other(commands.Cog):
           message = ctx.message
           if message.reference is not None:
               await message.delete()
-              messagerply = message.reference
-              await messagerply.reply(f"{text}")
+              messagerply = message.reference.message_id
+              messagerslt = await ctx.channel.fetch_message(messagerply)
+              await messagerslt.reply(f"{text}")
           else:
               await message.delete()
               await ctx.send(f"{text}")
