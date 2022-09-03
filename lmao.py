@@ -250,8 +250,8 @@ class Fun(commands.Cog):
 
     @commands.hybrid_command(name="date", description="Show today date (UTC)")
     async def __date(self, ctx):
-     date = datetime.datetime.utc().strftime("%Y-%m-%d")
-     time = datetime.datetime.utc().strftime("%H:%M:%S")
+     date = datetime.datetime.now().strftime("%Y-%m-%d")
+     time = datetime.datetime.now().strftime("%H:%M:%S")
      embed=discord.Embed(title="Now", description=f"Today is")
      embed.add_field(name="Date", value=date)
      embed.add_field(name="Time", value=time)
