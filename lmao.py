@@ -549,7 +549,7 @@ class nsfw(commands.Cog):
       async with aiohttp.ClientSession() as session:
           async with session.get(f"https://nekobot.xyz/api/image?type={image}") as r:
            res = await r.json()
-           em = discord.Embed()
+           em = discord.Embed(title="Result")
            em.set_image(url=res['message'])
            await ctx.send(embed=em)
      except:
