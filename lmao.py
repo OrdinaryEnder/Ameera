@@ -137,6 +137,11 @@ async def on_message(message):
             await message.delete()
             await message.channel.send(f"{message.author.mention} Has Been Timed out for 5 minute \n Reason : pinging owner")
             return
+       elif "UwU" in message.content.lower():
+           await message.delete()
+           embed = discord.Embed(title=f"{message.author} said the forbidden word uwu!", description=" ")
+           embed.set_image(url="https://tenor.com/view/i-am-the-storm-that-is-approaching-gif-26009898")
+           await message.channel.send(embed=embed)
     await bot.process_commands(message)
     return
      
