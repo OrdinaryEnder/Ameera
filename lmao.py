@@ -148,6 +148,42 @@ async def on_connect():
 ZairullahDeveloper once said: Being a developer isnt that easy, start from making mistakes
 """
 
+# Umbras Sync Command
+@bot.command()
+@commands.guild_only()
+@commands.is_owner()
+async def sync(
+  ctx: Context, guilds: Greedy[discord.Object], spec: Optional[Literal["~", "*", "^"]] = None) -> None:
+    if not guilds:
+        if spec == "~":
+            synced = await ctx.bot.tree.sync(guild=ctx.guild)
+        elif spec == "*":
+            ctx.bot.tree.copy_global_to(guild=ctx.guild)
+            synced = await ctx.bot.tree.sync(guild=ctx.guild)
+        elif spec == "^":
+            ctx.bot.tree.clear_commands(guild=ctx.guild)
+            await ctx.bot.tree.sync(guild=ctx.guild)
+            synced = []
+        else:
+            synced = await ctx.bot.tree.sync()
+
+        await ctx.send(
+            f"Synced {len(synced)} commands {'globally' if spec is None else 'to the current guild.'}"
+        )
+        return
+
+    ret = 0
+    for guild in guilds:
+        try:
+            await ctx.bot.tree.sync(guild=guild)
+        except discord.HTTPException:
+            pass
+        else:
+            ret += 1
+
+    await ctx.send(f"Synced the tree to {ret}/{len(guilds)}.") 
+
+
 class MyHelpCommand(commands.MinimalHelpCommand):
 
  async def send_pages(self):
@@ -169,7 +205,7 @@ class Fun(commands.Cog):
      self.bot = bot
      super().__init__()
  
-    @commands.command(name='lvbypass', description='Bypass Linkvertise (powered by bypass.vip)')
+    @commands.hybrid_command(name='lvbypass', description='Bypass Linkvertise (powered by bypass.vip)')
     async def _lvbypass(self, ctx, url):
        link = await bypass(url)
        loadlink = json.dumps(link)
@@ -181,7 +217,7 @@ class Fun(commands.Cog):
        await ctx.send(embed=embed)
 
 
-    @commands.command(name='8ball', description='Let the 8 Ball Predict!\n')
+    @commands.hybrid_command(name='8ball', description='Let the 8 Ball Predict!\n')
     async def _8ball(self, ctx, *, question: str):
      responses = ['As I see it, yes.',
              'Yes.',
@@ -207,12 +243,12 @@ class Fun(commands.Cog):
      await ctx.send(embed=embed)
 
 
-    @commands.command(name='akinator', description="Lemme guess ur character")
+    @commands.hybrid_command(name='akinator', description="Lemme guess ur character")
     async def akinator(self, ctx):
      await ctx.send("Akinator is disabled for sone reason")
      
 
-    @commands.command(name="date", description="Show today date (UTC)")
+    @commands.hybrid_command(name="date", description="Show today date (UTC)")
     async def __date(self, ctx):
      date = datetime.datetime.utc().strftime("%Y-%m-%d")
      time = datetime.datetime.utc().strftime("%H:%M:%S")
@@ -222,7 +258,7 @@ class Fun(commands.Cog):
      embed.set_footer(text="If you wanna donate to us your can execute donate command")
      await ctx.send(embed=embed)
 
-    @commands.command(name="math", description="Math")
+    @commands.hybrid_command(name="math", description="Math")
     async def __math(self, ctx, num: int, operation, num2: int):
      if operation not in ['+', '-', '*', '/']:
          await ctx.send('Please type a valid operation type. (+ for summation ,- for subtraction , * for multiplication, ÷ for divine)')
@@ -232,7 +268,7 @@ class Fun(commands.Cog):
      embed.set_footer(text="Be Smart Next Time!")
      await ctx.send(embed=embed)
 
-    @commands.command(name="meme", description="Reddit Memes")
+    @commands.hybrid_command(name="meme", description="Reddit Memes")
     async def meme(self, ctx):
       pages=["memes",
              "dankmemes",
@@ -249,7 +285,7 @@ class Fun(commands.Cog):
             embed.set_image(url=res['data']['children'] [random.randint(0, 25)]['data']['url'])
 
             await ctx.send(embed=embed)
-    @commands.command(name="linuxmemes", description="Linux funny memes")
+    @commands.hybrid_command(name="linuxmemes", description="Linux funny memes")
     async def linuxmeme(self, ctx):
         async with aiohttp.ClientSession() as cs:
             async with cs.get(f"https://www.reddit.com/r/linuxmemes/new.json?sort=hot") as r:
@@ -259,7 +295,7 @@ class Fun(commands.Cog):
                 await ctx.send(embed=embed)
 
     
-    @commands.command(name="typerace", description="Lets see how fast your typing")
+    @commands.hybrid_command(name="typerace", description="Lets see how fast your typing")
     async def typerace(self,  message):
         ##  no need for bot to reply to itself
         
@@ -287,7 +323,7 @@ class Fun(commands.Cog):
      embed.set_author(name="Your found ender!", url="https://github.com/OrdinaryEnder", icon_url="https://i.ibb.co/qgFpJzF/Png-1.png")
      await ctx.send(embed=embed)
 
-    @commands.command(name="linusquotes", description="Get Better Motivation from Linus Torvalds!")
+    @commands.hybrid_command(name="linusquotes", description="Get Better Motivation from Linus Torvalds!")
     async def quotes(self, ctx):
      async with aiohttp.ClientSession() as session:
          async with session.get('https://linusquote.com/quote') as r:
@@ -300,7 +336,7 @@ class Fun(commands.Cog):
           embed.add_field(name="ㅤ", value=f"{final['body']}")
           await ctx.send(embed=embed)
 
-    @commands.command(name="qrgen", description="Generates QR using Data (Can be URL or Anything")
+    @commands.hybrid_command(name="qrgen", description="Generates QR using Data (Can be URL or Anything")
     async def qrgen(self, ctx, *, data):
      img = qrcode.make(data)
      img.save("temp.png")
