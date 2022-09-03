@@ -181,7 +181,7 @@ async def sync(
         else:
             ret += 1
 
-    await ctx.send(f"Synced the tree to {ret}/{len(guilds)}.") 
+    await ctx.send(f"Synced the tree to {ret}/{len(guilds)}.")
 
 
 class MyHelpCommand(commands.MinimalHelpCommand):
