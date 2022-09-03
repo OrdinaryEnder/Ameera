@@ -459,7 +459,7 @@ class Moderation(commands.Cog):
 
     @commands.hybrid_command(name='kick', description='Kick Dumbass from Your Holy Server')
     @commands.has_permissions(kick_members=True)
-    async def _kick(self, ctx, Member: discord.Member, reason=None):
+    async def _kick(self, ctx, member: discord.Member, reason=None):
         if ctx.author.top_role < Member.top_role:
                 return await ctx.send("**You don't have enough permission**")
         if ctx.author.top_role > Member.top_role:
