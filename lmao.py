@@ -350,12 +350,12 @@ class Owner(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="gcclean")
+    @commands.hybrid_command(name="gcclean")
     @commands.is_owner()
     async def gc(self, ctx):
      await ctx.send(f"Cleaned {gc.collect()} Garbage Collections")
 
-    @commands.command()
+    @commands.hybrid_command(name="shutdown" description="Shutdown the bot")
     @commands.is_owner()
     async def shutdown(self, ctx):
      await ctx.send("ALT+F4 PRESSED")
@@ -363,7 +363,7 @@ class Owner(commands.Cog):
      await ctx.send("Bye :(")
      await bot.close()
 
-    @commands.command(name='shell', description='Console Remote')
+    @commands.hybrid_command(name='shell', description='Console Remote')
     @commands.is_owner()
     async def _eval(self, ctx, *, cmd):
         # Ender : This very  damger dont give it to your friend ig D:<
@@ -373,7 +373,7 @@ class Owner(commands.Cog):
 
         await ctx.send(f"```css\n{ lmao }```")
 
-    @commands.command(name='restart', description='Restart Bot Session')
+    @commands.hybrid_command(name='restart', description='Restart Bot Session')
     @commands.is_owner()
     async def _restart(self, ctx):
           embed = discord.Embed(title="Restarting.....", description="")
@@ -385,7 +385,7 @@ class Owner(commands.Cog):
           await ctx.channel.purge(limit=1, check=lambda m: m.author == bot.user)
           restart_bot()
 
-    @commands.command(name='chpresence', description='Change Bot Presence As You Wanted')
+    @commands.hybrid_command(name='chpresence', description='Change Bot Presence As You Wanted')
     @commands.is_owner()
     async def _chp(self, ctx, type, *, name=None, twittch=None):
           if type == 'playing':
@@ -398,7 +398,7 @@ class Owner(commands.Cog):
              await bot.change_presence(activity=discord.Streaming(name=name, url=twittch))
           elif type == 'sleep':
              await bot.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.listening, name = '24/7 Lo-fi'))
-    @commands.command(name="eval", description="Quick Eval (Codeblock)")
+    @commands.hybrid_command(name="eval", description="Quick Eval (Codeblock)")
     @commands.is_owner()
     async def eval(self, ctx, *, code):
      try:
@@ -418,7 +418,8 @@ class Owner(commands.Cog):
          embed.add_field(name= " ", value=f"```py\n { e } \n```")
          await ctx.send(embed=embed)
 
-    @commands.command(name="awaiteval", description="Await an eval")
+    @commands.hybrid_command(name="awaiteval", description="Await an eval")
+    @commands.is_owner()
     async def awaiteval(self, ctx, *, code):
      try:
       if "```" in code:
@@ -435,7 +436,7 @@ class Owner(commands.Cog):
 class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    @commands.command(name="timeout", description="had enough?, Mute still annoy u?, Try timeout")
+    @commands.hybrid_command(name="timeout", description="had enough?, Mute still annoy u?, Try timeout")
     @commands.has_permissions(kick_members=True)
     async def timeout(self, ctx, member: discord.Member, time, *, reason=None):
      time_convert = {"s":1, "m":60, "h":3600, "d":86400}
@@ -444,14 +445,14 @@ class Moderation(commands.Cog):
      embed = discord.Embed(title="Timed out", description=f"Timed out user: {member.mention}\n \n For {time} \n \n Tryna Leave ur still can get timed out haha", color=0xe74c3c)
      await ctx.send(embed=embed)
 
-    @commands.command(name="untimeout", description="Untimeout user", aliases=["rmtimeout"])
+    @commands.hybrid_command(name="untimeout", description="Untimeout user", aliases=["rmtimeout"])
     @commands.has_permissions(kick_members=True)
     async def untimeout(self, ctx, member: discord.Member):
      await member.timeout(None)
      embed = discord.Embed(title="Untimed out", description=f"Untimed out {member.mention}", color=0x2ecc71)
      await ctx.send(embed=embed)
 
-    @commands.command(name='kick', description='Kick Dumbass from Your Holy Server')
+    @commands.hybrid_command(name='kick', description='Kick Dumbass from Your Holy Server')
     @commands.has_permissions(kick_members=True)
     async def _kick(self, ctx, Member: discord.Member, reason=None):
         if ctx.author.top_role < Member.top_role:
@@ -464,7 +465,7 @@ class Moderation(commands.Cog):
      if isinstance(error, discord.ext.commands.BadArgument):
         await ctx.send('Could not recognize user')
 
-    @commands.command(name='ban', description='Ban dumbass from your Holy Server')
+    @commands.hybrid_command(name='ban', description='Ban dumbass from your Holy Server')
     @commands.has_permissions(ban_members=True)
     async def _ban(self, ctx, user: discord.Member, *, reason=None):
         if reason == None:
@@ -475,7 +476,7 @@ class Moderation(commands.Cog):
            return await ctx.guild.ban(user, reason=reason)
            return await ctx.send(f"{user} Successfully Banned by {ctx.author.mention}")
 
-    @commands.command(name='unban', description='Unban people who have repented')
+    @commands.hybrid_command(name='unban', description='Unban people who have repented')
     @commands.has_permissions(ban_members=True)
     async def _unban(self, ctx, id):
          user = await bot.fetch_user(int(id))
@@ -488,7 +489,7 @@ class Moderation(commands.Cog):
         await ctx.guild.ban(user, reason=reason)
         await ctx.send(f"Banned @{user.name}#{user.discriminator}, Reason = {reason}")
 
-    @commands.command(name='mute', description='Mute Whos Keep Spamming on ur Holy Server')
+    @commands.hybrid_command(name='mute', description='Mute Whos Keep Spamming on ur Holy Server')
     @commands.has_permissions(manage_messages=True)
     async def _mute(self, ctx, member: discord.Member, time, *, reason=None):
             mutedrole = os.getenv("MUTED_ROLE")
@@ -511,7 +512,7 @@ class Moderation(commands.Cog):
 
 
 
-    @commands.command(name='unmute', description='Unmute')
+    @commands.hybrid_command(name='unmute', description='Unmute')
     @commands.has_permissions(manage_messages=True)
     async def unmute(self, ctx, member: discord.Member):
          mutedRole = discord.utils.get(ctx.guild.roles, name="Muted")
@@ -522,14 +523,14 @@ class Moderation(commands.Cog):
          await member.add_roles(memberrole)
          await ctx.send(embed=embed)
        
-    @commands.command(name='purge', description='Purge Old Messages', pass_context=True)
+    @commands.hybrid_command(name='purge', description='Purge Old Messages', pass_context=True)
     @commands.has_permissions(manage_messages=True)
     async def _purge(self, ctx, limit: int):
          await ctx.channel.purge(limit=limit)
          await ctx.send("Purged by {}".format(ctx.author.mention), delete_after=5)
          await ctx.message.delete()
 
-    @commands.command(name='nick', description='Change Nickname of people')
+    @commands.hybrid_command(name='nick', description='Change Nickname of people')
     @commands.has_permissions(manage_nicknames=True)
     async def chnick(self, ctx, member: discord.Member, *, nick):
      await member.edit(nick=nick)
@@ -539,7 +540,7 @@ class Moderation(commands.Cog):
 class nsfw(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    @commands.command(name='image', description='Get Images (NSFW!!!!!)\n Current Possible:\n hass, hmidriff, pgif, 4k, hentai, holo, hneko, neko, hkitsune, kemonomimi, anal, hanal, gonewild, kanna, ass, pussy, thigh, hthigh, gah, coffee, food, paizuri, tentacle, boobs, hboobs, yaoi')
+    @commands.hybrid_command(name='image', description='Get Images (NSFW!!!!!)\n Current Possible:\n hass, hmidriff, pgif, 4k, hentai, holo, hneko, neko, hkitsune, kemonomimi, anal, hanal, gonewild, kanna, ass, pussy, thigh, hthigh, gah, coffee, food, paizuri, tentacle, boobs, hboobs, yaoi')
     @commands.is_nsfw()
     async def _image(self, ctx, image):
      try:
@@ -556,24 +557,29 @@ class Other(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="idavatar", description="Get avatar by ID")
+    @commands.hybrid_command(name="idavatar", description="Get avatar by ID")
     async def _idavatar(self, ctx, id):
       userid = int(id)
       user = await bot.fetch_user(userid)
       avatar = user.avatar.url
       await ctx.send(avatar)
 
-    @commands.command(name='avatar', description='get someone avatar (avatar copy)')
+    @commands.hybrid_command(name='avatar', description='get someone avatar (avatar copy)')
     async def _avatar(self, ctx, avamember : discord.Member):
        userAvatarUrl = avamember.avatar.url
        await ctx.send(userAvatarUrl)
 
-    @commands.command(name='say', description='say smth')
+    @commands.hybrid_command(name='say', description='say smth')
     async def _speak(self, ctx, *, text):
           message = ctx.message
-          await message.delete()
-          await ctx.send(f"{text}")
-          return
+          if message.reference is not None:
+              await message.delete()
+              messagerply = message.reference
+              await messagerply.reply(f"{text}")
+          else:
+              await message.delete()
+              await ctx.send(f"{text}")
+              return
 
     @commands.command(name="runpython", description="Run Python Codes")
     async def pycode(self, ctx, *, content):
@@ -583,14 +589,14 @@ class Other(commands.Cog):
            embed = discord.Embed(title="Result", description=f"Here your code result {ctx.author.mention} \n {await response.json()}")
            return await ctx.send(embed=embed)
 
-    @commands.command(name='brainfuck', description='Yet another BrainFuck Interpreter In Discord')
+    @commands.hybrid_command(name='brainfuck', description='Yet another BrainFuck Interpreter In Discord')
     async def _brainfuck(self, ctx, *, code):
      content = re.sub("```brainfuck|```bf|```", "", code)
      embed = discord.Embed(title="Result", description="Brainfuck Interpreter")
      embed.add_field(name="Translate:", value=f"{brainfuck.evaluate(content)}")
      await ctx.send(embed=embed)
 
-    @commands.command(name='robloxinfo', description='Get Roblox Game Info')
+    @commands.hybrid_command(name='robloxinfo', description='Get Roblox Game Info')
     async def _robloxinfo(self, ctx, *, placeid):
    # First we gonna get Universe ID, Because Roblox Only Allow show game with it
      async with aiohttp.ClientSession() as session:
@@ -607,7 +613,7 @@ class Other(commands.Cog):
      jsonroblox = '```'
      await ctx.send(f'```json\n{ getinfogame }\n```')
 
-    @commands.command(name='upload', description='Upload Files Into transfer.sh')
+    @commands.hybrid_command(name='upload', description='Upload Files Into transfer.sh')
     async def upfile(self, ctx):
      bonk = ctx.message.attachments[0]
      url = bonk.url
@@ -632,16 +638,16 @@ class Other(commands.Cog):
      # Because it already done lets remove it
      os.remove(local_filename)
 
-    @commands.command(name="donate", description="Donate using PayPal (Indonesia Only)")
+    @commands.hybrid_command(name="donate", description="Donate using PayPal (Indonesia Only)")
     async def donate(self, ctx):
      embed=discord.Embed(title="Donate", description="")
      embed.set_image(url="https://i.ibb.co/pn6LLZj/Donation.png")
      await ctx.send(embed=embed)
 
-    @commands.command(name="ping", description="Pong! <3")
+    @commands.hybrid_command(name="ping", description="Pong! <3")
     async def ping(self, ctx):
           await ctx.send(f"Pong!\nLatency: {round(bot.latency * 1000)}")
-    @commands.command(name="stats", description="bot stats")
+    @commands.hybrid_command(name="stats", description="bot stats")
     async def stats(self, ctx):
       embed = discord.Embed(title=f"Bot stats of {bot.user}", description="Stats:")
       embed.add_field(name="Platform:", value=f"```css \n {platform.system()} {platform.release()} {platform.machine()} \n ```")
@@ -652,7 +658,7 @@ class Other(commands.Cog):
       embed.add_field(name="Discord.py Version", value=f"```css \n {discord.__version__} \n ```")
       await ctx.send(embed=embed)
 
-    @commands.command(name="search", description="Search Youtube Videos")
+    @commands.hybrid_command(name="search", description="Search Youtube Videos")
     async def yt(self, ctx, *, search):
      query_string = urllib.parse.urlencode({
         "search_query": search
@@ -663,7 +669,7 @@ class Other(commands.Cog):
      search_results = re.findall(r"watch\?v=(\S{11})", html_content.read().decode())
      await ctx.send("http://www.youtube.com/watch?v=" + search_results[0])
 
-    @commands.command(name="webhookspawn")
+    @commands.hybrid_command(name="webhookspawn")
     @commands.has_permissions(manage_webhooks=True)
     async def webhookspawn(self, ctx, *, name):
      webhook = await ctx.channel.create_webhook(name=name)
@@ -675,7 +681,7 @@ class Music(commands.Cog):
   def __init__(self, bot):
    self.bot = bot
 
-  @commands.command(name="connect", description="Connect to Your Voice")
+  @commands.hybrid_command(name="connect", description="Connect to Your Voice")
   async def join(self, ctx):
     if ctx.author.voice is None:
       return await ctx.send("You are not connected to a voice channel")
@@ -686,7 +692,7 @@ class Music(commands.Cog):
       await ctx.send(f"Connected to voice channel: '{channel}'")
 
 
-  @commands.command(name="playsc", description="Play SoundCloud (Powered by WaveLink)")
+  @commands.hybrid_command(name="playsc", description="Play SoundCloud (Powered by WaveLink)")
   async def playsc(self, ctx, *, search: str):
     if not ctx.voice_client:
       vc: wavelink.Player = await ctx.author.voice.channel.connect(cls=wavelink.Player)
@@ -708,7 +714,7 @@ class Music(commands.Cog):
     vc.ctx = ctx
     setattr(vc, "loop", False)
 
-  @commands.command(name="play", description="Play a music from Youtube (Powered by WaveLink)")
+  @commands.hybrid_command(name="play", description="Play a music from Youtube (Powered by WaveLink)")
   async def play(self, ctx, *, search: wavelink.YouTubeTrack):
     if not ctx.voice_client:
       vc: wavelink.Player = await ctx.author.voice.channel.connect(cls=wavelink.Player)
@@ -730,7 +736,7 @@ class Music(commands.Cog):
     setattr(vc, "loop", False)
 
 
-  @commands.command(name="pause", description="Pause song")
+  @commands.hybrid_command(name="pause", description="Pause song")
   async def pause(self, ctx):
     if not ctx.voice_client:
       return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
@@ -743,7 +749,7 @@ class Music(commands.Cog):
     await ctx.send(f"Music paused by {ctx.message.author.mention}")
 
 
-  @commands.command(name="resume", description="Resume playing")
+  @commands.hybrid_command(name="resume", description="Resume playing")
   async def resume(self, ctx):
     if not ctx.voice_client:
       return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
@@ -756,7 +762,7 @@ class Music(commands.Cog):
     await ctx.send(f"Music is back! by {ctx.message.author.mention}")
 
 
-  @commands.command(name="stop", description="Stop Player")
+  @commands.hybrid_command(name="stop", description="Stop Player")
   async def stop(self, ctx):
     if not ctx.voice_client:
       return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
@@ -767,7 +773,7 @@ class Music(commands.Cog):
 
     await vc.stop()
     await ctx.send(f"{ctx.message.author.mention} stopped the music.")
-  @commands.command(name="cleareffect", description="Clear any effect")
+  @commands.hybrid_command(name="cleareffect", description="Clear any effect")
   async def effclean(self, ctx):
     if not ctx.voice_client:
       return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")
@@ -780,7 +786,7 @@ class Music(commands.Cog):
       await asyncio.sleep(5)
       await message.edit(content="Cleared The Filter")
 
-  @commands.command(name="bassboost", description="Bass boost goes brr")
+  @commands.hybrid_command(name="bassboost", description="Bass boost goes brr")
   async def bassboost(self, ctx):
     if not ctx.voice_client:
       return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")
@@ -793,7 +799,7 @@ class Music(commands.Cog):
       await asyncio.sleep(5)
       await message.edit(content="Applied")
 
-  @commands.command(name="nightcore", description="Apply NightCore") 
+  @commands.hybrid_command(name="nightcore", description="Apply NightCore") 
   async def nightcore(self, ctx):
     if not ctx.voice_client:
       return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")
@@ -806,7 +812,7 @@ class Music(commands.Cog):
       await ctx.send("Applied Nightcore (Require 5 sec)")
 
 
-  @commands.command(name="disconnect", description="Disconnect the Bot from VC")
+  @commands.hybrid_command(name="disconnect", description="Disconnect the Bot from VC")
   async def disconnect(self, ctx):
     if not ctx.voice_client:
         return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
@@ -819,7 +825,7 @@ class Music(commands.Cog):
     await ctx.send(f"{ctx.message.author.mention} send me out :(")
 
 
-  @commands.command(name="loop", description="Loops the song")
+  @commands.hybrid_command(name="loop", description="Loops the song")
   async def loop(self, ctx):
     if not ctx.voice_client:
       return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
@@ -839,7 +845,7 @@ class Music(commands.Cog):
       return await ctx.send("Loop is now Disabled!")
 
 
-  @commands.command(name="queue", description="Show Queues")
+  @commands.hybrid_command(name="queue", description="Show Queues")
   async def queue(self, ctx):
     if not ctx.voice_client:
       return await ctx.send(f"Hey {ctx.message.author.mention}, im not connected to a voice channel")   
@@ -861,7 +867,7 @@ class Music(commands.Cog):
     return await ctx.send(embed=em)
 
 
-  @commands.command(name="volume", description="Volume")
+  @commands.hybrid_command(name="volume", description="Volume")
   async def volume(self, ctx, volume: int):
     if not ctx.voice_client:
       return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
@@ -879,7 +885,7 @@ class Music(commands.Cog):
     return await ctx.send(f"Set the volume to {volume}%")
 
 
-  @commands.command(name="nowplaying", description="Show what playing now", aliases=['np'])
+  @commands.hybrid_command(name="nowplaying", description="Show what playing now", aliases=['np'])
   async def playing(self, ctx):
     if not ctx.voice_client:
       return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
@@ -898,7 +904,7 @@ class Music(commands.Cog):
 
 
 
-  @commands.command(name="skip", description="Skip a song")
+  @commands.hybrid_command(name="skip", description="Skip a song")
   async def skip(self, ctx):
     if not ctx.voice_client:
       return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
@@ -911,8 +917,8 @@ class Music(commands.Cog):
     return await ctx.send(f"{ctx.message.author.mention} skipped the actual music.")
 
 
-  @commands.command(name="remove", description="Remove amount of queue")
-  async def remove(self, ctx, index: int):
+  @commands.hybrid_command(name="qremove", description="Remove amount of queue")
+  async def qremove(self, ctx, index: int):
     if not ctx.voice_client:
       return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
     elif not getattr(ctx.author.voice, "channel", None):
@@ -927,7 +933,7 @@ class Music(commands.Cog):
 
     await ctx.send(f"{ctx.message.author.mention} removed `{removed.title}` from the queue")
 
-  @commands.command(name="qclean", description="Clear queue")
+  @commands.hybrid_command(name="qclean", description="Clear queue")
   async def qclear(self, ctx):
     if not ctx.voice_client:
       return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
@@ -939,7 +945,7 @@ class Music(commands.Cog):
       vc.queue.clear()
     return await ctx.send(f"{ctx.message.author.mention} cleared the queue.")
    
-  @commands.command(name='lyrics', description='Genius Lyrics')
+  @commands.hybrid_command(name='lyrics', description='Genius Lyrics')
   async def lyrics(self, ctx, artist, *, title):
      try:
       song = genius.search_song(title, artist)
