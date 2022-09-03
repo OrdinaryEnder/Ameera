@@ -153,7 +153,7 @@ ZairullahDeveloper once said: Being a developer isnt that easy, start from makin
 @commands.guild_only()
 @commands.is_owner()
 async def sync(
-  ctx: Context, guilds: Greedy[discord.Object], spec: Optional[Literal["~", "*", "^"]] = None) -> None:
+  ctx: commands.Context, guilds: commands.Greedy[discord.Object], spec: typing.Optional[Literal["~", "*", "^"]] = None) -> None:
     if not guilds:
         if spec == "~":
             synced = await ctx.bot.tree.sync(guild=ctx.guild)
