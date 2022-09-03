@@ -360,7 +360,7 @@ class Owner(commands.Cog):
     async def gc(self, ctx):
      await ctx.send(f"Cleaned {gc.collect()} Garbage Collections")
 
-    @commands.hybrid_command(name="shutdown" description="Shutdown the bot")
+    @commands.hybrid_command(name="shutdown", description="Shutdown the bot")
     @commands.is_owner()
     async def shutdown(self, ctx):
      await ctx.send("ALT+F4 PRESSED")
