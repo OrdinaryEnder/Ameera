@@ -211,6 +211,7 @@ class Fun(commands.Cog):
      super().__init__()
  
     @commands.hybrid_command(name='lvbypass', description='Bypass Linkvertise (powered by bypass.vip)')
+    @app_commands.describe(url="URL About to Bypass (Example: https://linkvertise.com/38666/ArceusXRoblox")
     async def _lvbypass(self, ctx, url):
        link = await bypass(url)
        loadlink = json.dumps(link)
@@ -223,6 +224,7 @@ class Fun(commands.Cog):
 
 
     @commands.hybrid_command(name='8ball', description='Let the 8 Ball Predict!\n')
+    @app_commands.describe(question="The question")
     async def _8ball(self, ctx, *, question: str):
      responses = ['As I see it, yes.',
              'Yes.',
@@ -262,8 +264,9 @@ class Fun(commands.Cog):
      embed.add_field(name="Time", value=time)
      embed.set_footer(text="If you wanna donate to us your can execute donate command")
      await ctx.send(embed=embed)
-
+       
     @commands.hybrid_command(name="math", description="Math")
+    @app_commands.describe(num="Needed number", operation="+ for summation ,- for subtraction , * for multiplication, / for divine", num2="another number")
     async def __math(self, ctx, num: int, operation, num2: int):
      if operation not in ['+', '-', '*', '/']:
          await ctx.send('Please type a valid operation type. (+ for summation ,- for subtraction , * for multiplication, ÷ for divine)')
@@ -300,29 +303,7 @@ class Fun(commands.Cog):
                 await ctx.send(embed=embed)
 
     
-    @commands.hybrid_command(name="typerace", description="Lets see how fast your typing")
-    async def typerace(self,  message):
-        ##  no need for bot to reply to itself
-        
-            answer = 'Linux is a family of open-source Unix-like operating systems based on the Linux kernel, an operating system kernel first released on September 17, 1991, by Linus Torvalds. Linux is typically packaged in a Linux distribution.'
-            timer  = 15.0
-            await message.channel.send(f'You have {timer} seconds to type:  {answer}')
-
-            def is_correct(msg):
-                return msg.author == message.author
-
-            try:
-                guess = await bot.wait_for('message',  check=is_correct,  timeout=timer)
-                score = time.time()
-            except asyncio.TimeoutError:
-                return await message.channel.send('Sorry, you took too long.')
-
-            if guess.content == answer:
-                await message.channel.send(f'Right on!, your score was {str(datetime.timedelta(seconds=int(round(time.time()-startTime))))}')
-            else:
-                await message.channel.send('Oops.')
-
-    @commands.command(name="meow", description="meow", hidden=True)
+   @commands.command(name="meow", description="meow", hidden=True)
     async def meow(self, ctx):
      embed = discord.Embed(title="Ender was here", description="He say meow (hi!) to you!")
      embed.set_author(name="Your found ender!", url="https://github.com/OrdinaryEnder", icon_url="https://i.ibb.co/qgFpJzF/Png-1.png")
@@ -342,6 +323,7 @@ class Fun(commands.Cog):
           await ctx.send(embed=embed)
 
     @commands.hybrid_command(name="qrgen", description="Generates QR using Data (Can be URL or Anything")
+    @app_commands.describe(data="URL Or String")
     async def qrgen(self, ctx, *, data):
      img = qrcode.make(data)
      img.save("temp.png")
@@ -370,6 +352,7 @@ class Owner(commands.Cog):
 
     @commands.hybrid_command(name='shell', description='Console Remote')
     @commands.is_owner()
+    @app_commands.describe(cmd="The Command About to executed in shell")
     async def _eval(self, ctx, *, cmd):
         # Ender : This very  damger dont give it to your friend ig D:<
         await ctx.send(f"Current Shell = {os.getenv('SHELL')}")
@@ -392,7 +375,8 @@ class Owner(commands.Cog):
 
     @commands.hybrid_command(name='chpresence', description='Change Bot Presence As You Wanted')
     @commands.is_owner()
-    async def _chp(self, ctx, type, *, name=None, twittch=None):
+    @app_commands.describe(status="Status to be displayed", name="The text", twittch="Twitch URL For Streaming")
+    async def _chp(self, ctx, status: typing.Literal['playing', 'watching', 'listening', 'streaming', 'sleep'], *, name, twittch=None):
           if type == 'playing':
              await bot.change_presence(activity=discord.Game(name=name))
           elif type == 'watching':
@@ -404,6 +388,7 @@ class Owner(commands.Cog):
           elif type == 'sleep':
              await bot.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.listening, name = '24/7 Lo-fi'))
     @commands.hybrid_command(name="eval", description="Quick Eval (Codeblock)")
+    @app_commands.describe(code="The code about to executed")
     @commands.is_owner()
     async def eval(self, ctx, *, code):
      try:
@@ -425,6 +410,7 @@ class Owner(commands.Cog):
 
     @commands.hybrid_command(name="awaiteval", description="Await an eval")
     @commands.is_owner()
+    @app_commands.describe(code="Await Execution")
     async def awaiteval(self, ctx, *, code):
      try:
       if "```" in code:
@@ -441,8 +427,11 @@ class Owner(commands.Cog):
 class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
     @commands.hybrid_command(name="timeout", description="had enough?, Mute still annoy u?, Try timeout")
     @commands.has_permissions(kick_members=True)
+    @app_commands.describe(member="Valid Member", time="For example, 1d is for 1 day, s for second, m for minutes, h for hour, d for day", reason="The reason")
+
     async def timeout(self, ctx, member: discord.Member, time, *, reason=None):
      time_convert = {"s":1, "m":60, "h":3600, "d":86400}
      tempmute= int(time[:-1]) * time_convert[time[-1]]
@@ -452,12 +441,14 @@ class Moderation(commands.Cog):
 
     @commands.hybrid_command(name="untimeout", description="Untimeout user", aliases=["rmtimeout"])
     @commands.has_permissions(kick_members=True)
+    @app_commands.describe(member="Timed out member")
     async def untimeout(self, ctx, member: discord.Member):
      await member.timeout(None)
      embed = discord.Embed(title="Untimed out", description=f"Untimed out {member.mention}", color=0x2ecc71)
      await ctx.send(embed=embed)
 
     @commands.hybrid_command(name='kick', description='Kick Dumbass from Your Holy Server')
+    @app_commands.describe(member="Member About to kicked", reason="Reason")
     @commands.has_permissions(kick_members=True)
     async def _kick(self, ctx, member: discord.Member, reason=None):
         if ctx.author.top_role < Member.top_role:
@@ -467,6 +458,7 @@ class Moderation(commands.Cog):
                 return await ctx.send(f"{Member} Successfully Banned by {ctx.author.mention}")
 
     @commands.hybrid_command(name='ban', description='Ban dumbass from your Holy Server')
+    @app_commands.describe(member="Member About to banned", reason="Reason")
     @commands.has_permissions(ban_members=True)
     async def _ban(self, ctx, user: discord.Member, *, reason=None):
         if reason == None:
@@ -478,12 +470,14 @@ class Moderation(commands.Cog):
            return await ctx.send(f"{user} Successfully Banned by {ctx.author.mention}")
 
     @commands.hybrid_command(name='unban', description='Unban people who have repented')
+    @app_commands.describe(id="ID of Member About to unban")
     @commands.has_permissions(ban_members=True)
     async def _unban(self, ctx, id):
          user = await bot.fetch_user(int(id))
          await ctx.guild.unban(user)
          await ctx.send(f"Unbanned @{user.name}#{user.discriminator}")
     @commands.command(name="idban", description="Ban using ID (For Unfair Leaver")
+    @app_commands.describe(member="ID of Member About to banned", reason="Reason")
     @commands.has_permissions(ban_members=True)
     async def _idban(self, ctx, id, *, reason=None):
         user = await bot.fetch_user(int(id))
@@ -491,6 +485,7 @@ class Moderation(commands.Cog):
         await ctx.send(f"Banned @{user.name}#{user.discriminator}, Reason = {reason}")
 
     @commands.hybrid_command(name='mute', description='Mute Whos Keep Spamming on ur Holy Server')
+    @app_commands.describe(member="Member to be muted", time="Time (example: 1y", reason="Reason")
     @commands.has_permissions(manage_messages=True)
     async def _mute(self, ctx, member: discord.Member, time, *, reason=None):
             mutedrole = os.getenv("MUTED_ROLE")
@@ -514,6 +509,7 @@ class Moderation(commands.Cog):
 
 
     @commands.hybrid_command(name='unmute', description='Unmute')
+    @app_commands.describe(member="Member")
     @commands.has_permissions(manage_messages=True)
     async def unmute(self, ctx, member: discord.Member):
          mutedRole = discord.utils.get(ctx.guild.roles, name="Muted")
@@ -524,8 +520,9 @@ class Moderation(commands.Cog):
          await member.add_roles(memberrole)
          await ctx.send(embed=embed)
        
-    @commands.hybrid_command(name='purge', description='Purge Old Messages', pass_context=True)
+    @commands.hybrid_command(name='purge', description='Purge Old Messages')
     @commands.has_permissions(manage_messages=True)
+    @app_commands.describe(limit="How much ur gonna delete")
     async def _purge(self, ctx, limit: int):
          await ctx.channel.purge(limit=limit)
          await ctx.send("Purged by {}".format(ctx.author.mention), delete_after=5)
@@ -533,6 +530,7 @@ class Moderation(commands.Cog):
 
     @commands.hybrid_command(name='nick', description='Change Nickname of people')
     @commands.has_permissions(manage_nicknames=True)
+    @app_commands.describe(member="Member", nick="New Nickname")
     async def chnick(self, ctx, member: discord.Member, *, nick):
      await member.edit(nick=nick)
      await ctx.send(f'Nickname was changed for {member.mention} ')
@@ -544,7 +542,8 @@ class nsfw(commands.Cog):
 
     @commands.hybrid_command(name="image", description="Get Images (NSFW!!!!!)")
     @commands.is_nsfw()
-    async def _image(self, ctx, *, image):
+    @app_commands.describe(image="NSFW Image about to show")
+    async def _image(self, ctx, *, image: typing.Literal['hass', 'hmidriff', 'pgif', '4k', 'hentai', 'holo', 'hneko', 'neko', 'hkitsune', 'kemonomimi', 'anal', 'hanal', 'gonewild', 'kanna', 'ass', 'pussy', 'thigh', 'hthigh', 'gah', 'coffee', 'food', 'paizuri', 'tentacle', 'boobs', 'hboobs', 'yaoi']):
      try:                                     
       async with aiohttp.ClientSession() as session:
           async with session.get(f"https://nekobot.xyz/api/image?type={image}") as r:
@@ -560,6 +559,7 @@ class Other(commands.Cog):
         self.bot = bot
 
     @commands.hybrid_command(name="idavatar", description="Get avatar by ID")
+    @app_commands.describe(id="ID of user to get the avatar")
     async def _idavatar(self, ctx, id):
       userid = int(id)
       user = await bot.fetch_user(userid)
@@ -567,6 +567,7 @@ class Other(commands.Cog):
       await ctx.send(avatar)
 
     @commands.hybrid_command(name='avatar', description='get someone avatar (avatar copy)')
+    @app_commands.describe(avamember="Member")
     async def _avatar(self, ctx, avamember : discord.Member):
        userAvatarUrl = avamember.avatar.url
        await ctx.send(userAvatarUrl)
@@ -593,6 +594,7 @@ class Other(commands.Cog):
            return await ctx.send(embed=embed)
 
     @commands.hybrid_command(name='brainfuck', description='Yet another BrainFuck Interpreter In Discord')
+    @app_commands.describe(code="brainfuck code")
     async def _brainfuck(self, ctx, *, code):
      content = re.sub("```brainfuck|```bf|```", "", code)
      embed = discord.Embed(title="Result", description="Brainfuck Interpreter")
@@ -600,6 +602,7 @@ class Other(commands.Cog):
      await ctx.send(embed=embed)
 
     @commands.hybrid_command(name='robloxinfo', description='Get Roblox Game Info')
+    @app_commands.describe(placeid="Roblox Place ID")
     async def _robloxinfo(self, ctx, *, placeid):
    # First we gonna get Universe ID, Because Roblox Only Allow show game with it
      async with aiohttp.ClientSession() as session:
@@ -662,6 +665,7 @@ class Other(commands.Cog):
       await ctx.send(embed=embed)
 
     @commands.hybrid_command(name="search", description="Search Youtube Videos")
+    @app_commands.describe(search="Youtube Video To Search")
     async def yt(self, ctx, *, search):
      query_string = urllib.parse.urlencode({
         "search_query": search
@@ -673,6 +677,7 @@ class Other(commands.Cog):
      await ctx.send("http://www.youtube.com/watch?v=" + search_results[0])
 
     @commands.hybrid_command(name="webhookspawn")
+    @app_commands.describe(name="Webhook Name")
     @commands.has_permissions(manage_webhooks=True)
     async def webhookspawn(self, ctx, *, name):
      webhook = await ctx.channel.create_webhook(name=name)
