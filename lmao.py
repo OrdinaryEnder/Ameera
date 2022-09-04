@@ -377,6 +377,7 @@ class Owner(commands.Cog):
     @commands.is_owner()
     @app_commands.describe(status="Status to be displayed", name="The text", twittch="Twitch URL For Streaming")
     async def _chp(self, ctx, status: typing.Literal['playing', 'watching', 'listening', 'streaming', 'sleep'], *, name, twittch=None):
+          await ctx.defer(thinking=True)
           if type == 'playing':
              await bot.change_presence(activity=discord.Game(name=name))
           elif type == 'watching':
@@ -387,6 +388,7 @@ class Owner(commands.Cog):
              await bot.change_presence(activity=discord.Streaming(name=name, url=twittch))
           elif type == 'sleep':
              await bot.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.listening, name = '24/7 Lo-fi'))
+          return await ctx.send(f"Now the status was {status} {name}")
     @commands.hybrid_command(name="eval", description="Quick Eval (Codeblock)")
     @app_commands.describe(code="The code about to executed")
     @commands.is_owner()
@@ -544,8 +546,9 @@ class nsfw(commands.Cog):
     @commands.is_nsfw()
     @app_commands.describe(image="NSFW Image about to show")
     async def _image(self, ctx, *, image: typing.Literal['hass', 'hmidriff', 'pgif', 'hentai', 'holo', 'hneko', 'neko', 'hkitsune', 'kemonomimi', 'anal', 'hanal', 'gonewild', 'kanna', 'ass', 'pussy', 'thigh', 'hthigh', 'gah', 'coffee', 'food', 'paizuri', 'tentacle', 'boobs', 'hboobs', 'yaoi']):
-     try:                                     
-      async with aiohttp.ClientSession() as session:
+     try:
+         await ctx.defer(thinking=True)
+         async with aiohttp.ClientSession() as session:
           async with session.get(f"https://nekobot.xyz/api/image?type={image}") as r:
            res = await r.json()
            em = discord.Embed(title="Result")
