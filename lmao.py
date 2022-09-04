@@ -543,7 +543,7 @@ class nsfw(commands.Cog):
     @commands.hybrid_command(name="image", description="Get Images (NSFW!!!!!)")
     @commands.is_nsfw()
     @app_commands.describe(image="NSFW Image about to show")
-    async def _image(self, ctx, *, image: typing.Literal['hass', 'hmidriff', 'pgif', '4k', 'hentai', 'holo', 'hneko', 'neko', 'hkitsune', 'kemonomimi', 'anal', 'hanal', 'gonewild', 'kanna', 'ass', 'pussy', 'thigh', 'hthigh', 'gah', 'coffee', 'food', 'paizuri', 'tentacle', 'boobs', 'hboobs', 'yaoi']):
+    async def _image(self, ctx, *, image: typing.Literal['hass', 'hmidriff', 'pgif', , 'hentai', 'holo', 'hneko', 'neko', 'hkitsune', 'kemonomimi', 'anal', 'hanal', 'gonewild', 'kanna', 'ass', 'pussy', 'thigh', 'hthigh', 'gah', 'coffee', 'food', 'paizuri', 'tentacle', 'boobs', 'hboobs', 'yaoi']):
      try:                                     
       async with aiohttp.ClientSession() as session:
           async with session.get(f"https://nekobot.xyz/api/image?type={image}") as r:
