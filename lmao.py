@@ -377,7 +377,7 @@ class Owner(commands.Cog):
     @commands.is_owner()
     @app_commands.describe(status="Status to be displayed", name="The text", twittch="Twitch URL For Streaming")
     async def _chp(self, ctx, status: typing.Literal['playing', 'watching', 'listening', 'streaming', 'sleep'], *, name, twittch=None):
-          await ctx.defer(thinking=True)
+          await ctx.defer()
           if type == 'playing':
              await bot.change_presence(activity=discord.Game(name=name))
           elif type == 'watching':
@@ -547,7 +547,7 @@ class nsfw(commands.Cog):
     @app_commands.describe(image="NSFW Image about to show")
     async def _image(self, ctx, *, image: typing.Literal['hass', 'hmidriff', 'pgif', 'hentai', 'holo', 'hneko', 'neko', 'hkitsune', 'kemonomimi', 'anal', 'hanal', 'gonewild', 'kanna', 'ass', 'pussy', 'thigh', 'hthigh', 'gah', 'coffee', 'food', 'paizuri', 'tentacle', 'boobs', 'hboobs', 'yaoi']):
      try:
-         await ctx.defer(thinking=True)
+         await ctx.defer()
          async with aiohttp.ClientSession() as session:
           async with session.get(f"https://nekobot.xyz/api/image?type={image}") as r:
            res = await r.json()
