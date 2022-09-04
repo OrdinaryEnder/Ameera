@@ -458,7 +458,7 @@ class Moderation(commands.Cog):
                 return await ctx.send(f"{Member} Successfully Banned by {ctx.author.mention}")
 
     @commands.hybrid_command(name='ban', description='Ban dumbass from your Holy Server')
-    @app_commands.describe(member="Member About to banned", reason="Reason")
+    @app_commands.describe(user="Member About to banned", reason="Reason")
     @commands.has_permissions(ban_members=True)
     async def _ban(self, ctx, user: discord.Member, *, reason=None):
         if reason == None:
