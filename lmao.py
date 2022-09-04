@@ -303,7 +303,7 @@ class Fun(commands.Cog):
                 await ctx.send(embed=embed)
 
     
-   @commands.command(name="meow", description="meow", hidden=True)
+    @commands.command(name="meow", description="meow", hidden=True)
     async def meow(self, ctx):
      embed = discord.Embed(title="Ender was here", description="He say meow (hi!) to you!")
      embed.set_author(name="Your found ender!", url="https://github.com/OrdinaryEnder", icon_url="https://i.ibb.co/qgFpJzF/Png-1.png")
