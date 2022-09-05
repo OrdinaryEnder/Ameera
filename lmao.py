@@ -380,15 +380,20 @@ class Owner(commands.Cog):
           await ctx.defer()
           if type == 'playing':
              await bot.change_presence(activity=discord.Game(name=name))
+             await ctx.send(f"Lets play {name}")
           elif type == 'watching':
              await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=name))
+             await ctx.send(f"Time to watch {name}")
           elif type == 'listening':
              await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=name))
+             await ctx.send("🎶🎶🎶")
           elif type == 'streaming':
              await bot.change_presence(activity=discord.Streaming(name=name, url=twittch))
+             await ctx.send(f"Lets stream {name}")
           elif type == 'sleep':
              await bot.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.listening, name = '24/7 Lo-fi'))
-          return await ctx.send(f"Now the status was {status} {name}")
+             await ctx.send("zzz")
+            
     @commands.hybrid_command(name="eval", description="Quick Eval (Codeblock)")
     @app_commands.describe(code="The code about to executed")
     @commands.is_owner()
@@ -608,6 +613,7 @@ class Other(commands.Cog):
     @app_commands.describe(placeid="Roblox Place ID")
     async def _robloxinfo(self, ctx, *, placeid):
    # First we gonna get Universe ID, Because Roblox Only Allow show game with it
+     await ctx.defer()
      async with aiohttp.ClientSession() as session:
          async with session.get(f'https://api.roblox.com/universes/get-universe-containing-place?placeid={placeid}') as uidget:
           universeload = await uidget.json()
@@ -658,6 +664,7 @@ class Other(commands.Cog):
           await ctx.send(f"Pong!\nLatency: {round(bot.latency * 1000)}")
     @commands.hybrid_command(name="stats", description="bot stats")
     async def stats(self, ctx):
+      await ctx.defer()
       embed = discord.Embed(title=f"Bot stats of {bot.user}", description="Stats:")
       embed.add_field(name="Platform:", value=f"```css \n {platform.system()} {platform.release()} {platform.machine()} \n ```")
       embed.add_field(name="Timezone", value=f"```css \n {datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo} \n```")
@@ -694,6 +701,7 @@ class Music(commands.Cog):
 
   @commands.hybrid_command(name="connect", description="Connect to Your Voice")
   async def join(self, ctx):
+    await ctx.defer()
     if ctx.author.voice is None:
       return await ctx.send("You are not connected to a voice channel")
     else:
@@ -705,6 +713,7 @@ class Music(commands.Cog):
 
   @commands.hybrid_command(name="playsc", description="Play SoundCloud (Powered by WaveLink)")
   async def playsc(self, ctx, *, search: str):
+    await ctx.defer()
     if not ctx.voice_client:
       vc: wavelink.Player = await ctx.author.voice.channel.connect(cls=wavelink.Player)
     elif not getattr(ctx.author.voice, "channel", None):
@@ -727,6 +736,7 @@ class Music(commands.Cog):
 
   @commands.hybrid_command(name="play", description="Play a music from Youtube (Powered by WaveLink)")
   async def play(self, ctx, *, search: wavelink.YouTubeTrack):
+    await ctx.defer()
     if not ctx.voice_client:
       vc: wavelink.Player = await ctx.author.voice.channel.connect(cls=wavelink.Player)
     elif not getattr(ctx.author.voice, "channel", None):
