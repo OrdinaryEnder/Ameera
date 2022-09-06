@@ -712,6 +712,7 @@ class Music(commands.Cog):
 
 
   @commands.hybrid_command(name="playsc", description="Play SoundCloud (Powered by WaveLink)")
+  @app_commands.describe(search="Search for song")
   async def playsc(self, ctx, *, search: str):
     await ctx.defer()
     if not ctx.voice_client:
@@ -735,6 +736,7 @@ class Music(commands.Cog):
     setattr(vc, "loop", False)
 
   @commands.hybrid_command(name="play", description="Play a music from Youtube (Powered by WaveLink)")
+  @app_commands.describe(search="Youtube search or URL")
   async def play(self, ctx, *, search: wavelink.YouTubeTrack):
     await ctx.defer()
     if not ctx.voice_client:
@@ -889,6 +891,7 @@ class Music(commands.Cog):
 
 
   @commands.hybrid_command(name="volume", description="Volume")
+  @app_commands.describe(volume="Must be 1 to 300")
   async def volume(self, ctx, volume: int):
     if not ctx.voice_client:
       return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
@@ -967,6 +970,7 @@ class Music(commands.Cog):
     return await ctx.send(f"{ctx.message.author.mention} cleared the queue.")
    
   @commands.hybrid_command(name='lyrics', description='Genius Lyrics')
+  @app_commands.describe(artist="Artist of song", title="Song")
   async def lyrics(self, ctx, artist, *, title):
      try:
       song = genius.search_song(title, artist)
