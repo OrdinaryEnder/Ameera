@@ -83,7 +83,8 @@ async def on_wavelink_track_end(player: wavelink.Player, track: wavelink.Track, 
       embed = discord.Embed(title=" ", description=f"Started playing  **[{next_song.title}]({next_song.uri})**")
       await ctx.send(embed=embed)
     except wavelink.errors.QueueEmpty:
-      await ctx.send("There are no more track")
+      embed = discord.Embed(title=" ", description="There are no more tracks", color=discord.Color.from_rgb(255, 0, 0))
+      await ctx.send(embed=embed)
       await vc.disconnect()
 
 @bot.event
@@ -104,7 +105,7 @@ async def on_ready():
  await bot.add_cog(Owner(bot))
  print(Fore.RED + "Adding Nsfw Cogs")
  await bot.add_cog(nsfw(bot))
- print(Back.WHITE + Fore.RED + "Support" + Fore.YELLOW + " us" + Fore.BLUE + " at" + Fore.GREEN + " https://github.com/zairullahdev/Alexandra")
+ print(Back.WHITE + Fore.RED + "Support" + Fore.YELLOW + " us" + Fore.BLUE + " at" + Fore.GREEN + " https://github.com/OrdinaryEnder/Olivia")
  global startTime
  startTime = time.time()
 
@@ -129,9 +130,7 @@ async def on_message(message):
             await webhook.send(username=f"{message.author.name}#{message.author.discriminator}", avatar_url=message.author.avatar, content=f"{ '#' * len(message.content)}")
             await webhook.delete()
             return
-       elif "atd game link?" in message.content.lower():
-           await message.channel.send("ATD is been discontinued.... \n \n Q: Why? \n A: Many devs are quitting, zach cant continue anymore \n \n More Info: https://discord.gg/B3uEenXMPV ")
-           return
+
        elif message.author.guild.owner.mention in message.content.lower().split(' '):
             await message.author.timeout(datetime.timedelta(seconds=300))
             await message.delete()
@@ -458,24 +457,15 @@ class Moderation(commands.Cog):
     @app_commands.describe(member="Member About to kicked", reason="Reason")
     @commands.has_permissions(kick_members=True)
     async def _kick(self, ctx, member: discord.Member, reason=None):
-        if ctx.author.top_role < Member.top_role:
-                return await ctx.send("**You don't have enough permission**")
-        if ctx.author.top_role > Member.top_role:
-                return await ctx.guild.kick(Member, reason=reason)
-                return await ctx.send(f"{Member} Successfully Banned by {ctx.author.mention}")
+                await ctx.guild.kick(Member, reason=reason)
+                await ctx.send(f"{Member} Successfully kicked by {ctx.author.mention}")
 
     @commands.hybrid_command(name='ban', description='Ban dumbass from your Holy Server')
     @app_commands.describe(user="Member About to banned", reason="Reason")
     @commands.has_permissions(ban_members=True)
     async def _ban(self, ctx, user: discord.Member, *, reason=None):
-        if reason == None:
-           reason = f"{user} banned by {ctx.author}"
-        if ctx.author.top_role < user.top_role:
-           return await ctx.send("**You don't have enough permission**")
-        if ctx.author.top_role > user.top_role:
-           return await ctx.guild.ban(user, reason=reason)
-           return await ctx.send(f"{user} Successfully Banned by {ctx.author.mention}")
-
+        await ctx.guild.ban(user, reason=reason)
+        await ctx.send(f"Successfully banned {user} by {ctx.author.mention}, reason={reason}")
     @commands.hybrid_command(name='unban', description='Unban people who have repented')
     @app_commands.describe(id="ID of Member About to unban")
     @commands.has_permissions(ban_members=True)
@@ -863,9 +853,11 @@ class Music(commands.Cog):
       setattr(vc, "loop", False)
 
     if vc.loop:
-      return await ctx.send("Loop is now Enabled!")
+        embed = discord.Embed(title=" ", description="I will now repeat the current track :repeat_one:")
+        return await ctx.send(embed=embed)
     else:
-      return await ctx.send("Loop is now Disabled!")
+        embed = discord.Embed(title=" ", description="I will no longer repeat the current track")
+        return await ctx.send(embed=embed)
 
 
   @commands.hybrid_command(name="queue", description="Show Queues")
@@ -899,14 +891,14 @@ class Music(commands.Cog):
       return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
     else:
       vc: wavelink.Player = ctx.voice_client
+      embed = discord.Embed(title=" ", description=f"Volume has been set to {volume}")
 
     if volume > 300:
-      return await ctx.send("Thats to high...")
-    elif volume < 0:
-      return await ctx.send("Thats to low...")
+      await vc.set_volume(volume=300)
+      await ctx.send(embed=em)
       
     await vc.set_volume(volume=volume)
-    return await ctx.send(f"Set the volume to {volume}%")
+    return await ctx.send(embed=em)
 
 
   @commands.hybrid_command(name="nowplaying", description="Show what playing now", aliases=['np'])
@@ -921,9 +913,10 @@ class Music(commands.Cog):
     if not vc.is_playing():
       return await ctx.send("Nothing is playing")
 
-    em = discord.Embed(title=f"Now playing {vc.track}", description=f"Artist: {vc.track.author}")
-    em.add_field(name="Duration", value=f"`{datetime.timedelta(seconds=vc.track.length)}`")
-    em.add_field(name="Extra info", value=f"Song URL: [Click Me]({str(vc.track.uri)})")
+    em = discord.Embed(title=f" ", description=f"Now Playing [{vc.track}]({vc.track.uri})Artist: {vc.track.author}")
+    em.set_author(name="Now Playing♪", icon_url="https://camo.githubusercontent.com/51f16d28861eade2210bb6c5414a1d6b0096d0d8d56debc5fc64e8b88681c154/68747470733a2f2f656e637279707465642d74626e302e677374617469632e636f6d2f696d616765733f713d74626e3a414e6439476354664f54472d6d5268655674414b7164366430613774522d7157716b534e75464869767726757371703d434155")
+    em.add_field(name="Position", value=f"`{datetime.timedelta(seconds=vc.position)}")
+    em.add_field(name="Duration", value=f"`{datetime.timedelta(seconds=vc.track.length)}`") 
     return await ctx.send(embed=em)
 
 
@@ -938,7 +931,8 @@ class Music(commands.Cog):
       vc: wavelink.Player = ctx.voice_client
 
     await vc.stop()
-    return await ctx.send(f"{ctx.message.author.mention} skipped the actual music.")
+    embed = discord.Embed(title=" ", description=f"{[vc.track](vc.track.uri) has been skipped", color=discord.Color.from_rgb(0, 255, 0)))
+    return await ctx.send(embed=embed)
 
 
   @commands.hybrid_command(name="qremove", description="Remove amount of queue")
