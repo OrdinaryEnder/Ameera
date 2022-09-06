@@ -931,7 +931,7 @@ class Music(commands.Cog):
       vc: wavelink.Player = ctx.voice_client
 
     await vc.stop()
-    embed = discord.Embed(title=" ", description=f"{[vc.track](vc.track.uri) has been skipped", color=discord.Color.from_rgb(0, 255, 0))
+    embed = discord.Embed(title=" ", description=f"[{vc.track}]({vc.track.uri}) has been skipped", color=discord.Color.from_rgb(0, 255, 0))
     return await ctx.send(embed=embed)
 
 
