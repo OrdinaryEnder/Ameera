@@ -80,7 +80,7 @@ async def on_wavelink_track_end(player: wavelink.Player, track: wavelink.Track, 
     try:
       next_song = vc.queue.get()
       await vc.play(next_song)
-      embed = discord.Embed(title=" ", description=f"Start Playing **[{next_song.title}]({next_song.uri})**")
+      embed = discord.Embed(title=" ", description=f"Started playing  **[{next_song.title}]({next_song.uri})**")
       await ctx.send(embed=embed)
     except wavelink.errors.QueueEmpty:
       await ctx.send("There are no more track")
