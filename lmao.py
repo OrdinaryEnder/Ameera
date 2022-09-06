@@ -913,9 +913,9 @@ class Music(commands.Cog):
     if not vc.is_playing():
       return await ctx.send("Nothing is playing")
 
-    em = discord.Embed(title=f" ", description=f"Now Playing [{vc.track}]({vc.track.uri})Artist: {vc.track.author}")
+    em = discord.Embed(title=f" ", description=f"Now Playing [{vc.track}]({vc.track.uri}) \n Artist: {vc.track.author}")
     em.set_author(name="Now Playing♪", icon_url="https://camo.githubusercontent.com/51f16d28861eade2210bb6c5414a1d6b0096d0d8d56debc5fc64e8b88681c154/68747470733a2f2f656e637279707465642d74626e302e677374617469632e636f6d2f696d616765733f713d74626e3a414e6439476354664f54472d6d5268655674414b7164366430613774522d7157716b534e75464869767726757371703d434155")
-    em.add_field(name="Position", value=f"`{datetime.timedelta(seconds=vc.position)}")
+    em.add_field(name="Position", value=f"`{datetime.timedelta(seconds=vc.position)}`")
     em.add_field(name="Duration", value=f"`{datetime.timedelta(seconds=vc.track.length)}`") 
     return await ctx.send(embed=em)
 
