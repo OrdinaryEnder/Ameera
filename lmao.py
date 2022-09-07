@@ -892,7 +892,7 @@ class Music(commands.Cog):
       return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
     else:
       vc: wavelink.Player = ctx.voice_client
-      embed = discord.Embed(title=" ", description=f"Volume has been set to {volume}")
+      embed = discord.Embed(title=" ", description=f"Volume has been set to {vc.volume}")
 
     if volume > 300:
       await vc.set_volume(volume=300)
