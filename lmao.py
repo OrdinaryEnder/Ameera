@@ -896,10 +896,10 @@ class Music(commands.Cog):
 
     if volume > 300:
       await vc.set_volume(volume=300)
-      await ctx.send(embed=em)
+      await ctx.send(embed=embed)
       
     await vc.set_volume(volume=volume)
-    return await ctx.send(embed=em)
+    return await ctx.send(embed=embed)
 
 
   @commands.hybrid_command(name="nowplaying", description="Show what playing now", aliases=['np'])
@@ -918,12 +918,12 @@ class Music(commands.Cog):
     em.set_author(name="Now Playing♪", icon_url=f"{bot.user.avatar.url}")
     bar = progressBar.splitBar(int(vc.track.length), int(vc.position))
     em.add_field(name="Position", value=f"{bar[0]}")
-    em.add_field(name=" ", value=" ")
-    em.add_field(name=" ", value=" ")
+    em.add_field(name="ㅤ", value="ㅤ")
+    em.add_field(name="ㅤ", value="ㅤ")
     em.add_field(name="Position", value=f"`{datetime.timedelta(seconds=vc.position)}`")
     em.add_field(name="Duration", value=f"`{datetime.timedelta(seconds=vc.track.length)}`") 
-    em.add_field(name=" ", value=" ")
-    em.add_field(name=" ", value=" ")
+    em.add_field(name="ㅤ", value="ㅤ")
+    em.add_field(name="ㅤ", value="ㅤ")
     em.set_footer(icon_url=f"{ctx.author.avatar.url}", text=f"Requested by {ctx.author}")
     return await ctx.send(embed=em)
 
