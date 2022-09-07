@@ -1,3 +1,4 @@
+from StringProgressBar import progressBar
 import platform
 import aiofiles
 import traceback
