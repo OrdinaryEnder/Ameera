@@ -924,7 +924,7 @@ class Music(commands.Cog):
     em.add_field(name="Duration", value=f"`{datetime.timedelta(seconds=vc.track.length)}`") 
     em.add_field(name=" ", value=" ")
     em.add_field(name=" ", value=" ")
-    em.set_footer(icon_url=f"{ctx.author.icon.url}", text=f"Requested by {ctx.author}")
+    em.set_footer(icon_url=f"{ctx.author.avatar.url}", text=f"Requested by {ctx.author}")
     return await ctx.send(embed=em)
 
 
