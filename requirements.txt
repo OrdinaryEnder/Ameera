@@ -11,3 +11,4 @@ lavalink
 git+https://github.com/johnwmillr/LyricsGenius.git
 colorama
 aiofiles
+StringProgressBar
