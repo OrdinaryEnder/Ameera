@@ -916,7 +916,8 @@ class Music(commands.Cog):
 
     em = discord.Embed(title=f" ", description=f"Playing \n **[{vc.track}]({vc.track.uri})** \n Artist: {vc.track.author}")
     em.set_author(name="Now Playing♪", icon_url=f"{bot.user.avatar.url}")
-    em.add_field(name="Position", value=f"{progressBar.splitBar(vc.track.length, vc.position)}")
+    bar = progressBar.splitBar(vc.track.length, vc.position)
+    em.add_field(name="Position", value=f"{bar[0]}")
     em.add_field(name=" ", value=" ")
     em.add_field(name=" ", value=" ")
     em.add_field(name="Position", value=f"`{datetime.timedelta(seconds=vc.position)}`")
