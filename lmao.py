@@ -896,7 +896,7 @@ class Music(commands.Cog):
 
     if volume > 300:
       await vc.set_volume(volume=300)
-      await ctx.send(embed=embed)
+      return await ctx.send(embed=embed)
       
     await vc.set_volume(volume=volume)
     return await ctx.send(embed=embed)
