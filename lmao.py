@@ -131,17 +131,11 @@ async def on_message(message):
             await webhook.send(username=f"{message.author.name}#{message.author.discriminator}", avatar_url=message.author.avatar, content=f"{ '#' * len(message.content)}")
             await webhook.delete()
             return
-
-       elif message.author.guild.owner.mention in message.content.lower().split(' '):
-            await message.author.timeout(datetime.timedelta(seconds=300))
-            await message.delete()
-            await message.channel.send(f"{message.author.mention} Has Been Timed out for 5 minute \n Reason : pinging owner")
-            return
        elif "UwU" in message.content.lower():
            await message.delete()
            embed = discord.Embed(title=f"{message.author} said the forbidden word uwu!", description=" ")
            embed.set_image(url="https://tenor.com/view/i-am-the-storm-that-is-approaching-gif-26009898")
-           await message.channel.send(embed=embed)
+           return await message.channel.send(embed=embed)
     await bot.process_commands(message)
     return
      
@@ -567,7 +561,9 @@ class Other(commands.Cog):
 
     @commands.hybrid_command(name='avatar', description='get someone avatar (avatar copy)')
     @app_commands.describe(avamember="Member")
-    async def _avatar(self, ctx, avamember : discord.Member):
+    async def _avatar(self, ctx, avamember: discord.Member = None):
+       if avamember is None:
+           return await ctx.send(ctx.author.avatar.url)
        userAvatarUrl = avamember.avatar.url
        await ctx.send(userAvatarUrl)
 
@@ -987,7 +983,7 @@ class Music(commands.Cog):
 
 async def node_connect(bot):
   await bot.wait_until_ready()
-  await wavelink.NodePool.create_node(bot=bot, host="51.161.130.134", port=10436, password="youshallnotpass")
+  await wavelink.NodePool.create_node(bot=bot, host="lavalink.oops.wtf", port=443, password="www.freelavalink.ga", https=True)
 
 
 token = os.getenv("TOKEN")
