@@ -65,6 +65,10 @@ with open('badwords.txt', 'r') as f:
 intents = discord.Intents().all()
 bot = commands.Bot(command_prefix='+', intents=intents)
 # Badword Test (haha lol)
+@bot.before_invoke
+async def deprecate(ctx):
+    if ctx.interaction is None:
+        return await ctx.send("Message command are going EOL \n Ender Been decide to make move too, any command like +meme going to not work \n Prediction: End of October 2022 \n \n INFO: <https://pastebin.com/9Ci5fq96>")
 
 @bot.event
 async def on_wavelink_node_ready(node: wavelink.Node):
