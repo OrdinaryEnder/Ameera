@@ -5,10 +5,10 @@ qrcode
 pillow
 pynacl
 python-dotenv
-requests
 git+https://github.com/PythonistaGuild/Wavelink
 lavalink
 git+https://github.com/johnwmillr/LyricsGenius.git
 colorama
+beautifulsoup4
 aiofiles
 StringProgressBar
