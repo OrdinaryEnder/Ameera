@@ -1,4 +1,5 @@
 from StringProgressBar import progressBar
+from typing import List 
 import platform
 from bs4 import BeautifulSoup
 import logging
@@ -27,6 +28,7 @@ import discord
 from discord.ext import commands
 from discord.ext import tasks
 import json
+from wavelink import Node as node
 from mod.botmod import bypass
 import youtube_dl
 import aiohttp
@@ -54,17 +56,9 @@ load_dotenv()
 colorama.init(autoreset=True)
 
 genius = Genius()
-
-badlist = ["sex", "fuck", "shit", "gay", "luzer sucks", "happylemon suck", "zach suck", "sh^t", "yo mama", "deez nut"]
-
 # this is will cached
 def restart_bot(): 
   os.execv(sys.executable, ['python'] + sys.argv)
-
-with open('badwords.txt', 'r') as f:
-    words = f.read()
-    badword = words.split()
-
 
 # setup hook
 class MyBot(commands.Bot):
@@ -144,16 +138,7 @@ async def on_member_join(member):
 async def on_message(message):
     if message.author.bot:
         return
-    if re.fullmatch(bot.user.mention, message.content):
-        url = f'https://api.simsimi.net/v2/?text={message.content[len(bot.user.mention):]}&lc=en'
-        async with aiohttp.ClientSession() as session:
-         async with session.get(url) as r:
-            response = await r.text()
-            soup = BeautifulSoup(response, 'html.parser')
-            # print("Respond: " + str(soup))
-            text = json.loads(soup.text)
-            return await message.reply(text["success"])
-        
+
     await bot.process_commands(message)
     return
 
@@ -213,6 +198,39 @@ class MyHelpCommand(commands.MinimalHelpCommand):
 
 # slash support of help
 bot.help_command = MyHelpCommand()
+
+# music view
+class MusicDropDown(discord.ui.select):
+    def __init__(self, search):
+      track = await wavelink.SoundCloudTrack.search(query=current, return_first=False)
+      ret = []
+      for song in track[:5]:
+          ret.append(discord.SelectOption(label=song.title, description=song.author, value=song.uri))
+
+      super().__init__(placeholder='Choose song ...', min_values=1, max_values=1, options=options)
+    async def callback(self, interaction: discord.Interaction):
+        # Use the interaction object to send a response message containing
+        # the user's favourite colour or choice. The self object refers to the
+        # Select object, and the values attribute gets a list of the user's
+        # selected options. We only want the first one.
+        search = (await node.get_tracks(wavelink.SoundCloudTrack, self.values[0]))
+        if vc.queue.is_empty and not vc.is_playing():
+         await vc.play(search)
+         embed = discord.Embed(title="Now playing", description=f"[{search.title}]({search.uri})\n \n Uploader: {search.author}")
+         embed.set_thumbnail(url=search.thumbnail)
+         embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
+         await self.message.edit(embed=embed, view=None)
+        else:
+         await vc.queue.put_wait(search)
+         await self.message.edit(f"Added {search.title} to the queue", view=None)
+        vc.ctx = ctx
+        setattr(vc, "loop", False)
+
+
+
+
+
+
 
 # meme view
 class refreshbutton(discord.ui.View):
@@ -309,7 +327,6 @@ class Fun(commands.Cog):
 
     @app_commands.command(name="meme", description="Reddit Memes")
     async def meme(self, interaction: discord.Interaction):
-     try:
       pages=["memes",
              "dankmemes",
              "PrequelMemes",
@@ -319,7 +336,8 @@ class Fun(commands.Cog):
              "raimimemes",
              "linuxmemes"]
       await interaction.response.defer(thinking=True)
-      async with aiohttp.ClientSession() as cs:
+      try:
+       async with aiohttp.ClientSession() as cs:
         async with cs.get(f'https://www.reddit.com/r/{random.choice(pages)}/new.json?sort=hot') as r:
             res = await r.json()
             embed=discord.Embed(title="Daily Memes", description=" ")
@@ -328,8 +346,8 @@ class Fun(commands.Cog):
             view = refreshbutton(timeout=30.0)
             await interaction.followup.send(embed=embed, view=view)
             view.message = await interaction.original_response()
-     except Exception:
-         await interaction.response.send_message("theres problem", ephemeral=True)
+      except Exception:
+         await interaction.followup.send("theres problem", ephemeral=True)
 
     @app_commands.command(name="linusquotes", description="Get Better Motivation from Linus Torvalds!")
     async def quotes(self, interaction: discord.Interaction):
@@ -537,17 +555,21 @@ class nsfw(commands.Cog):
            em.set_image(url=res['message'])
            await interaction.followup.send(embed=em)
         except:
-           await interaction.response.send_message(traceback.print_exc())
+           await interaction.followup.send(traceback.print_exc())
 
 class Other(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @app_commands.command(name="invite" description="Invite the bot")
+    async def _invite(self, interaction: discord.Interaction):
+        await interaction.response.send_message(f"https://discord.com/api/oauth2/authorize?client_id={bot.user.id}&permissions=1644971949559&scope=bot", ephemeral=True)
+
     @app_commands.command(name="idavatar", description="Get avatar by ID")
     @app_commands.describe(id="ID of user to get the avatar")
     async def _idavatar(self, interaction: discord.Interaction, id: int):
       userid = int(id)
-      user = await bot.fetch_user(userid)
+      user = await bot.get_user(userid)
       avatar = user.avatar.url
       await interaction.response.send_message(avatar)
 
@@ -612,7 +634,7 @@ class Other(commands.Cog):
 
     @app_commands.command(name="webhookspawn")
     @app_commands.describe(name="Webhook Name")
-    @commands.has_permissions(manage_webhooks=True)
+    @app_commands.checks.has_permissions(manage_webhooks=True)
     async def webhookspawn(self, interaction: discord.Interaction, name: str):
      webhook = await interaction.channel.create_webhook(name=name)
      await interaction.user.send(f"Heres your webhook \n {webhook.url}")
@@ -624,42 +646,28 @@ class Music(commands.Cog):
   def __init__(self, bot):
    self.bot = bot
 
-  @commands.hybrid_command(name="connect", description="Connect to Your Voice")
-  async def join(self, ctx):
-    await ctx.defer()
-    if ctx.author.voice is None:
-      return await ctx.send("You are not connected to a voice channel")
+  @app_commands.command(name="connect", description="Connect to Your Voice")
+  async def join(self, interaction: discord.Interaction):
+    await interaction.response.defer()
+    if interaction.user.voice is None:
+      return await interaction.followup.send("You are not connected to a voice channel")
     else:
-      channel = ctx.author.voice.channel
+      channel = interaction.user.voice.channel
       vc: wavelink.Player = channel
       await vc.connect(cls=wavelink.Player)
-      await ctx.send(f"Connected to voice channel: '{channel}'")
+      await interaction.followup.send(f"Connected to voice channel: '{channel}'")
 
 
-  @commands.hybrid_command(name="playsc", description="Play SoundCloud (Powered by WaveLink)")
+  @app_commands.command(name="playsc", description="Play SoundCloud (Powered by WaveLink)")
   @app_commands.describe(search="Search for song")
-  async def playsc(self, ctx, *, search: str):
-    await ctx.defer()
-    if not ctx.voice_client:
-      vc: wavelink.Player = await ctx.author.voice.channel.connect(cls=wavelink.Player)
-    elif not getattr(ctx.author.voice, "channel", None):
-      return await ctx.send(f"Hey, {ctx.message.author.mention}You are not connected to a voice channel")
-    else:
-      vc: wavelink.Player = ctx.voice_client
-     
-    if vc.queue.is_empty and not vc.is_playing():
-      track = await wavelink.SoundCloudTrack.search(query=search)
-      await vc.play(track[0])
-      embed = discord.Embed(title="Now playing", description=f"[{track[0].title}]({track[0].uri}) \n \n Author: {track[0].author}")
-      embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
-      await ctx.send(embed=embed)
-    else:
-      track = await wavelink.SoundCloudTrack.search(query=search)
-      await vc.queue.put_wait(track[0])
-      await ctx.send(f"Added {search} to the queue")
-    vc.ctx = ctx
-    setattr(vc, "loop", False)
-
+  async def playsc(self, interaction: discord.Interaction, search: str):
+    await interaction.user.voice.channel.connect(cls=wavelink.Player)
+    await interaction.response.defer()
+    vc: wavelink.Player = interaction.user.voice_client
+    dropdig = MusicDropDown()
+    dropdig.search = search
+    dropdig.vc = vc
+   
   @commands.hybrid_command(name="play", description="Play a music from Youtube (Powered by WaveLink)")
   @app_commands.describe(search="Youtube search or URL")
   async def play(self, ctx, *, search: wavelink.YouTubeTrack):
@@ -670,20 +678,7 @@ class Music(commands.Cog):
       return await ctx.send(f"Hey, {ctx.message.author.mention}You are not connected to a voice channel")
     else:
       vc: wavelink.Player = ctx.voice_client
-
-    if vc.queue.is_empty and not vc.is_playing():
-      await vc.play(search)
-      embed = discord.Embed(title="Now playing", description=f"[{search.title}]({search.uri})\n \n Uploader: {search.author}")
-      embed.set_thumbnail(url=search.thumbnail)
-      embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
-      await ctx.send(embed=embed)
-    else:
-      await vc.queue.put_wait(search)
-      await ctx.send(f"Added {search.title} to the queue")
-    vc.ctx = ctx
-    setattr(vc, "loop", False)
-
-
+    
   @commands.hybrid_command(name="pause", description="Pause song")
   async def pause(self, ctx):
     if not ctx.voice_client:
@@ -928,4 +923,4 @@ async def node_connect(bot):
 
 
 
-bot.run(token)
+bot.run(token, log_level=logging.DEBUG)
