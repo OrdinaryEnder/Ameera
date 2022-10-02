@@ -200,7 +200,7 @@ class MyHelpCommand(commands.MinimalHelpCommand):
 bot.help_command = MyHelpCommand()
 
 # music view
-class MusicDropDown(discord.ui.select):
+class MusicDropDown(discord.ui.Select):
     def __init__(self, search, track):
       ret = []
       for song in track[:5]:
