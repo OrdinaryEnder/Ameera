@@ -561,7 +561,7 @@ class Other(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name="invite" description="Invite the bot")
+    @app_commands.command(name="invite", description="Invite the bot")
     async def _invite(self, interaction: discord.Interaction):
         await interaction.response.send_message(f"https://discord.com/api/oauth2/authorize?client_id={bot.user.id}&permissions=1644971949559&scope=bot", ephemeral=True)
 
