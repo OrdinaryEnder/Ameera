@@ -201,11 +201,12 @@ bot.help_command = MyHelpCommand()
 
 # music view
 class MusicDropDown(discord.ui.select):
-    def __init__(self, search):
-      track = await wavelink.SoundCloudTrack.search(query=current, return_first=False)
+    def __init__(self, search, track):
       ret = []
       for song in track[:5]:
           ret.append(discord.SelectOption(label=song.title, description=song.author, value=song.uri))
+
+          options = ret
 
       super().__init__(placeholder='Choose song ...', min_values=1, max_values=1, options=options)
     async def callback(self, interaction: discord.Interaction):
@@ -665,8 +666,8 @@ class Music(commands.Cog):
     await interaction.response.defer()
     vc: wavelink.Player = interaction.user.voice_client
     dropdig = MusicDropDown()
-    dropdig.search = search
     dropdig.vc = vc
+    dropdig.track = await wavelink.SoundCloudTrack.search(query=search, return_first=False)
    
   @commands.hybrid_command(name="play", description="Play a music from Youtube (Powered by WaveLink)")
   @app_commands.describe(search="Youtube search or URL")
