@@ -667,7 +667,7 @@ class Music(commands.Cog):
   async def playsc(self, interaction: discord.Interaction, search: str):
     await interaction.user.voice.channel.connect(cls=wavelink.Player)
     await interaction.response.defer()
-    vc: wavelink.Player = interaction.user.voice_client
+    vc: wavelink.Player = interaction.guild.voice_client
     dropdig = MusicDropDown()
     dropdig.vc = vc
     dropdig.track = await wavelink.SoundCloudTrack.search(query=search, return_first=False)
