@@ -929,4 +929,4 @@ async def node_connect(bot):
 
 
 
-bot.run(token, log_level=logging.DEBUG)
+bot.run(token)
