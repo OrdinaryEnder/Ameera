@@ -201,7 +201,7 @@ bot.help_command = MyHelpCommand()
 
 # music view
 class MusicDropDown(discord.ui.Select):
-    def __init__(self, search, track):
+    def __init__(self, track):
       ret = []
       for song in track[:5]:
           ret.append(discord.SelectOption(label=song.title, description=song.author, value=song.uri))
@@ -668,9 +668,9 @@ class Music(commands.Cog):
     await interaction.user.voice.channel.connect(cls=wavelink.Player)
     await interaction.response.defer()
     vc: wavelink.Player = interaction.guild.voice_client
-    dropdig = MusicDropDown()
-    dropdig.vc = vc
-    dropdig.track = await wavelink.SoundCloudTrack.search(query=search, return_first=False)
+    track = await wavelink.SoundCloudTrack.search(query=search, return_first=False)
+    dropdig = MusicDropDown(track)
+    dropdig.vc = vc 
     await interaction.followup.send(view=MusicSelectView())
     dropdig.message = await interaction.original_response()
    
