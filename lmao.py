@@ -230,7 +230,7 @@ class MusicDropDown(discord.ui.Select):
 
 class MusicSelectView(discord.ui.View):
     def __init__(self, track, timeout):
-        super().__init__(track, timeout=timeout)
+        super().__init__(timeout=timeout)
         self.add_item(MusicDropDown(track))
 
 
