@@ -214,6 +214,7 @@ class MusicDropDown(discord.ui.Select):
         # the user's favourite colour or choice. The self object refers to the
         # Select object, and the values attribute gets a list of the user's
         # selected options. We only want the first one.
+        print(self.values[0])
         search = (await node.get_tracks(wavelink.SoundCloudTrack, self.values[0]))
         if vc.queue.is_empty and not vc.is_playing():
          await vc.play(search)
