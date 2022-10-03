@@ -675,6 +675,7 @@ class Music(commands.Cog):
    track = await wavelink.SoundCloudTrack.search(query=search, return_first=False) 
    viewdig = MusicSelectView(track, vc, timeout=30)
    await interaction.followup.send(view=MusicSelectView(track, vc, timeout=30))
+   dropdig = MusicDropDown(track, vc)
    dropdig.message = await interaction.original_response()
    
   @commands.hybrid_command(name="play", description="Play a music from Youtube (Powered by WaveLink)")
