@@ -671,10 +671,10 @@ class Music(commands.Cog):
    else:
     vc: wavelink.Player = interaction.guild.voice_client
    await interaction.response.defer()
-   dropdig = MusicDropDown()
+   dropdig = MusicDropDown(track)
    track = await wavelink.SoundCloudTrack.search(query=search, return_first=False)
    dropdig.vc = vc
-   viewdig = MusicSelectView()
+   viewdig = MusicSelectView(timeout=30)
    viewdig.track = track
    await interaction.followup.send(view=MusicSelectView(timeout=30))
    dropdig.message = await interaction.original_response()
