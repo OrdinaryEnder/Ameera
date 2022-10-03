@@ -203,7 +203,6 @@ bot.help_command = MyHelpCommand()
 class MusicDropDown(discord.ui.Select):
     def __init__(self, track, vc):
       ret = []
-      self.vc = vc
       for song in track[:5]:
           ret.append(discord.SelectOption(label=song.title, description=song.author, value=song.uri))
 
@@ -217,9 +216,9 @@ class MusicDropDown(discord.ui.Select):
         # Select object, and the values attribute gets a list of the user's
         # selected options. We only want the first one.
         print(self.values[0])
-        search = (await vc.node.get_tracks(query=self.values[0], cls=wavelink.SoundCloudTrack))[0]
+        search = (await self.vc.node.get_tracks(query=self.values[0], cls=wavelink.SoundCloudTrack))[0]
         if vc.queue.is_empty and not vc.is_playing():
-         await vc.play(search)
+         await self.vc.play(search)
          embed = discord.Embed(title="Now playing", description=f"[{search.title}]({search.uri})\n \n Uploader: {search.author}")
          embed.set_thumbnail(url=search.thumbnail)
          embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
