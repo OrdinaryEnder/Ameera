@@ -665,16 +665,19 @@ class Music(commands.Cog):
   @app_commands.command(name="playsc", description="Play SoundCloud (Powered by WaveLink)")
   @app_commands.describe(search="Search for song")
   async def playsc(self, interaction: discord.Interaction, search: str):
+   if not interaction.guild.voice_client:
     await interaction.user.voice.channel.connect(cls=wavelink.Player)
     vc: wavelink.Player = interaction.guild.voice_client
-    await interaction.response.defer()
-    dropdig = MusicDropDown()
-    track = await wavelink.SoundCloudTrack.search(query=search, return_first=False)
-    dropdig.vc = vc
-    viewdig = MusicSelectView()
-    viewdig.track = track
-    await interaction.followup.send(view=MusicSelectView(timeout=30))
-    dropdig.message = await interaction.original_response()
+   else:
+    vc: wavelink.Player = interaction.guild.voice_client
+   await interaction.response.defer()
+   dropdig = MusicDropDown()
+   track = await wavelink.SoundCloudTrack.search(query=search, return_first=False)
+   dropdig.vc = vc
+   viewdig = MusicSelectView()
+   viewdig.track = track
+   await interaction.followup.send(view=MusicSelectView(timeout=30))
+   dropdig.message = await interaction.original_response()
    
   @commands.hybrid_command(name="play", description="Play a music from Youtube (Powered by WaveLink)")
   @app_commands.describe(search="Youtube search or URL")
