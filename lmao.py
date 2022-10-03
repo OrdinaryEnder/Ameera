@@ -210,12 +210,7 @@ class MusicDropDown(discord.ui.Select):
 
       super().__init__(placeholder='Choose song ...', min_values=1, max_values=1, options=options)
     async def callback(self, interaction: discord.Interaction):
-        if not interaction.guild.voice_client:
-         await interaction.user.voice.channel.connect(cls=wavelink.Player)
-         vc: wavelink.Player = interaction.guild.voice_client
-        else:
-         vc: wavelink.Player = interaction.guild.voice_client
- 
+
         # Use the interaction object to send a response message containing
         # the user's favourite colour or choice. The self object refers to the
         # Select object, and the values attribute gets a list of the user's
@@ -673,8 +668,7 @@ class Music(commands.Cog):
   @app_commands.describe(search="Search for song")
   async def playsc(self, interaction: discord.Interaction, search: str):
    if not interaction.guild.voice_client:
-    await interaction.user.voice.channel.connect(cls=wavelink.Player)
-    vc: wavelink.Player = interaction.guild.voice_client
+    vc: wavelink.Player = await interaction.user.voice.channel.connect(cls=wavelink.Player)
    else:
     vc: wavelink.Player = interaction.guild.voice_client
    await interaction.response.defer()
