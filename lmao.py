@@ -229,9 +229,9 @@ class MusicDropDown(discord.ui.Select):
 
 
 class MusicSelectView(discord.ui.View):
-    def __init__(self, timeout):
-        super().__init__(timeout=timeout)
-        self.add_item(MusicDropDown(self.track))
+    def __init__(self, track, timeout):
+        super().__init__(track, timeout=timeout)
+        self.add_item(MusicDropDown(track))
 
 
 
@@ -674,9 +674,8 @@ class Music(commands.Cog):
    track = await wavelink.SoundCloudTrack.search(query=search, return_first=False)
    dropdig = MusicDropDown(track)
    dropdig.vc = vc
-   viewdig = MusicSelectView(timeout=30)
-   viewdig.track = track
-   await interaction.followup.send(view=MusicSelectView(timeout=30))
+   viewdig = MusicSelectView(track, timeout=30)
+   await interaction.followup.send(view=MusicSelectView(track, timeout=30))
    dropdig.message = await interaction.original_response()
    
   @commands.hybrid_command(name="play", description="Play a music from Youtube (Powered by WaveLink)")
