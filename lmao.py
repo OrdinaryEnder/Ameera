@@ -666,10 +666,10 @@ class Music(commands.Cog):
   @app_commands.describe(search="Search for song")
   async def playsc(self, interaction: discord.Interaction, search: str):
     await interaction.user.voice.channel.connect(cls=wavelink.Player)
-    await interaction.response.defer()
     vc: wavelink.Player = interaction.guild.voice_client
-    track = await wavelink.SoundCloudTrack.search(query=search, return_first=False)
+    await interaction.response.defer()
     dropdig = MusicDropDown()
+    track = await wavelink.SoundCloudTrack.search(query=search, return_first=False)
     dropdig.vc = vc
     viewdig = MusicSelectView()
     viewdig.track = track
