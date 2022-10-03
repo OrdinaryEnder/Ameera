@@ -216,7 +216,7 @@ class MusicDropDown(discord.ui.Select):
         # Select object, and the values attribute gets a list of the user's
         # selected options. We only want the first one.
         print(self.values[0])
-        search = await node.get_tracks(cls=wavelink.SoundCloudTrack, query=self.values[0])
+        search = (await vc.node.get_tracks(query=self.values[0], cls=wavelink.SoundCloudTrack))[0]
         if vc.queue.is_empty and not vc.is_playing():
          await vc.play(search)
          embed = discord.Embed(title="Now playing", description=f"[{search.title}]({search.uri})\n \n Uploader: {search.author}")
