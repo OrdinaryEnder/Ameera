@@ -201,7 +201,7 @@ bot.help_command = MyHelpCommand()
 
 # music view
 class MusicDropDown(discord.ui.Select):
-    def __init__(self, track):
+    def __init__(self, track, vc):
       ret = []
       for song in track[:5]:
           ret.append(discord.SelectOption(label=song.title, description=song.author, value=song.uri))
@@ -230,9 +230,9 @@ class MusicDropDown(discord.ui.Select):
 
 
 class MusicSelectView(discord.ui.View):
-    def __init__(self, track, timeout):
+    def __init__(self, track, vc, timeout):
         super().__init__(timeout=timeout)
-        self.add_item(MusicDropDown(track))
+        self.add_item(MusicDropDown(track, vc))
 
 
 
@@ -672,11 +672,9 @@ class Music(commands.Cog):
    else:
     vc: wavelink.Player = interaction.guild.voice_client
    await interaction.response.defer()
-   track = await wavelink.SoundCloudTrack.search(query=search, return_first=False)
-   dropdig = MusicDropDown(track)
-   dropdig.vc = vc
-   viewdig = MusicSelectView(track, timeout=30)
-   await interaction.followup.send(view=MusicSelectView(track, timeout=30))
+   track = await wavelink.SoundCloudTrack.search(query=search, return_first=False) 
+   viewdig = MusicSelectView(track, vc, timeout=30)
+   await interaction.followup.send(view=MusicSelectView(track, vc, timeout=30))
    dropdig.message = await interaction.original_response()
    
   @commands.hybrid_command(name="play", description="Play a music from Youtube (Powered by WaveLink)")
