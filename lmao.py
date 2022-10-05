@@ -104,7 +104,7 @@ async def on_wavelink_node_ready(node: wavelink.Node):
     print(Fore.GREEN + f"Node {node.identifier} is ready!")
 
 @bot.event
-async def on_wavelink_track_end(interaction: discord.Interaction, player: wavelink.Player, track: wavelink.Track, reason):
+async def on_wavelink_track_end(interaction: discord.Interaction, player: wavelink.Player, track: wavelink.Track):
     ctx = await self.bot.get_context(interaction, cls=commands.Context)
     vc: player = ctx.voice_client
 
