@@ -216,7 +216,7 @@ class MusicDropDown(discord.ui.Select):
         # Select object, and the values attribute gets a list of the user's
         # selected options. We only want the first one.
         print(self.values[0])
-        search = (await self.vc.node.get_tracks(query=self.values[0], cls=wavelink.SoundCloudTrack))[0]
+        search = (await susnode.get_tracks(query=self.values[0], cls=wavelink.SoundCloudTrack))[0]
         if vc.queue.is_empty and not vc.is_playing():
          await self.vc.play(search)
          embed = discord.Embed(title="Now playing", description=f"[{search.title}]({search.uri})\n \n Uploader: {search.author}")
@@ -929,7 +929,8 @@ token = os.getenv("TOKEN")
 
 
 async def node_connect(bot):
-  await wavelink.NodePool.create_node(bot=bot, host="lavalink.oops.wtf", port=443, password="www.freelavalink.ga", https=True)
+  global susnode
+  susnode = await wavelink.NodePool.create_node(bot=bot, host="lavalink.oops.wtf", port=443, password="www.freelavalink.ga", https=True)
 
 
 
