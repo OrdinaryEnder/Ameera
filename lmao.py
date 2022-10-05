@@ -203,6 +203,7 @@ bot.help_command = MyHelpCommand()
 class MusicDropDown(discord.ui.Select):
     def __init__(self, track, vc):
       ret = []
+      self.vc = vc
       for song in track[:5]:
           ret.append(discord.SelectOption(label=song.title, description=song.author, value=song.uri))
 
