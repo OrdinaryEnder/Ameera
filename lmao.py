@@ -217,14 +217,14 @@ class MusicDropDown(discord.ui.Select):
         # selected options. We only want the first one.
         print(self.values[0])
         search = (await susnode.get_tracks(query=self.values[0], cls=wavelink.SoundCloudTrack))[0]
-        if vc.queue.is_empty and not vc.is_playing():
+        if self.vc.queue.is_empty and not self.vc.is_playing():
          await self.vc.play(search)
          embed = discord.Embed(title="Now playing", description=f"[{search.title}]({search.uri})\n \n Uploader: {search.author}")
          embed.set_thumbnail(url=search.thumbnail)
          embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
          await self.message.edit(embed=embed, view=None)
         else:
-         await vc.queue.put_wait(search)
+         await self.vc.queue.put_wait(search)
          await self.message.edit(f"Added {search.title} to the queue", view=None)
         vc.ctx = ctx
         setattr(vc, "loop", False)
