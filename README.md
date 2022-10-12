@@ -22,6 +22,7 @@ bash termuxsetup.sh
 ### Online Hosting
 You can host this bot to make it stay online on these online hostings.
 
+**PAID**
 <a href="https://heroku.com/deploy?template=https://github.com/zairullahdev/Alexandra"><img src="https://www.herokucdn.com/deploy/button.svg" alt="Run your bot in Heroku"></a>
 
 [![Run on Repl.it](https://repl.it/badge/github/zairullahdev/Alexandra)](https://repl.it/github/zairullahdev/Alexandra)
@@ -57,5 +58,5 @@ OrdinaryEnder - Idea
 # To-do List
 
 
-**Automoderator**
+**Completing Music Cogs into slash**
 

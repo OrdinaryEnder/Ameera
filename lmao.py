@@ -1,3 +1,9 @@
+from hypercorn.config import Config
+from hypercorn.asyncio import serve
+
+from web import app
+
+
 from StringProgressBar import progressBar
 from typing import List 
 import platform
@@ -933,6 +939,8 @@ async def node_connect(bot):
   global susnode
   susnode = await wavelink.NodePool.create_node(bot=bot, host="lavalink.oops.wtf", port=443, password="www.freelavalink.ga", https=True)
 
-
+webconf = Config()
+webconf.bind = [f"127.0.0.1:{os.getenv('PORT')"]
+asyncio.run(serve(app, webconf))
 
 bot.run(token)
