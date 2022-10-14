@@ -1,8 +1,3 @@
-from hypercorn.config import Config
-from hypercorn.asyncio import serve
-
-from web import app
-
 
 from StringProgressBar import progressBar
 from typing import List 
@@ -211,7 +206,7 @@ class MusicDropDown(discord.ui.Select):
       ret = []
       self.vc = vc
       for song in track[:5]:
-          ret.append(discord.SelectOption(label=song.title, description=song.author, value=song.uri))
+          ret.append(discord.SelectOption(label=song.title[:100], description=song.author, value=song.uri))
 
           options = ret
 
@@ -227,7 +222,6 @@ class MusicDropDown(discord.ui.Select):
         if self.vc.queue.is_empty and not self.vc.is_playing():
          await self.vc.play(search)
          embed = discord.Embed(title="Now playing", description=f"[{search.title}]({search.uri})\n \n Uploader: {search.author}")
-         embed.set_thumbnail(url=search.thumbnail)
          embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
          await self.message.edit(embed=embed, view=None)
         else:
@@ -241,6 +235,48 @@ class MusicSelectView(discord.ui.View):
     def __init__(self, track, vc, timeout):
         super().__init__(timeout=timeout)
         self.add_item(MusicDropDown(track, vc))
+
+
+
+# music view
+class YTMusicDropDown(discord.ui.Select):
+    def __init__(self, track, vc):
+      ret = []
+      self.vc = vc
+      for song in track[:5]:
+          ret.append(discord.SelectOption(label=song.title[:100], description=song.author, value=song.uri))
+
+          options = ret
+
+      super().__init__(placeholder='Choose song ...', min_values=1, max_values=1, options=options)
+    async def callback(self, interaction: discord.Interaction):
+
+        # Use the interaction object to send a response message containing
+        # the user's favourite colour or choice. The self object refers to the
+        # Select object, and the values attribute gets a list of the user's
+        # selected options. We only want the first one.
+        print(self.values[0])
+        search = (await susnode.get_tracks(query=self.values[0], cls=wavelink.YoutubeMusicTrack))[0]
+        if self.vc.queue.is_empty and not self.vc.is_playing():
+         await self.vc.play(search)
+         embed = discord.Embed(title="Now playing", description=f"[{search.title}]({search.uri})\n \n Uploader: {search.author}")
+         embed.set_thumbnail(url=search.thumbnail)
+         embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
+         await self.message.edit(embed=embed, view=None)
+        else:
+         await self.vc.queue.put_wait(search)
+         await self.message.edit(f"Added {search.title} to the queue", view=None)
+        vc.ctx = ctx
+        setattr(vc, "loop", False)
+
+
+class YTMusicSelectView(discord.ui.View):
+    def __init__(self, track, vc, timeout):
+        super().__init__(timeout=timeout)
+        self.add_item(YTMusicDropDown(track, vc))
+
+
+
 
 
 
@@ -678,24 +714,29 @@ class Music(commands.Cog):
     vc: wavelink.Player = await interaction.user.voice.channel.connect(cls=wavelink.Player)
    else:
     vc: wavelink.Player = interaction.guild.voice_client
+   
    await interaction.response.defer()
-   track = await wavelink.SoundCloudTrack.search(query=search, return_first=False) 
+   track = await asyncio.wait_for(wavelink.SoundCloudTrack.search(query=search, return_first=False), timeout=None)
    viewdig = MusicSelectView(track, vc, timeout=30)
    await interaction.followup.send(view=MusicSelectView(track, vc, timeout=30))
    dropdig = MusicDropDown(track, vc)
    dropdig.message = await interaction.original_response()
+  
+  @app_commands.command(name="play", description="Play Youtube (Powered by WaveLink)")
+  @app_commands.describe(search="Search for song")
+  async def playsc(self, interaction: discord.Interaction, search: str):
+   if not interaction.guild.voice_client:
+    vc: wavelink.Player = await interaction.user.voice.channel.connect(cls=wavelink.Player)
+   else:
+    vc: wavelink.Player = interaction.guild.voice_client
+   await interaction.response.defer()
+   track = await await asyncio.wait_for(wavelink.YoutubeMusicTrack.search(query=search, return_first=False))
+   viewdig = YTMusicSelectView(track, vc, timeout=30)
+   await interaction.followup.send(view=MusicSelectView(track, vc, timeout=30))
+   dropdig = YTMusicDropDown(track, vc)
+   dropdig.message = await interaction.original_response()
    
-  @commands.hybrid_command(name="play", description="Play a music from Youtube (Powered by WaveLink)")
-  @app_commands.describe(search="Youtube search or URL")
-  async def play(self, ctx, *, search: wavelink.YouTubeTrack):
-    await ctx.defer()
-    if not ctx.voice_client:
-      vc: wavelink.Player = await ctx.author.voice.channel.connect(cls=wavelink.Player)
-    elif not getattr(ctx.author.voice, "channel", None):
-      return await ctx.send(f"Hey, {ctx.message.author.mention}You are not connected to a voice channel")
-    else:
-      vc: wavelink.Player = ctx.voice_client
-    
+
   @commands.hybrid_command(name="pause", description="Pause song")
   async def pause(self, ctx):
     if not ctx.voice_client:
@@ -939,8 +980,9 @@ async def node_connect(bot):
   global susnode
   susnode = await wavelink.NodePool.create_node(bot=bot, host="lavalink.oops.wtf", port=443, password="www.freelavalink.ga", https=True)
 
-webconf = Config()
-webconf.bind = [f"127.0.0.1:{os.getenv('PORT')}"]
-asyncio.run(serve(app, webconf))
+async def main():
+        async with bot:
+                    await bot.start(token)
 
-bot.run(token)
+
+asyncio.run(main())

@@ -1,3 +1,4 @@
+quart
 hypercorn
 brainfuck-interpreter
 git+https://github.com/Rapptz/discord.py
