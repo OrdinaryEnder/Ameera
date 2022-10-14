@@ -730,7 +730,7 @@ class Music(commands.Cog):
    else:
     vc: wavelink.Player = interaction.guild.voice_client
    await interaction.response.defer()
-   track = await await asyncio.wait_for(wavelink.YoutubeMusicTrack.search(query=search, return_first=False))
+   track = await asyncio.wait_for(wavelink.YoutubeMusicTrack.search(query=search, return_first=False))
    viewdig = YTMusicSelectView(track, vc, timeout=30)
    await interaction.followup.send(view=MusicSelectView(track, vc, timeout=30))
    dropdig = YTMusicDropDown(track, vc)
