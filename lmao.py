@@ -715,8 +715,8 @@ class Music(commands.Cog):
    else:
     vc: wavelink.Player = interaction.guild.voice_client
    
-   await interaction.response.defer()
    track = await wavelink.SoundCloudTrack.search(query=search, return_first=False)
+   await interaction.response.defer()
    viewdig = MusicSelectView(track, vc, timeout=30)
    await interaction.followup.send(view=MusicSelectView(track, vc, timeout=30))
    dropdig = MusicDropDown(track, vc)
@@ -729,8 +729,8 @@ class Music(commands.Cog):
     vc: wavelink.Player = await interaction.user.voice.channel.connect(cls=wavelink.Player)
    else:
     vc: wavelink.Player = interaction.guild.voice_client
-   await interaction.response.defer()
    track = await wavelink.YoutubeMusicTrack.search(query=search, return_first=False)
+   await interaction.response.defer()
    viewdig = YTMusicSelectView(track, vc, timeout=30)
    await interaction.followup.send(view=MusicSelectView(track, vc, timeout=30))
    dropdig = YTMusicDropDown(track, vc)
