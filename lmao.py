@@ -292,7 +292,7 @@ class YTMusicDropDown(discord.ui.Select):
         # Select object, and the values attribute gets a list of the user's
         # selected options. We only want the first one.
         print(self.values[0])
-        search = (await susnode.get_tracks(query=self.values[0], cls=wavelink.YoutubeMusicTrack))[0]
+        search = (await susnode.get_tracks(query=self.values[0], cls=wavelink.YouTubeTrack))[0]
         if self.vc.queue.is_empty and not self.vc.is_playing():
             await self.vc.play(search)
             embed = discord.Embed(
@@ -767,7 +767,7 @@ class Music(commands.Cog):
         # detect if user put url instead of title
         await interaction.response.defer(thinking=True)
         if re.fullmatch("http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+", search):
-            scsong = (await susnode.get_tracks(query=search, cls=wavelink.YoutubeMusicTrack))[0]
+            scsong = (await susnode.get_tracks(query=search, cls=wavelink.YouTubeTrack))[0]
             embed = discord.Embed(
                 title="Now playing", description=f"[{scsong.title}]({scsong.uri})\n \n Uploader: {scsong.author}")
             embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
@@ -775,7 +775,7 @@ class Music(commands.Cog):
             await vc.play(scsong)
             await interaction.followup.send(embed=embed)
         else:
-            track = await wavelink.YoutubeMusicTrack.search(query=search, return_first=False)
+            track = await wavelink.YouTubeTrack.search(query=search, return_first=False)
             print(track)
             await interaction.followup.send(view=YTMusicSelectView(track, vc, timeout=30), wait=True)
             global ayo
