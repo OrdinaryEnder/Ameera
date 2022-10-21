@@ -1,4 +1,3 @@
-
 from StringProgressBar import progressBar
 from typing import List 
 import platform
@@ -106,10 +105,10 @@ async def on_wavelink_node_ready(node: wavelink.Node):
 
 @bot.event
 async def on_wavelink_track_end(player: wavelink.Player, track: wavelink.Track, reason):
-    ctx = await self.bot.get_context(discord.Interaction, cls=commands.Context)
+    ctx = await bot.get_context(ayo, cls=commands.Context)
     vc: player = ctx.voice_client
 
-    if vc.loop:
+    if vc.loop is True:
       return await vc.play(track)
 
     try:
@@ -206,11 +205,10 @@ class MusicDropDown(discord.ui.Select):
       ret = []
       self.vc = vc
       for song in track[:5]:
-          ret.append(discord.SelectOption(label=song.title[:100], description=song.author, value=song.uri))
+          ret.append(discord.SelectOption(label=song.title, description=song.author, value=song.uri))
 
-          options = ret
 
-      super().__init__(placeholder='Choose song ...', min_values=1, max_values=1, options=options)
+      super().__init__(placeholder='Choose song ...', min_values=1, max_values=1, options=ret)
     async def callback(self, interaction: discord.Interaction):
 
         # Use the interaction object to send a response message containing
@@ -223,12 +221,11 @@ class MusicDropDown(discord.ui.Select):
          await self.vc.play(search)
          embed = discord.Embed(title="Now playing", description=f"[{search.title}]({search.uri})\n \n Uploader: {search.author}")
          embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
-         await self.message.edit(embed=embed, view=None)
+         await ayo.edit(embed=embed, view=None)
         else:
          await self.vc.queue.put_wait(search)
-         await self.message.edit(f"Added {search.title} to the queue", view=None)
-        vc.ctx = ctx
-        setattr(vc, "loop", False)
+         await ayo.edit(content=f"Added {search.title} to the queue", view=None)
+        setattr(self.vc, "loop", False)
 
 
 class MusicSelectView(discord.ui.View):
@@ -237,18 +234,16 @@ class MusicSelectView(discord.ui.View):
         self.add_item(MusicDropDown(track, vc))
 
 
-
 # music view
 class YTMusicDropDown(discord.ui.Select):
     def __init__(self, track, vc):
       ret = []
       self.vc = vc
       for song in track[:5]:
-          ret.append(discord.SelectOption(label=song.title[:100], description=song.author, value=song.uri))
+          ret.append(discord.SelectOption(label=song.title, description=song.author, value=song.uri))
 
-          options = ret
 
-      super().__init__(placeholder='Choose song ...', min_values=1, max_values=1, options=options)
+      super().__init__(placeholder='Choose song ...', min_values=1, max_values=1, options=ret)
     async def callback(self, interaction: discord.Interaction):
 
         # Use the interaction object to send a response message containing
@@ -262,12 +257,11 @@ class YTMusicDropDown(discord.ui.Select):
          embed = discord.Embed(title="Now playing", description=f"[{search.title}]({search.uri})\n \n Uploader: {search.author}")
          embed.set_thumbnail(url=search.thumbnail)
          embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
-         await self.message.edit(embed=embed, view=None)
+         await ayo.edit(embed=embed, view=None)
         else:
          await self.vc.queue.put_wait(search)
-         await self.message.edit(f"Added {search.title} to the queue", view=None)
-        vc.ctx = ctx
-        setattr(vc, "loop", False)
+         await ayo.edit(content=f"Added {search.title} to the queue", view=None)
+        setattr(self.vc, "loop", False)
 
 
 class YTMusicSelectView(discord.ui.View):
@@ -707,6 +701,30 @@ class Music(commands.Cog):
       await interaction.followup.send(f"Connected to voice channel: '{channel}'")
 
 
+  @app_commands.command(name="play", description="Play Youtube (Powered by WaveLink)")
+  @app_commands.describe(search="Search for song")
+  async def play(self, interaction: discord.Interaction, search: str):
+   if not interaction.guild.voice_client:
+    vc: wavelink.Player = await interaction.user.voice.channel.connect(cls=wavelink.Player)
+   else:
+    vc: wavelink.Player = interaction.guild.voice_client
+   # detect if user put url instead of title
+   await interaction.response.defer(thinking=True)
+   if re.fullmatch("http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+", search):
+       scsong = (await susnode.get_tracks(query=search, cls=wavelink.YoutubeMusicTrack))[0]
+       embed = discord.Embed(title="Now playing", description=f"[{scsong.title}]({scsong.uri})\n \n Uploader: {scsong.author}")
+       embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
+       print(scsong)
+       await vc.play(scsong)
+       await interaction.followup.send(embed=embed)
+   else:
+       track = await wavelink.YoutubeMusicTrack.search(query=search, return_first=False)
+       print(track)
+       await interaction.followup.send(view=YTMusicSelectView(track, vc, timeout=30), wait=True)
+       global ayo
+       ayo = await interaction.original_response()
+
+
   @app_commands.command(name="playsc", description="Play SoundCloud (Powered by WaveLink)")
   @app_commands.describe(search="Search for song")
   async def playsc(self, interaction: discord.Interaction, search: str):
@@ -714,53 +732,46 @@ class Music(commands.Cog):
     vc: wavelink.Player = await interaction.user.voice.channel.connect(cls=wavelink.Player)
    else:
     vc: wavelink.Player = interaction.guild.voice_client
-   
-   track = await wavelink.SoundCloudTrack.search(query=search, return_first=False)
-   await interaction.response.defer()
-   viewdig = MusicSelectView(track, vc, timeout=30)
-   await interaction.followup.send(view=MusicSelectView(track, vc, timeout=30))
-   dropdig = MusicDropDown(track, vc)
-   dropdig.message = await interaction.original_response()
-  
-  @app_commands.command(name="play", description="Play Youtube (Powered by WaveLink)")
-  @app_commands.describe(search="Search for song")
-  async def playsc(self, interaction: discord.Interaction, search: str):
-   if not interaction.guild.voice_client:
-    vc: wavelink.Player = await interaction.user.voice.channel.connect(cls=wavelink.Player)
+   # detect if user put url instead of title
+   await interaction.response.defer(thinking=True)
+   if re.fullmatch("http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+", search):
+       scsong = (await susnode.get_tracks(query=search, cls=wavelink.SoundCloudTrack))[0]
+       embed = discord.Embed(title="Now playing", description=f"[{scsong.title}]({scsong.uri})\n \n Uploader: {scsong.author}")
+       embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
+       print(scsong)
+       await vc.play(scsong)
+       await interaction.followup.send(embed=embed)
    else:
-    vc: wavelink.Player = interaction.guild.voice_client
-   track = await wavelink.YoutubeMusicTrack.search(query=search, return_first=False)
-   await interaction.response.defer()
-   viewdig = YTMusicSelectView(track, vc, timeout=30)
-   await interaction.followup.send(view=MusicSelectView(track, vc, timeout=30))
-   dropdig = YTMusicDropDown(track, vc)
-   dropdig.message = await interaction.original_response()
-   
+       track = await wavelink.SoundCloudTrack.search(query=search, return_first=False)
+       await interaction.followup.send(view=MusicSelectView(track, vc, timeout=30), wait=True)
+       global ayo
+       ayo = await interaction.original_response()
 
-  @commands.hybrid_command(name="pause", description="Pause song")
-  async def pause(self, ctx):
-    if not ctx.voice_client:
-      return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
+
+  @app_commands.command(name="pause", description="Pause song")
+  async def pause(self, interaction: discord.Interaction):
+    if not interaction.guild.voice_client:
+      return await interaction.response.send_message(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
     elif not getattr(ctx.author.voice, "channel", None):
-      return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
+      return await interaction.response.send_message(f"{ctx.message.author.mention} first you need to join a voice channel")
     else:
-      vc: wavelink.Player = ctx.voice_client
+      vc: wavelink.Player = interaction.guild.voice_client
 
     await vc.pause()
-    await ctx.send(f"Music paused by {ctx.message.author.mention}")
+    await interaction.response.send_message(f"Music paused by {ctx.message.author.mention}")
 
 
-  @commands.hybrid_command(name="resume", description="Resume playing")
-  async def resume(self, ctx):
-    if not ctx.voice_client:
-      return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
+  @app_commands.command(name="resume", description="Resume playing")
+  async def resume(self, interaction: discord.Interaction):
+    if not interaction.guild.voice_client:
+      return await interaction.response.send_message(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
     elif not getattr(ctx.author.voice, "channel", None):
-      return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
+      return await interaction.response.send_message(f"{ctx.message.author.mention} first you need to join a voice channel")
     else:
-      vc: wavelink.Player = ctx.voice_client
+      vc: wavelink.Player = interaction.guild.voice_client
 
     await vc.resume()
-    await ctx.send(f"Music is back! by {ctx.message.author.mention}")
+    await interaction.response.send_message(f"Music is resumed by  interaction.user.mention")
 
 
   @commands.hybrid_command(name="stop", description="Stop Player")
@@ -773,45 +784,7 @@ class Music(commands.Cog):
       vc: wavelink.Player = ctx.voice_client
 
     await vc.stop()
-    await ctx.send(f"{ctx.message.author.mention} stopped the music.")
-  @commands.hybrid_command(name="cleareffect", description="Clear any effect")
-  async def effclean(self, ctx):
-    if not ctx.voice_client:
-      return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")
-    elif not getattr(ctx.author.voice, "channel", None):
-      return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
-    else:
-      vc: wavelink.Player = ctx.voice_client
-      await vc.set_filter(wavelink.Filter(equalizer=wavelink.Equalizer.flat()))
-      message = await ctx.send("Clearing")
-      await asyncio.sleep(5)
-      await message.edit(content="Cleared The Filter")
-
-  @commands.hybrid_command(name="bassboost", description="Bass boost goes brr")
-  async def bassboost(self, ctx):
-    if not ctx.voice_client:
-      return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")
-    elif not getattr(ctx.author.voice, "channel", None):
-      return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
-    else:
-      vc: wavelink.Player = ctx.voice_client
-      await vc.set_filter(wavelink.Filter(equalizer=wavelink.Equalizer.boost()))
-      message = await ctx.send("Applying...")
-      await asyncio.sleep(5)
-      await message.edit(content="Applied")
-
-  @commands.hybrid_command(name="nightcore", description="Apply NightCore") 
-  async def nightcore(self, ctx):
-    if not ctx.voice_client:
-      return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")
-    elif not getattr(ctx.author.voice, "channel", None):
-      return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
-    else:
-      vc: wavelink.Player = ctx.voice_client
-
-      await vc.set_filter(wavelink.Filter(timescale=wavelink.Timescale(speed=1.05, pitch=1.2, rate=1.0)))
-      await ctx.send("Applied Nightcore (Require 5 sec)")
-
+    await interaction.response.send_message(f"{interaction.user.mention} stopped the music.")
 
   @commands.hybrid_command(name="disconnect", description="Disconnect the Bot from VC")
   async def disconnect(self, ctx):
@@ -870,37 +843,37 @@ class Music(commands.Cog):
     return await ctx.send(embed=em)
 
 
-  @commands.hybrid_command(name="volume", description="Volume")
+  @app_commands.command(name="volume", description="Volume")
   @app_commands.describe(volume="Must be 1 to 300")
-  async def volume(self, ctx, volume: int):
-    if not ctx.voice_client:
-      return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
-    elif not getattr(ctx.author.voice, "channel", None):
-      return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
+  async def volume(self, interaction: discord.Interaction, volume: int):
+    if not interaction.guild.voice_client:
+      return await interaction.response.send_message(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
+    elif not getattr(interaction.user.voice, "channel", None):
+      return await interaction.response.send_message(f"{ctx.message.author.mention} first you need to join a voice channel")
     else:
-      vc: wavelink.Player = ctx.voice_client
+      vc: wavelink.Player = interaction.guild.voice_client
 
     if volume > 300:
       await vc.set_volume(volume=300)
       embed = discord.Embed(title=" ", description=f"Volume has been set to {vc.volume}")
-      return await ctx.send(embed=embed)
+      return await interaction.response.send_message(embed=embed)
       
     await vc.set_volume(volume=volume)
     embed = discord.Embed(title=" ", description=f"Volume has been set to {vc.volume}")
-    return await ctx.send(embed=embed)
+    return await interaction.response.send_message(embed=embed)
 
 
-  @commands.hybrid_command(name="nowplaying", description="Show what playing now", aliases=['np'])
-  async def playing(self, ctx):
-    if not ctx.voice_client:
-      return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
-    elif not getattr(ctx.author.voice, "channel", None):
-      return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
+  @app_commands.command(name="nowplaying", description="Show what playing")
+  async def playing(self, interaction: discord.Interaction):
+    if not interaction.guild.voice_client:
+      return await interaction.response.send_message(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
+    elif not getattr(interaction.user.voice, "channel", None):
+      return await interaction.response.send_message(f"{ctx.message.author.mention} first you need to join a voice channel")
     else:
-      vc: wavelink.Player = ctx.voice_client
+      vc: wavelink.Player = interaction.guild.voice_client
     
     if not vc.is_playing():
-      return await ctx.send("Nothing is playing")
+      return await interaction.response.send_message("Nothing is playing")
 
     em = discord.Embed(title=f" ", description=f"Playing \n **[{vc.track}]({vc.track.uri})** \n Artist: {vc.track.author}")
     em.set_author(name="Now Playing♪", icon_url=f"{bot.user.avatar.url}")
@@ -912,65 +885,66 @@ class Music(commands.Cog):
     em.add_field(name="Duration", value=f"`{datetime.timedelta(seconds=vc.track.length)}`") 
     em.add_field(name="ㅤ", value="ㅤ")
     em.add_field(name="ㅤ", value="ㅤ")
-    em.set_footer(icon_url=f"{ctx.author.avatar.url}", text=f"Requested by {ctx.author}")
-    return await ctx.send(embed=em)
+    em.set_footer(icon_url=f"{interaction.user.avatar.url}", text=f"Requested by {interaction.user}")
+    return await interaction.response.send_message(embed=em)
 
 
 
-  @commands.hybrid_command(name="skip", description="Skip a song")
-  async def skip(self, ctx):
-    if not ctx.voice_client:
-      return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
-    elif not getattr(ctx.author.voice, "channel", None):
-      return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
-    else:
-      vc: wavelink.Player = ctx.voice_client
+  @app_commands.command(name="skip", description="Skip a song")
+  async def skip(self, interaction: discord.Interaction):
+     if interaction.guild.voice_client is None:
+      return await interaction.response.send_message(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
+     elif not getattr(interaction.user.voice, "channel", None):
+      return await interaction.response.send_message(f"{ctx.message.author.mention} first you need to join a voice channel")
+     else:
+      vc: wavelink.Player = interaction.guild.voice_client
 
     
-    embed = discord.Embed(title=" ", description=f"[{vc.track}]({vc.track.uri}) has been skipped", color=discord.Color.from_rgb(0, 255, 0))
-    await ctx.send(embed=embed)
-    await vc.stop()
+     embed = discord.Embed(title=" ", description=f"[{vc.track}]({vc.track.uri}) has been skipped", color=discord.Color.from_rgb(0, 255, 0))
+     await interaction.response.send_message(embed=embed)
+     await vc.stop()
 
 
-  @commands.hybrid_command(name="qremove", description="Remove amount of queue")
-  async def qremove(self, ctx, index: int):
-    if not ctx.voice_client:
-      return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
-    elif not getattr(ctx.author.voice, "channel", None):
-      return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
+  @app_commands.command(name="qremove", description="Remove amount of queue")
+  async def qremove(self, interaction: discord.Interaction, index: int):
+    if not interaction.guild.voice_client:
+      return await interaction.response.send_message(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
+    elif not getattr(interaction.user.voice, "channel", None):
+      return await interaction.response.send_message(f"{ctx.message.author.mention} first you need to join a voice channel")
     else:
       vc: wavelink.Player = ctx.voice_client
 
     if index > len(vc.queue) or index < 1:
-      return await ctx.send(f"Index must be between 1 and {len(vc.queue)}")
+      return await interaction.response.send_message(f"Index must be between 1 and {len(vc.queue)}")
 
     removed = vc.queue.pop(index - 1)
 
-    await ctx.send(f"{ctx.message.author.mention} removed `{removed.title}` from the queue")
+    await interaction.response.send_message(f"{ctx.message.author.mention} removed `{removed.title}` from the queue")
 
-  @commands.hybrid_command(name="qclean", description="Clear queue")
-  async def qclear(self, ctx):
-    if not ctx.voice_client:
-      return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
-    elif not getattr(ctx.author.voice, "channel", None):
-      return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
+  @app_commands.command(name="qclean", description="Clear queue")
+  async def qclear(self, interaction: discord.Interaction):
+    if not interaction.guild.voice_client:
+      return await interaction.response.send_message(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")   
+    elif not getattr(interaction.user.voice, "channel", None):
+      return await interaction.response.send_message(f"{ctx.message.author.mention} first you need to join a voice channel")
     else:
-      vc: wavelink.Player = ctx.voice_client
+      vc: wavelink.Player = interaction.guild.voice_client
 
       vc.queue.clear()
-    return await ctx.send(f"{ctx.message.author.mention} cleared the queue.")
+    return await interaction.response.send_message(f"{ctx.message.author.mention} cleared the queue.")
    
-  @commands.hybrid_command(name='lyrics', description='Genius Lyrics')
+  @app_commands.command(name='lyrics', description='Genius Lyrics')
   @app_commands.describe(artist="Artist of song", title="Song")
-  async def lyrics(self, ctx, artist, *, title):
+  async def lyrics(self, interaction: discord.Interaction, artist: str, title: str):
+     await interaction.response.defer()
      try:
       song = genius.search_song(title, artist)
       lyric = song.lyrics
       print(lyric[:lyric.rfind("Embed")])
       embedgenius = discord.Embed(title=f"{song.title} by {song.artist}", description=f"\n{lyric[:lyric.rfind('Embed')]}")
-      await ctx.send(embed=embedgenius)
+      await interaction.followup.send(embed=embedgenius)
      except Exception as e:
-      await ctx.send(f"Something wrong, Report this to !        from ender import bot#2105\n Logs: \n ```py\n{e}\n```")
+      await interaction.followup.send(f"Something wrong, Report this to !        from ender import bot#2105\n Logs: \n ```py\n{e}\n```")
 
 token = os.getenv("TOKEN")
 
@@ -980,9 +954,5 @@ async def node_connect(bot):
   global susnode
   susnode = await wavelink.NodePool.create_node(bot=bot, host="lavalink.oops.wtf", port=443, password="www.freelavalink.ga", https=True)
 
-async def main():
-        async with bot:
-                    await bot.start(token)
+bot.run(token)
 
-
-asyncio.run(main())
