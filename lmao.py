@@ -771,6 +771,7 @@ class Music(commands.Cog):
             embed = discord.Embed(
                 title="Now playing", description=f"[{scsong.title}]({scsong.uri})\n \n Uploader: {scsong.author}")
             embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
+            embed.set_thumbnail(url=scsong.thumbnail)
             print(scsong)
             await vc.play(scsong)
             await interaction.followup.send(embed=embed)
@@ -786,6 +787,8 @@ class Music(commands.Cog):
     async def playsc(self, interaction: discord.Interaction, search: str):
         if not interaction.guild.voice_client:
             vc: wavelink.Player = await interaction.user.voice.channel.connect(cls=wavelink.Player)
+        elif getattr(interaction.user.voice, "channel", None):
+            await interaction.response.send_message(f"{interaction.user.mention}, you are not connected into a voice channel")
         else:
             vc: wavelink.Player = interaction.guild.voice_client
         # detect if user put url instead of title
@@ -807,59 +810,59 @@ class Music(commands.Cog):
     @app_commands.command(name="pause", description="Pause song")
     async def pause(self, interaction: discord.Interaction):
         if not interaction.guild.voice_client:
-            return await interaction.response.send_message(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")
-        elif not getattr(ctx.author.voice, "channel", None):
-            return await interaction.response.send_message(f"{ctx.message.author.mention} first you need to join a voice channel")
+            return await interaction.response.send_message(f"Hey {interaction.user.mention}, you are not connected to a voice channel")
+        elif not getattr(interaction.user.voice, "channel", None):
+            return await interaction.response.send_message(f"{interaction.user.mention} first you need to join a voice channel")
         else:
             vc: wavelink.Player = interaction.guild.voice_client
 
         await vc.pause()
-        await interaction.response.send_message(f"Music paused by {ctx.message.author.mention}")
+        await interaction.response.send_message(f"Music paused by {interaction.user.mention}")
 
-    @app_commands.command(name="resume", description="Resume playing")
+    @ app_commands.command(name="resume", description="Resume playing")
     async def resume(self, interaction: discord.Interaction):
         if not interaction.guild.voice_client:
-            return await interaction.response.send_message(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")
-        elif not getattr(ctx.author.voice, "channel", None):
-            return await interaction.response.send_message(f"{ctx.message.author.mention} first you need to join a voice channel")
+            return await interaction.response.send_message(f"Hey {interaction.user.mention}, you are not connected to a voice channel")
+        elif not getattr(interaction.user.voice, "channel", None):
+            return await interaction.response.send_message(f"{interaction.user.mention} first you need to join a voice channel")
         else:
             vc: wavelink.Player = interaction.guild.voice_client
 
         await vc.resume()
-        await interaction.response.send_message(f"Music is resumed by  interaction.user.mention")
+        await interaction.response.send_message(f"Music is resumed by  {interaction.user.mention}")
 
-    @commands.hybrid_command(name="stop", description="Stop Player")
-    async def stop(self, ctx):
-        if not ctx.voice_client:
-            return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")
-        elif not getattr(ctx.author.voice, "channel", None):
-            return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
+    @ app_commands.command(name="stop", description="Stop Player")
+    async def stop(self, interaction: Interaction):
+        if not interaction.guild.voice_client:
+            return await interaction.response.send_message(f"Hey {interaction.user.mention}, you are not connected to a voice channel")
+        elif not getattr(interaction.user.voice, "channel", None):
+            return await interaction.response.send_message(f"{interaction.user.mention} first you need to join a voice channel")
         else:
             vc: wavelink.Player = ctx.voice_client
 
         await vc.stop()
         await interaction.response.send_message(f"{interaction.user.mention} stopped the music.")
 
-    @commands.hybrid_command(name="disconnect", description="Disconnect the Bot from VC")
-    async def disconnect(self, ctx):
-        if not ctx.voice_client:
-            return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")
-        elif not getattr(ctx.author.voice, "channel", None):
-            return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
+    @ app_commands.command(name="disconnect", description="Disconnect the Bot from VC")
+    async def disconnect(self, interaction: Interaction):
+        if not interaction.guild.voice_client:
+            return await interaction.response.send_message(f"Hey {interaction.user.mention}, you are not connected to a voice channel")
+        elif not getattr(interaction.user.voice, "channel", None):
+            return await interaction.response.send_message(f"{interaction.user.mention} first you need to join a voice channel")
         else:
-            vc: wavelink.Player = ctx.voice_client
+            vc: wavelink.Player = interaction.guild.voice_client
 
         await vc.disconnect()
-        await ctx.send(f"{ctx.message.author.mention} send me out :(")
+        await interaction.response.send_message(f"{interaction.user.mention} send me out :(")
 
-    @commands.hybrid_command(name="loop", description="Loops the song")
-    async def loop(self, ctx):
-        if not ctx.voice_client:
-            return await ctx.send(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")
-        elif not getattr(ctx.author.voice, "channel", None):
-            return await ctx.send(f"{ctx.message.author.mention} first you need to join a voice channel")
+    @ app_commands.command(name="loop", description="Loops the song")
+    async def loop(self, interaction: Interaction):
+        if not interaction.guild.voice_client:
+            return await interaction.response.send_message(f"Hey {interaction.user.mention}, you are not connected to a voice channel")
+        elif not getattr(interaction.user.voice, "channel", None):
+            return await interaction.response.send_message(f"{interaction.user.mention} first you need to join a voice channel")
         else:
-            vc: wavelink.Player = ctx.voice_client
+            vc: wavelink.Player = interaction.guild.voice_client
 
         try:
             vc.loop ^= True
@@ -869,18 +872,18 @@ class Music(commands.Cog):
         if vc.loop:
             embed = discord.Embed(
                 title=" ", description="I will now repeat the current track :repeat_one:")
-            return await ctx.send(embed=embed)
+            return await interaction.response.send_message(embed=embed)
         else:
             embed = discord.Embed(
                 title=" ", description="I will no longer repeat the current track")
-            return await ctx.send(embed=embed)
+            return await interaction.response.send_message(embed=embed)
 
-    @app_commands.command(name="queue", description="Show Queues")
+    @ app_commands.command(name="queue", description="Show Queues")
     async def queue(self, interaction: discord.Interaction):
         if not interaction.guild.voice_client:
-            return await interaction.response.send_message(f"Hey {ctx.message.author.mention}, im not connected to a voice channel")
+            return await interaction.response.send_message(f"Hey {interaction.user.mention}, im not connected to a voice channel")
         elif not interaction.user.voice:
-            return await interaction.response.send_message(f"Hey {ctx.message.author.mention}, you are not connected to a voice channel")
+            return await interaction.response.send_message(f"Hey {interaction.user.mention}, you are not connected to a voice channel")
         else:
             vc: wavelink.Player = interaction.guild.voice_client
 
@@ -896,8 +899,8 @@ class Music(commands.Cog):
 
         return await interaction.response.send_message(embed=em)
 
-    @app_commands.command(name="volume", description="Volume")
-    @app_commands.describe(volume="Must be 1 to 300")
+    @ app_commands.command(name="volume", description="Volume")
+    @ app_commands.describe(volume="Must be 1 to 300")
     async def volume(self, interaction: discord.Interaction, volume: int):
         if not interaction.guild.voice_client:
             return await interaction.response.send_message(f"Hey {interaction.user.mention}, you are not connected to a voice channel")
@@ -932,6 +935,11 @@ class Music(commands.Cog):
         em = discord.Embed(
             title=f" ", description=f"Playing \n **[{vc.track}]({vc.track.uri})** \n Artist: {vc.track.author}")
         em.set_author(name="Now Playing♪", icon_url=f"{bot.user.avatar.url}")
+        if vc.track.thumbnail:
+            em.set_thumbnail(url=vc.track.thumbnail)
+        else:
+            em.set_thumbnail(
+                url="https://media.discordapp.net/attachments/977216545921073192/1033304783156690984/images2.jpg")
         bar = progressBar.splitBar(
             int(vc.track.length), int(vc.position), size=10)
         em.add_field(name="Position", value=f"{bar[0]}")

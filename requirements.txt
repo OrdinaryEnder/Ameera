@@ -14,3 +14,4 @@ colorama
 beautifulsoup4
 aiofiles
 StringProgressBar
+jishaku
