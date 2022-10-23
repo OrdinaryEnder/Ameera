@@ -91,14 +91,13 @@ class MyBot(commands.Bot):
         await bot.load_extension('jishaku')
         print(Back.WHITE + Fore.RED + "Support" + Fore.YELLOW + " us" + Fore.BLUE +
               " at" + Fore.GREEN + " https://github.com/OrdinaryEnder/Olivia")
-        global startTime
-        startTime = time.time()
 
 
 intents = discord.Intents().all()
 bot = MyBot(command_prefix=commands.when_mentioned, intents=intents,
             activity=discord.Game(name="wassup"))
 tree = bot.tree
+bot.startTime = time.time()
 # mystbin paster
 webpaste = Client()
 
@@ -669,7 +668,7 @@ class Other(commands.Cog):
 
     @app_commands.command(name="paste", description="Paste something to https://mystb.in")
     @app_commands.checks.cooldown(1, 12.0, key=lambda i: (i.guild_id, i.user.id))
-    async def mystpaste(self, Interaction, text: str):
+    async def mystpaste(self, interaction: Interaction, text: str):
         await interaction.response.defer()
         textpaste = await webpaste.create_paste(filename="file.txt", content=text)
         await interaction.followup.send(str(textpaste))
@@ -725,7 +724,7 @@ class Other(commands.Cog):
         embed.add_field(
             name="Latency", value=f"```css \n{bot.latency * 1000} \n ```")
         embed.add_field(
-            name="Uptime", value=f"```css \n {str(datetime.timedelta(seconds=int(round(time.time()-startTime))))} \n ```")
+            name="Uptime", value=f"```css \n {str(datetime.timedelta(seconds=int(round(time.time()-bot.startTime))))} \n ```")
         embed.add_field(name="Python Version",
                         value=f"```css \n {sys.version} \n ```")
         embed.add_field(name="Discord.py Version",
