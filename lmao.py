@@ -668,17 +668,15 @@ class Other(commands.Cog):
         self.bot = bot
 
     @app_commands.command(name="paste", description="Paste something to https://mystb.in")
+    @app_commands.checks.cooldown(1, 12.0, key=lambda i: (i.guild_id, i.user.id))
+    async def mystpaste(self, Interaction, text: str):
+        await interaction.response.defer()
+        textpaste = await webpaste.create_paste(filename="file.txt", content=text)
+        await interaction.followup.send(str(textpaste))
+
     @app_commands.command(name="invite", description="Invite the bot")
     async def _invite(self, interaction: discord.Interaction):
         await interaction.response.send_message(f"https://discord.com/api/oauth2/authorize?client_id={bot.user.id}&permissions=1644971949559&scope=bot", ephemeral=True)
-
-    @app_commands.command(name="idavatar", description="Get avatar by ID")
-    @app_commands.describe(id="ID of user to get the avatar")
-    async def _idavatar(self, interaction: discord.Interaction, id: int):
-        userid = int(id)
-        user = await bot.get_user(userid)
-        avatar = user.avatar.url
-        await interaction.response.send_message(avatar)
 
     @app_commands.command(name='avatar', description='get someone avatar (avatar copy)')
     @app_commands.describe(avamember="Member")
@@ -732,6 +730,7 @@ class Other(commands.Cog):
                         value=f"```css \n {sys.version} \n ```")
         embed.add_field(name="Discord.py Version",
                         value=f"```css \n {discord.__version__} \n ```")
+
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command(name="search", description="Search Youtube Videos")
