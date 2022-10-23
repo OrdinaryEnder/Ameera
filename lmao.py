@@ -1,3 +1,4 @@
+from mystbin import Client
 from StringProgressBar import progressBar
 from typing import List
 import platform
@@ -86,6 +87,8 @@ class MyBot(commands.Bot):
         await bot.add_cog(Owner(bot))
         print(Fore.RED + "Adding Nsfw Cogs")
         await bot.add_cog(nsfw(bot))
+        print(Fore.GREEN + "Adding Jishaku Debug Cogs")
+        await bot.load_extension('jishaku')
         print(Back.WHITE + Fore.RED + "Support" + Fore.YELLOW + " us" + Fore.BLUE +
               " at" + Fore.GREEN + " https://github.com/OrdinaryEnder/Olivia")
         global startTime
@@ -93,9 +96,11 @@ class MyBot(commands.Bot):
 
 
 intents = discord.Intents().all()
-bot = MyBot(command_prefix='+', intents=intents,
+bot = MyBot(command_prefix=commands.when_mentioned, intents=intents,
             activity=discord.Game(name="wassup"))
 tree = bot.tree
+# mystbin paster
+webpaste = Client()
 
 
 @tree.error
@@ -103,10 +108,22 @@ async def on_app_command_error(
     interaction: Interaction,
     error: AppCommandError
 ):
-    if interaction.response.is_done():
-        await interaction.followup.send(f"An error has been occurred, \n error : {error}", ephemeral=True)
+    if isinstance(error, app_commands.CommandOnCooldown):
+        if interaction.response.is_done():
+            await interaction.followup.send(str(error), ephemeral=True)
+        else:
+            await interaction.response.send_message(str(error), ephemeral=True)
+
+    elif isinstance(error, app_commands.MissingPermissions):
+        if interaction.response.is_done():
+            await interaction.followup.send(str(error), ephemeral=True)
+        else:
+            await interaction.response.send_message(str(error), ephemeral=True)
     else:
-        await interaction.response.send_message(f"an error has been occurred, \n error : {error}", ephemeral=True)
+        if interaction.response.is_done():
+            await interaction.followup.send(str(error), ephemeral=True)
+        else:
+            await interaction.response.send_message(str(error), ephemeral=True)
 
 
 @bot.before_invoke
@@ -650,6 +667,7 @@ class Other(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @app_commands.command(name="paste", description="Paste something to https://mystb.in")
     @app_commands.command(name="invite", description="Invite the bot")
     async def _invite(self, interaction: discord.Interaction):
         await interaction.response.send_message(f"https://discord.com/api/oauth2/authorize?client_id={bot.user.id}&permissions=1644971949559&scope=bot", ephemeral=True)
