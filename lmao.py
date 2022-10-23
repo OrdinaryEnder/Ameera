@@ -795,8 +795,8 @@ class Music(commands.Cog):
             track = await wavelink.YouTubeTrack.search(query=search, return_first=False)
             print(track)
             await interaction.followup.send(view=YTMusicSelectView(track, vc, timeout=30), wait=True)
-            global ayo
-            ayo = await interaction.original_response()
+        global ayo
+        ayo = await interaction.original_response()
 
     @app_commands.command(name="playsc", description="Play SoundCloud (Powered by WaveLink)")
     @app_commands.describe(search="Search for song")
@@ -820,8 +820,8 @@ class Music(commands.Cog):
         else:
             track = await wavelink.SoundCloudTrack.search(query=search, return_first=False)
             await interaction.followup.send(view=MusicSelectView(track, vc, timeout=30), wait=True)
-            global ayo
-            ayo = await interaction.original_response()
+        global ayo
+        ayo = await interaction.original_response()
 
     @app_commands.command(name="pause", description="Pause song")
     async def pause(self, interaction: discord.Interaction):
