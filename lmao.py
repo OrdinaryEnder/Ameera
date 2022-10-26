@@ -68,6 +68,11 @@ def restart_bot():
 # setup hook
 
 
+with open("badwords.txt") as f:
+    yudi = f.read()
+    badwords = yudi.split()
+
+
 class MyBot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -89,6 +94,8 @@ class MyBot(commands.Bot):
         await bot.add_cog(nsfw(bot))
         print(Fore.GREEN + "Adding Jishaku Debug Cogs")
         await bot.load_extension('jishaku')
+        print(Fore.GREEN + "Enabling memory optimizer")
+        gc.enable()
         print(Back.WHITE + Fore.RED + "Support" + Fore.YELLOW + " us" + Fore.BLUE +
               " at" + Fore.GREEN + " https://github.com/OrdinaryEnder/Olivia")
 
@@ -176,10 +183,16 @@ async def on_member_join(member):
     await member.add_roles(member.guild.get_role(os.getenv("MEMBER_ROLE")))
 
 
-@bot.event
+@bot.listen()
 async def on_message(message):
     if message.author.bot:
         return
+
+    for badword in badwords:
+        if re.findmatch(badword, message.content):
+            await message.delete()
+            lmao = await message.channel.create_webhook(name=message.author.name, avatar_url=message.author.avatar.url)
+            await lmao.send("#" * len(message.content))
 
     await bot.process_commands(message)
     return
@@ -778,11 +791,13 @@ class Music(commands.Cog):
     async def play(self, interaction: discord.Interaction, search: str):
         if not interaction.guild.voice_client:
             vc: wavelink.Player = await interaction.user.voice.channel.connect(cls=wavelink.Player)
+        elif interaction.user.voice is None:
+            return await interaction.response.send_message(f"{interaction.user.mention} Your not connected to a voice, connect it!")
         else:
             vc: wavelink.Player = interaction.guild.voice_client
         # detect if user put url instead of title
         await interaction.response.defer(thinking=True)
-        if re.fullmatch("http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+", search):
+        if re.fullmatch("^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$", search):
             scsong = (await susnode.get_tracks(query=search, cls=wavelink.YouTubeTrack))[0]
             embed = discord.Embed(
                 title="Now playing", description=f"[{scsong.title}]({scsong.uri})\n \n Uploader: {scsong.author}")
@@ -803,8 +818,8 @@ class Music(commands.Cog):
     async def playsc(self, interaction: discord.Interaction, search: str):
         if not interaction.guild.voice_client:
             vc: wavelink.Player = await interaction.user.voice.channel.connect(cls=wavelink.Player)
-        elif getattr(interaction.user.voice, "channel", None):
-            await interaction.response.send_message(f"{interaction.user.mention}, you are not connected into a voice channel")
+        elif interaction.user.voice is None:
+            return await interaction.response.send_message(f"{interaction.user.mention} Your not connected to a voice, connect it!")
         else:
             vc: wavelink.Player = interaction.guild.voice_client
         # detect if user put url instead of title
