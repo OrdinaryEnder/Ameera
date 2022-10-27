@@ -689,7 +689,7 @@ class Other(commands.Cog):
         self.bot = bot
 
     @app_commands.command()
-    async def help(self, interaction: discord.Interaction, command: Optional[str]):
+    async def help(self, interaction: discord.Interaction, command: typing.Optional[str]):
         ctx = await self.bot.get_context(interaction, cls=Context)
         if command is not None:
             await ctx.send_help(command)
