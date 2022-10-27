@@ -189,14 +189,21 @@ async def on_message(message):
         return
 
     for badword in badwords:
-        if re.fullmatch(badword, message.content):
-            await message.delete()
+        if re.fullmatch(badword, message.content.lower()):
             authorava = await message.author.avatar.read()
+            await message.delete()
             lmao = await message.channel.create_webhook(name=message.author.name, avatar=authorava)
             await lmao.send("#" * len(message.content))
 
     await bot.process_commands(message)
     return
+
+
+@bot.event
+async def on_guild_join(guild):
+    for channel in guild.channel:
+        chanel = random.choice(channel)
+        await chanel.send(f"Thanks for adding {bot.user.name}, The Multipurpose bot and Family Friendly")
 
 """
 ZairullahDeveloper once said: Being a developer isnt that easy, start from making mistakes
