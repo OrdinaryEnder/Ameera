@@ -189,7 +189,7 @@ async def on_message(message):
         return
 
     for badword in badwords:
-        if re.findmatch(badword, message.content):
+        if re.fullmatch(badword, message.content):
             await message.delete()
             lmao = await message.channel.create_webhook(name=message.author.name, avatar_url=message.author.avatar.url)
             await lmao.send("#" * len(message.content))
