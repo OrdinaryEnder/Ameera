@@ -690,7 +690,7 @@ class Other(commands.Cog):
 
     @app_commands.command()
     async def help(self, interaction: discord.Interaction, command: typing.Optional[str]):
-        ctx = await self.bot.get_context(interaction, cls=Context)
+        ctx = await self.bot.get_context(interaction, cls=commands.Context)
         if command is not None:
             await ctx.send_help(command)
         else:
@@ -698,7 +698,7 @@ class Other(commands.Cog):
 
     @help.autocomplete("command")
     async def command_autocomplete(self, interaction: discord.Interaction, needle: str) -> List[app_commands.Choice[str]]:
-        assert self.bot.help_command
+        assert MyHelpCommand()
         ctx = await self.bot.get_context(interaction, cls=commands.Context)
         help_command = MyHelpCommand().copy()
         help_command.context = ctx
