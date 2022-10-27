@@ -699,7 +699,7 @@ class Other(commands.Cog):
     @help.autocomplete("command")
     async def command_autocomplete(self, interaction: discord.Interaction, needle: str) -> List[app_commands.Choice[str]]:
         assert self.bot.help_command
-        ctx = await self.bot.get_context(interaction, cls=Context)
+        ctx = await self.bot.get_context(interaction, cls=commands.Context)
         help_command = MyHelpCommand().copy()
         help_command.context = ctx
         if not needle:
