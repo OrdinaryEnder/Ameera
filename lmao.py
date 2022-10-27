@@ -201,7 +201,7 @@ async def on_message(message):
 
 @bot.event
 async def on_guild_join(guild):
-    for channel in guild.channel:
+    for channel in guild.channels:
         chanel = random.choice(channel)
         await chanel.send(f"Thanks for adding {bot.user.name}, The Multipurpose bot and Family Friendly")
 
