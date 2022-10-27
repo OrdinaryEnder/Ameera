@@ -251,7 +251,8 @@ class MyHelpCommand(commands.MinimalHelpCommand):
 
     async def send_pages(self):
         destination = self.get_destination()
-        for command in bot.commands:
+        commands = await tree.fetch_commands()
+        for command in commands:
             embed = discord.Embed(
                 title="Alexandra ", url="https://discord.com/api/oauth2/authorize?client_id=972459217548099584&permissions=0&scope=bot%20applications.commands", description="")
             embed.set_author(name="ZairullahDeveloper", url="https://github.com/zairullahdev",
@@ -686,6 +687,34 @@ class nsfw(commands.Cog):
 class Other(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    @app_commands.command()
+    async def help(self, interaction: discord.Interaction, command: Optional[str]):
+        ctx = await self.bot.get_context(interaction, cls=Context)
+        if command is not None:
+            await ctx.send_help(command)
+        else:
+            await ctx.send_help()
+
+    @help.autocomplete("command")
+    async def command_autocomplete(self, interaction: discord.Interaction, needle: str) -> List[app_commands.Choice[str]]:
+        assert self.bot.help_command
+        ctx = await self.bot.get_context(interaction, cls=Context)
+        help_command = MyHelpCommand().copy()
+        help_command.context = ctx
+        if not needle:
+            return [
+                app_commands.Choice(name=cog_name, value=cog_name)
+                for cog_name, cog in self.bot.cogs.items()
+                if await help_command.filter_commands(cog.get_commands())
+            ][:25]
+        needle = needle.lower()
+        return [
+            app_commands.Choice(name=command.qualified_name,
+                                value=command.qualified_name)
+            for command in await help_command.filter_commands(self.bot.walk_commands(), sort=True)
+            if needle in command.qualified_name
+        ][:25]
 
     @app_commands.command(name="paste", description="Paste something to https://mystb.in")
     @app_commands.checks.cooldown(1, 12.0, key=lambda i: (i.guild_id, i.user.id))
