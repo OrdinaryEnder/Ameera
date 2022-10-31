@@ -188,12 +188,11 @@ async def on_message(message):
     if message.author.bot:
         return
 
-    for badword in badwords:
-        if re.fullmatch(badword, message.content.lower()):
-            authorava = await message.author.avatar.read()
-            await message.delete()
-            lmao = await message.channel.create_webhook(name=message.author.name, avatar=authorava)
-            await lmao.send("#" * len(message.content))
+    if any(badword in message.content.lower().split() for badword in badwords):
+        authorava = await message.author.avatar.read()
+        await message.delete()
+        lmao = await message.channel.create_webhook(name=message.author.name, avatar=authorava)
+        await lmao.send("#" * len(message.content))
 
 
 @bot.event
