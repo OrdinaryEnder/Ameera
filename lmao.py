@@ -42,7 +42,7 @@ import datetime as dt
 import typing as t
 from email.base64mime import body_encode
 import wavelink
-
+from site.index import app
 from enum import Enum
 import lavalink
 from dotenv import load_dotenv
@@ -78,6 +78,9 @@ class MyBot(commands.Bot):
         super().__init__(*args, **kwargs)
 
     async def setup_hook(self):
+        print(
+            Fore.Blue + f"Starting Website at {os.getenv('PORT')} (set PORT in enviroment variable)")
+        app.run(host="0.0.0.0", port=os.getenv('PORT'))
         print(Fore.BLUE + "Registering Commands (Wont take long time)....")
         print(Fore.YELLOW + Fore.RED + "Adding Music cogs")
         await bot.add_cog(Music(bot))

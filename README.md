@@ -19,6 +19,15 @@ Termux (Android, Not recommended using Data)
 bash termuxsetup.sh
 ```
 
+BEFORE YOU STARTING THE BOT, SET PORT ENVIROMENT AS YOUR OPERATING SYSTEM WAY
+
+Linux
+
+
+```bash
+export PORT=8080
+````
+
 ### Online Hosting
 You can host this bot to make it stay online on these online hostings.
 
@@ -32,6 +41,7 @@ You can host this bot to make it stay online on these online hostings.
 [![Run on Repl.it](https://repl.it/badge/github/zairullahdev/Alexandra)](https://repl.it/github/zairullahdev/Alexandra)
 
 
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/17ubF0?referralCode=a_kn60)
 
 
 
