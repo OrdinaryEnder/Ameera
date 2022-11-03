@@ -24,7 +24,6 @@ import math
 import functools
 import sys
 import io
-from lyricsgenius import Genius
 import inspect
 import random
 import discord
@@ -58,7 +57,6 @@ import async_timeout
 load_dotenv()
 colorama.init(autoreset=True)
 
-genius = Genius()
 # this is will cached
 
 
@@ -1035,20 +1033,6 @@ class Music(commands.Cog):
 
             vc.queue.clear()
         return await interaction.response.send_message(f"{interaction.user.mention} cleared the queue.")
-
-    @app_commands.command(name='lyrics', description='Genius Lyrics')
-    @app_commands.describe(artist="Artist of song", title="Song")
-    async def lyrics(self, interaction: discord.Interaction, artist: str, title: str):
-        await interaction.response.defer()
-        try:
-            song = genius.search_song(title, artist)
-            lyric = song.lyrics
-            print(lyric[:lyric.rfind("Embed")])
-            embedgenius = discord.Embed(
-                title=f"{song.title} by {song.artist}", description=f"\n{lyric[:lyric.rfind('Embed')]}")
-            await interaction.followup.send(embed=embedgenius)
-        except Exception as e:
-            await interaction.followup.send(f"Something wrong, Report this to !        from ender import bot#2105\n Logs: \n ```py\n{e}\n```")
 
 
 token = os.getenv("TOKEN")
