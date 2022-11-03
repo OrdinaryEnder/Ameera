@@ -82,7 +82,7 @@ class MyBot(commands.Bot):
 
     async def setup_hook(self):
         print(
-            Fore.Blue + f"Starting Website at {os.getenv('PORT')} (set PORT in enviroment variable)")
+            Fore.BLUE + f"Starting Website at {os.getenv('PORT')} (set PORT in enviroment variable)")
         asyncio.create_task(serve(app, config))
         print(Fore.BLUE + "Registering Commands (Wont take long time)....")
         print(Fore.YELLOW + Fore.RED + "Adding Music cogs")
