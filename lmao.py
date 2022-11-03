@@ -42,6 +42,8 @@ import typing as t
 from email.base64mime import body_encode
 import wavelink
 from web import app
+from hypercorn.config import Config
+from hypercorn.asyncio import serve
 from enum import Enum
 import lavalink
 from dotenv import load_dotenv
@@ -63,8 +65,11 @@ colorama.init(autoreset=True)
 def restart_bot():
     os.execv(sys.executable, ['python'] + sys.argv)
 
-# setup hook
 
+# setup hook
+# website
+config = Config()
+config.bind = [f"0.0.0.0:{os.getenv('PORT')}"]
 
 with open("badwords.txt") as f:
     yudi = f.read()
@@ -78,7 +83,7 @@ class MyBot(commands.Bot):
     async def setup_hook(self):
         print(
             Fore.Blue + f"Starting Website at {os.getenv('PORT')} (set PORT in enviroment variable)")
-        asyncio.create_task(app.run(host="0.0.0.0", port=os.getenv('PORT')))
+        asyncio.create_task(serve(app, config))
         print(Fore.BLUE + "Registering Commands (Wont take long time)....")
         print(Fore.YELLOW + Fore.RED + "Adding Music cogs")
         await bot.add_cog(Music(bot))

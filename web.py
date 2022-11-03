@@ -1,6 +1,6 @@
 from quart import Quart, render_template, websocket
 
-app = Quart(__name__, static_folder='site/assets')
+app = Quart(__name__, template_folder="site", static_folder='site/assets')
 
 
 @app.route("/")
