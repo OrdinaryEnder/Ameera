@@ -304,13 +304,26 @@ class MusicDropDown(discord.ui.Select):
         else:
             await self.vc.queue.put_wait(search)
             await ayo.edit(content=f"Added {search.title} to the queue", view=None)
-        setattr(self.vc, "loop", False)
+        
 
 
 class MusicSelectView(discord.ui.View):
-    def __init__(self, track, vc, timeout):
+    def __init__(self, track, vc, userid, timeout):
         super().__init__(timeout=timeout)
         self.add_item(MusicDropDown(track, vc))
+        self.userid = userid
+
+    async def on_timeout(self):
+        await self.message.edit("Music Timed Out", view=None)
+
+
+    async def interaction_check(self, interaction: discord.Interaction):
+        if self.userid != interaction.user.id:
+            return await interaction.response.send("Hey tf are you doing at someones view", ephemeral=True)
+        else:
+            pass
+
+
 
 
 # music view
@@ -343,20 +356,34 @@ class YTMusicDropDown(discord.ui.Select):
         else:
             await self.vc.queue.put_wait(search)
             await ayo.edit(content=f"Added {search.title} to the queue", view=None)
-        setattr(self.vc, "loop", False)
+        
 
 
 class YTMusicSelectView(discord.ui.View):
-    def __init__(self, track, vc, timeout):
+    def __init__(self, track, vc, userid, timeout):
         super().__init__(timeout=timeout)
+        self.userid = userid
         self.add_item(YTMusicDropDown(track, vc))
+
+    async def on_timeout(self):
+        await self.message.edit("Music Timed Out", view=None)
+
+
+    async def interaction_check(self, interaction: discord.Interaction):
+        if self.userid != interaction.user.id:
+            return await interaction.response.send("Hey tf are you doing at someones view", ephemeral=True)
+        else:
+            pass
+
+
 
 
 # meme view
 class refreshbutton(discord.ui.View):
-    def __init__(self, timeout):
+    def __init__(self, userid, timeout):
         super().__init__(timeout=timeout)
         self.value = None
+        self.userid = userid
 
     async def on_timeout(self):
         for butt in self.children:
@@ -364,6 +391,12 @@ class refreshbutton(discord.ui.View):
 
         await self.message.edit(view=self)
     # part of slash move, this is cool.
+
+    async def interaction_check(self, interaction: discord.Interaction):
+        if self.userid != interaction.user.id:
+            return await interaction.response.send("Hey tf are you doing at someones view", ephemeral=True)
+        else:
+            pass
 
     @discord.ui.button(label="🔄", style=discord.ButtonStyle.grey)
     async def refresh(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -464,7 +497,7 @@ class Fun(commands.Cog):
                     embed.set_image(
                         url=res['data']['children'][random.randint(0, 25)]['data']['url'])
 
-                    view = refreshbutton(timeout=30.0)
+                    view = refreshbutton(interaction.user.id, timeout=30.0)
                     await interaction.followup.send(embed=embed, view=view)
                     view.message = await interaction.original_response()
         except Exception:
@@ -824,8 +857,9 @@ class Music(commands.Cog):
         else:
             track = await wavelink.YouTubeTrack.search(query=search, return_first=False)
             print(track)
-            await interaction.followup.send(view=YTMusicSelectView(track, vc, timeout=30), wait=True)
+            await interaction.followup.send(view=YTMusicSelectView(track, vc, interaction.user.id, timeout=30), wait=True)
         vc.ayo = await interaction.original_response()
+        setattr(vc, "loop", False)
 
     @app_commands.command(name="playsc", description="Play SoundCloud (Powered by WaveLink)")
     @app_commands.describe(search="Search for song")
@@ -851,8 +885,9 @@ class Music(commands.Cog):
              await interaction.followup.send("Added: " + scsong.title)
         else:
             track = await wavelink.SoundCloudTrack.search(query=search, return_first=False)
-            await interaction.followup.send(view=MusicSelectView(track, vc, timeout=30), wait=True)
+            await interaction.followup.send(view=MusicSelectView(track, vc, interaction.user.id, timeout=30), wait=True)
         vc.ayo = await interaction.original_response()
+        setattr(vc, "loop", False)
 
     @app_commands.command(name="pause", description="Pause song")
     async def pause(self, interaction: discord.Interaction):
