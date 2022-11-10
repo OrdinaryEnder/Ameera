@@ -820,7 +820,7 @@ class Music(commands.Cog):
              await interaction.followup.send(embed=embed)
             else:
              await vc.queue.put_wait(scsong)
-             await interaction.followup.send("Added: ", scsong.title)
+             await interaction.followup.send("Added: " + scsong.title)
         else:
             track = await wavelink.YouTubeTrack.search(query=search, return_first=False)
             print(track)
@@ -848,7 +848,7 @@ class Music(commands.Cog):
              await interaction.followup.send(embed=embed)
             else:
              await vc.queue.put_wait(scsong)
-             await interaction.followup.send("Added: ", scsong.title)
+             await interaction.followup.send("Added: " + scsong.title)
         else:
             track = await wavelink.SoundCloudTrack.search(query=search, return_first=False)
             await interaction.followup.send(view=MusicSelectView(track, vc, timeout=30), wait=True)
