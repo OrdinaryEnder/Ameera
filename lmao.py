@@ -319,7 +319,7 @@ class MusicSelectView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction):
         if self.userid != interaction.user.id:
-            return await interaction.response.send("Hey tf are you doing at someones view", ephemeral=True)
+            return await interaction.response.send_message("Hey tf are you doing at someones view", ephemeral=True)
         else:
             pass
 
@@ -371,7 +371,7 @@ class YTMusicSelectView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction):
         if self.userid != interaction.user.id:
-            return await interaction.response.send("Hey tf are you doing at someones view", ephemeral=True)
+            return await interaction.response.send_message("Hey tf are you doing at someones view", ephemeral=True)
         else:
             pass
 
@@ -394,7 +394,7 @@ class refreshbutton(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction):
         if self.userid != interaction.user.id:
-            return await interaction.response.send("Hey tf are you doing at someones view", ephemeral=True)
+            return await interaction.response.send_message("Hey tf are you doing at someones view", ephemeral=True)
         else:
             pass
 
