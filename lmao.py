@@ -312,10 +312,10 @@ class MusicSelectView(discord.ui.View):
         super().__init__(timeout=timeout)
         self.add_item(MusicDropDown(track, vc))
         self.userid = userid
-        self.message = vc.ayo
+        self.vc = vc
 
     async def on_timeout(self):
-        await self.message.edit("Music Timed Out", view=None)
+        await self.vc.ayo.edit("Music Timed Out", view=None)
 
 
     async def interaction_check(self, interaction: discord.Interaction):
@@ -353,10 +353,10 @@ class YTMusicDropDown(discord.ui.Select):
                 title="Now playing", description=f"[{search.title}]({search.uri})\n \n Uploader: {search.author}")
             embed.set_thumbnail(url=search.thumbnail)
             embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
-            await self.ayo.edit(embed=embed, view=None)
+            await self.vc.ayo.edit(embed=embed, view=None)
         else:
             await self.vc.queue.put_wait(search)
-            await self.ayo.edit(content=f"Added {search.title} to the queue", view=None)
+            await self.vc.ayo.edit(content=f"Added {search.title} to the queue", view=None)
         
 
 
@@ -364,11 +364,11 @@ class YTMusicSelectView(discord.ui.View):
     def __init__(self, track, vc, userid, timeout):
         super().__init__(timeout=timeout)
         self.userid = userid
+        self.vc = vc
         self.add_item(YTMusicDropDown(track, vc))
-        self.message = vc.ayo
 
     async def on_timeout(self):
-        await self.message.edit("Music Timed Out", view=None)
+        await self.vc.ayo.edit("Music Timed Out", view=None)
 
 
     async def interaction_check(self, interaction: discord.Interaction):
