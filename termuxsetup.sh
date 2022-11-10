@@ -14,9 +14,9 @@ if [[ $arch == aarch64 ]]; then
 elif [[ $arch == arm64 ]]; then
    echo "64 Bit Detected"
    export LDFLAGS="-L/system/lib64"
-   pip install -r requirements.txt
+   pip install -r requirements.txt -v
 else
-    pip install -r requirements.txt
+    pip install -r requirements.txt -v
 fi
 
 exit=$(echo $?)

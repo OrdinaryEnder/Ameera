@@ -154,7 +154,7 @@ async def on_wavelink_node_ready(node: wavelink.Node):
 
 @bot.event
 async def on_wavelink_track_end(player: wavelink.Player, track: wavelink.Track, reason):
-    ctx = await bot.get_context(ayo, cls=commands.Context)
+    ctx = await bot.get_context(player.ayo, cls=commands.Context)
     vc: player = ctx.voice_client
 
     if vc.loop is True:
@@ -815,14 +815,17 @@ class Music(commands.Cog):
             embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
             embed.set_thumbnail(url=scsong.thumbnail)
             print(scsong)
-            await vc.play(scsong)
-            await interaction.followup.send(embed=embed)
+            if vc.queue.is_empty and not vc.is_playing():
+             await vc.play(scsong)
+             await interaction.followup.send(embed=embed)
+            else:
+             await vc.queue.put_wait(scsong)
+             await interaction.followup.send("Added: ", scsong.title)
         else:
             track = await wavelink.YouTubeTrack.search(query=search, return_first=False)
             print(track)
             await interaction.followup.send(view=YTMusicSelectView(track, vc, timeout=30), wait=True)
-        global ayo
-        ayo = await interaction.original_response()
+        vc.ayo = await interaction.original_response()
 
     @app_commands.command(name="playsc", description="Play SoundCloud (Powered by WaveLink)")
     @app_commands.describe(search="Search for song")
@@ -840,14 +843,16 @@ class Music(commands.Cog):
             embed = discord.Embed(
                 title="Now playing", description=f"[{scsong.title}]({scsong.uri})\n \n Uploader: {scsong.author}")
             embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
-            print(scsong)
-            await vc.play(scsong)
-            await interaction.followup.send(embed=embed)
+            if vc.queue.is_empty and not vc.is_playing():
+             await vc.play(scsong)
+             await interaction.followup.send(embed=embed)
+            else:
+             await vc.queue.put_wait(scsong)
+             await interaction.followup.send("Added: ", scsong.title)
         else:
             track = await wavelink.SoundCloudTrack.search(query=search, return_first=False)
             await interaction.followup.send(view=MusicSelectView(track, vc, timeout=30), wait=True)
-        global ayo
-        ayo = await interaction.original_response()
+        vc.ayo = await interaction.original_response()
 
     @app_commands.command(name="pause", description="Pause song")
     async def pause(self, interaction: discord.Interaction):
