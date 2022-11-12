@@ -742,7 +742,7 @@ class Other(commands.Cog):
          for cmd in tree.get_commands()
         ]
         emb = discord.Embed(
-          title = "Here are my commands!"
+          title = "Here are my commands!",
           description = "\n".join(commands)
         )
         await interaction.response.send_message(embed=emb)
