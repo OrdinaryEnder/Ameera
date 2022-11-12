@@ -739,7 +739,7 @@ class Other(commands.Cog):
     async def _cmdlist(self, interaction: discord.Interaction):
         commands = [
          f"{cmd.mention} - {cmd.description}"
-         for cmd in tree.get_commands()
+         for cmd in tree.fetch_commands()
         ]
         emb = discord.Embed(
           title = "Here are my commands!",
