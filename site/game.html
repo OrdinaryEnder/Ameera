@@ -1,0 +1,21 @@
+<html>
+<head>
+ <meta name="viewport" content="width=device-width, initial-scale=0.7">
+</head>
+
+<body>
+ <div id="container"> </div>
+ <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
+ <script>
+    window.RufflePlayer = window.RufflePlayer || {};
+    window.addEventListener("load", (event) => {
+        const ruffle = window.RufflePlayer.newest();
+        const player = ruffle.createPlayer();
+        const container = document.getElementById("container");
+        container.appendChild(player);
+        player.load("assets/game/papaspizzeria_v2.swf");
+    });
+ </script>
+ <p> Tip: Hold on the game, click play then click play on the game </p>
+</body>
+</html>

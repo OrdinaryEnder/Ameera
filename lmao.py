@@ -724,6 +724,46 @@ class Other(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @app_commands.command(name="userinfo", description="Shows info about a user")
+    @app_commands.describe(user="the user")
+    async def info(self, interaction: discord.Interaction,  user: typing.Union[discord.Member, discord.User] = None):
+        """Shows info about a user."""
+
+        user = user or interaction.user
+        e = discord.Embed()
+        roles = [role.name.replace('@', '@\u200b') for role in getattr(user, 'roles', [])]
+        e.set_author(name=str(user))
+
+        def format_date(dt: Optional[datetime.datetime]):
+            if dt is None:
+                return 'N/A'
+            return f'{time.format_dt(dt, "F")} ({time.format_relative(dt)})'
+
+        e.add_field(name='ID', value=user.id, inline=False)
+        e.add_field(name='Joined', value=format_date(getattr(user, 'joined_at', None)), inline=False)
+        e.add_field(name='Created', value=format_date(user.created_at), inline=False)
+
+        voice = getattr(user, 'voice', None)
+        if voice is not None:
+            vc = voice.channel
+            other_people = len(vc.members) - 1
+            voice = f'{vc.name} with {other_people} others' if other_people else f'{vc.name} by themselves'
+            e.add_field(name='Voice', value=voice, inline=False)
+
+        if roles:
+            e.add_field(name='Roles', value=', '.join(roles) if len(roles) < 10 else f'{len(roles)} roles', inline=False)
+
+        colour = user.colour
+        if colour.value:
+            e.colour = colour
+
+        e.set_thumbnail(url=user.display_avatar.url)
+
+        if isinstance(user, discord.User):
+            e.set_footer(text='This member is not in this server.')
+
+        await interaction.response.send_message(embed=e)
+
     @app_commands.command(name="paste", description="Paste something to https://mystb.in")
     @app_commands.checks.cooldown(1, 12.0, key=lambda i: (i.guild_id, i.user.id))
     async def mystpaste(self, interaction: Interaction, text: str):
