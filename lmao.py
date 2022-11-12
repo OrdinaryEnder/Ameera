@@ -735,6 +735,18 @@ class Other(commands.Cog):
     async def _invite(self, interaction: discord.Interaction):
         await interaction.response.send_message(f"https://discord.com/api/oauth2/authorize?client_id={bot.user.id}&permissions=1644971949559&scope=bot", ephemeral=True)
 
+    @app_commands.command(name="list", description="Bunch list of my commands (Need Newer Discord to view this)")
+    async def _cmdlist(self, interaction: discord.Interaction):
+        commands = [
+         f"{cmd.name} - {cmd.description}"
+         for cmd in tree.get_commands()
+        ]
+        emb = discord.Embed(
+          title = "Here are my commands!"
+          description = "\n".join(commands)
+        )
+        await interaction.response.send_message(embed=emb)
+
     @app_commands.command(name='avatar', description='get someone avatar (avatar copy)')
     @app_commands.describe(avamember="Member")
     async def _avatar(self, interaction: discord.Interaction, avamember: discord.Member = None):
