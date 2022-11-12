@@ -848,9 +848,10 @@ class Music(commands.Cog):
     @app_commands.describe(search="Search for song")
     async def play(self, interaction: discord.Interaction, search: str):
         if not interaction.guild.voice_client:
-            vc: wavelink.Player = await interaction.user.voice.channel.connect(cls=wavelink.Player)
-        elif interaction.user.voice is None:
+          if interaction.user.voice is None:
             return await interaction.response.send_message(f"{interaction.user.mention} Your not connected to a voice, connect it!")
+          else:
+            vc: wavelink.Player = await interaction.user.voice.channel.connect(cls=wavelink.Player)
         else:
             vc: wavelink.Player = interaction.guild.voice_client
         # detect if user put url instead of title
@@ -879,12 +880,13 @@ class Music(commands.Cog):
     @app_commands.describe(search="Search for song")
     async def playsc(self, interaction: discord.Interaction, search: str):
         if not interaction.guild.voice_client:
-            vc: wavelink.Player = await interaction.user.voice.channel.connect(cls=wavelink.Player)
-        elif interaction.user.voice is None:
+          if interaction.user.voice is None:
             return await interaction.response.send_message(f"{interaction.user.mention} Your not connected to a voice, connect it!")
+          else:
+            vc: wavelink.Player = await interaction.user.voice.channel.connect(cls=wavelink.Player)
         else:
             vc: wavelink.Player = interaction.guild.voice_client
-        # detect if user put url instead of title
+       # detect if user put url instead of title
         await interaction.response.defer(thinking=True)
         if re.fullmatch("http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+", search):
             scsong = (await susnode.get_tracks(query=search, cls=wavelink.SoundCloudTrack))[0]
