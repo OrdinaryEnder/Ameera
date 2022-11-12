@@ -738,7 +738,7 @@ class Other(commands.Cog):
     @app_commands.command(name="list", description="Bunch list of my commands (Need Newer Discord to view this)")
     async def _cmdlist(self, interaction: discord.Interaction):
         commands = [
-         f"{cmd.name} - {cmd.description}"
+         f"{cmd.mention} - {cmd.description}"
          for cmd in tree.get_commands()
         ]
         emb = discord.Embed(
