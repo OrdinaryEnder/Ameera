@@ -8,11 +8,11 @@ pillow
 pynacl
 python-dotenv
 git+https://github.com/PythonistaGuild/Wavelink
-lavalink
+python-dateutil
 git+https://github.com/johnwmillr/LyricsGenius.git
 colorama
 beautifulsoup4
-aiofiles
+parsedatetime
 StringProgressBar
 jishaku
 mystbin-py

@@ -32,6 +32,7 @@ from discord.ext import tasks
 import json
 from wavelink import Node as node
 from mod.botmod import bypass
+from mod.botmod import time as lol
 import youtube_dl
 import aiohttp
 import asyncio
@@ -737,7 +738,7 @@ class Other(commands.Cog):
         def format_date(dt: typing.Optional[datetime.datetime]):
             if dt is None:
                 return 'N/A'
-            return f'{time.format_dt(dt, "F")} ({time.format_relative(dt)})'
+            return f'{lol.format_dt(dt, "F")} ({lol.format_relative(dt)})'
 
         e.add_field(name='ID', value=user.id, inline=False)
         e.add_field(name='Joined', value=format_date(getattr(user, 'joined_at', None)), inline=False)
