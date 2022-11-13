@@ -734,7 +734,7 @@ class Other(commands.Cog):
         roles = [role.name.replace('@', '@\u200b') for role in getattr(user, 'roles', [])]
         e.set_author(name=str(user))
 
-        def format_date(dt: Optional[datetime.datetime]):
+        def format_date(dt: typing.Optional[datetime.datetime]):
             if dt is None:
                 return 'N/A'
             return f'{time.format_dt(dt, "F")} ({time.format_relative(dt)})'
