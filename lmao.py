@@ -46,7 +46,6 @@ from web import app
 from hypercorn.config import Config
 from hypercorn.asyncio import serve
 from enum import Enum
-import lavalink
 from dotenv import load_dotenv
 from discord.utils import get
 from discord import NotFound
