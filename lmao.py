@@ -763,7 +763,7 @@ class Other(commands.Cog):
             e.set_footer(text='This member is not in this server.')
         else:
             # thanks to JDJG Inc. Official
-            ok = [activity for activity in member.activities if isinstance(activity, discord.Spotify)]
+            ok = [activity for activity in user.activities if isinstance(activity, discord.Spotify)]
             if bool(ok) is not False:
                 e.add_field(name="Spotify", value=f"Title: [{ok[0].title}](ok[0].track_url) \n Artist: {', '.join(ok[0].artists)} \n Album: {ok[0].album}")
             else:
