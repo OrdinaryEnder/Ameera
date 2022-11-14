@@ -761,6 +761,13 @@ class Other(commands.Cog):
 
         if isinstance(user, discord.User):
             e.set_footer(text='This member is not in this server.')
+        else:
+            # thanks to JDJG Inc. Official
+            ok = [activity for activity in member.activities if isinstance(activity, discord.Spotify)]
+            if ok not []:
+                e.add_field(name="Spotify", value=f"Title: [{ok[0].title}](ok[0].track_url) \n Artist: {', '.join(ok[0].artists)} \n Album: {ok[0].album}")
+            else:
+                pass
 
         await interaction.response.send_message(embed=e)
 
@@ -1073,7 +1080,8 @@ class Music(commands.Cog):
         em = discord.Embed(
             title=f" ", description=f"Playing \n **[{vc.track}]({vc.track.uri})** \n Artist: {vc.track.author}")
         em.set_author(name="Now Playing♪", icon_url=f"{bot.user.avatar.url}")
-        if vc.track.thumbnail is None:
+        print(vc.track.thumbnail)
+        if not vc.track.thumbnail:
             em.set_thumbnail(
                 url="https://media.discordapp.net/attachments/977216545921073192/1033304783156690984/images2.jpg")
         else:
