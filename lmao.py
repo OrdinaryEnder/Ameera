@@ -766,6 +766,11 @@ class Other(commands.Cog):
 
         if isinstance(user, discord.User):
             e.set_footer(text='This member is not in this server.')
+        elif isinstance(user, discord.Member):
+         ok = [activity for activity in user.activities if isinstance(activity, discord.Spotify)]
+         if ok:
+             e.add_field(name="Spotify", value=f"Title: [{ok[0].title}]({ok[0].track_url}) \n Artist: {', '.join(ok[0].artists)} \n Album: {ok[0].album}")
+
         await interaction.response.send_message(embed=e)
 
     @app_commands.command(name="paste", description="Paste something to https://mystb.in")
