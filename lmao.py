@@ -728,9 +728,7 @@ class Other(commands.Cog):
     @app_commands.describe(getuser="the user")
     async def info(self, interaction: discord.Interaction,  getuser: typing.Union[discord.Member, discord.User] = None):
         """Shows info about a user."""
-
-        userid = getuser or interaction.user
-        user = interaction.guild.get_member(userid.id)
+        user = interaction.guild.get_member((getuser or interaction.user).id)
         if not user:
             user = await bot.fetch_user(userid.id)
         e = discord.Embed()
@@ -760,17 +758,13 @@ class Other(commands.Cog):
         if colour.value:
             e.colour = colour
 
-        ok = [activity for activity in user.activities if isinstance(activity, discord.Spotify)]
-        print(user.activities)
-        if ok:
-             e.add_field(name="Spotify", value=f"Title: [{ok[0].title}]({ok[0].track_url}) \n Artist: {', '.join(ok[0].artists)} \n Album: {ok[0].album}")
-
-
-
-        e.set_thumbnail(url=user.display_avatar.url) 
-
         if isinstance(user, discord.User):
             e.set_footer(text='This member is not in this server.')
+        else:
+            ok = [activity for activity in user.activities if isinstance(activity, discord.Spotify)]
+            print(user.activities)
+            if ok:
+              e.add_field(name="Spotify", value=f"Title: [{ok[0].title}]({ok[0].track_url}) \n Artist: {', '.join(ok[0].artists)} \n Album: {ok[0].album}")
 
 
         await interaction.response.send_message(embed=e)
