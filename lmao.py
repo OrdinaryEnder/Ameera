@@ -725,7 +725,7 @@ class Other(commands.Cog):
         self.bot = bot
 
     @app_commands.command(name="userinfo", description="Shows info about a user")
-    @app_commands.describe(user="the user")
+    @app_commands.describe(getuser="the user")
     async def info(self, interaction: discord.Interaction,  getuser: typing.Union[discord.Member, discord.User] = None):
         """Shows info about a user."""
 
