@@ -726,13 +726,13 @@ class Other(commands.Cog):
 
     @app_commands.command(name="userinfo", description="Shows info about a user")
     @app_commands.describe(user="the user")
-    async def info(self, interaction: discord.Interaction,  getuser: typing.Union[discord.Member, discord.User] = None):
+    async def info(self, interaction: discord.Interaction,  userinfo: typing.Union[discord.Member, discord.User] = None):
         """Shows info about a user."""
 
-        userid = getuser or interaction.user
-        user = interaction.guild.get_member(userid.id)
+        userd = userinfo or interaction.user
+        user = interaction.guild.get_member(userd.id)
         if not user:
-            user = await bot.fetch_user(userid.id)
+                await bot.fetch_user(userinfo)
         e = discord.Embed()
         roles = [role.name.replace('@', '@\u200b') for role in getattr(user, 'roles', [])]
         e.set_author(name=str(user))
