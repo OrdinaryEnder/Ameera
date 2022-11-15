@@ -730,7 +730,7 @@ class Other(commands.Cog):
         """Shows info about a user."""
         user = interaction.guild.get_member((getuser or interaction.user).id)
         if not user:
-            user = await bot.fetch_user(userid.id)
+            user = await bot.fetch_user(getuser.id)
         e = discord.Embed()
         roles = [role.name.replace('@', '@\u200b') for role in getattr(user, 'roles', [])]
         e.set_author(name=str(user))
