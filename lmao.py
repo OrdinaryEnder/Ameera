@@ -55,7 +55,7 @@ from discord.gateway import DiscordWebSocket, _log
 from json import loads
 import wavelink
 import async_timeout
-from roblox import Client as boblox
+from roblox import Client as Boblox
 
 load_dotenv()
 colorama.init(autoreset=True)
@@ -114,13 +114,10 @@ tree = bot.tree
 bot.startTime = time.time()
 # mystbin paster
 webpaste = Client()
-# ro.py! 
-robloxclient = boblox()
+rblx = Boblox()
 
 @tree.error
 async def on_app_command_error(
-
-
     interaction: Interaction,
     error: AppCommandError
 ):
@@ -665,17 +662,24 @@ class Moderation(commands.Cog):
     @app_commands.command(name='ban', description='Ban dumbass from your Holy Server')
     @app_commands.describe(user="Member About to banned", reason="Reason")
     @app_commands.checks.has_permissions(ban_members=True)
-    async def _ban(self, interaction: discord.Interaction, user: typing.Union[discord.Member, discord.User], reason: str = None):
+    async def _ban(self, interaction: discord.Interaction, user: discord.Member, reason: str = None):
         await interaction.guild.ban(user, reason=reason)
-        await interaction.response.send_message(f"Successfully banned {user} by {interaction.user.mention}, reason={reason}")
+        await interaction.response.send_message(f"Successfully banned {user} by {ctx.author.mention}, reason={reason}")
 
     @app_commands.command(name='unban', description='Unban people who have repented')
-    @app_commands.describe(id="ID of Member About to unban (Dont use @, just id)")
+    @app_commands.describe(id="ID of Member About to unban")
     @app_commands.checks.has_permissions(ban_members=True)
-    async def _unban(self, interaction: discord.Interaction, id: discord.User):
+    async def _unban(self, interaction: discord.Interaction, id: int):
         user = await bot.fetch_user(int(id))
         await interaction.guild.unban(user)
-        await interaction.response.send_message(f"Unbanned ")
+        await interaction.response.send_message(f"Unbanned @{user.name}#{user.discriminator}")
+
+    @app_commands.command(name="idban", description="Ban using ID (For Unfair Leaver")
+    @app_commands.describe(id="ID of Member About to banned", reason="Reason")
+    @app_commands.checks.has_permissions(ban_members=True)
+    async def _idban(self, interaction: discord.Interaction, id: discord.User, reason: str = None):
+        await interaction.guild.ban(user, reason=reason)
+        await imteraction.response.send_message(f"Banned @{user.name}#{user.discriminator}, Reason = {reason}")
 
     @app_commands.command(name='purge', description='Purge Old Messages')
     @app_commands.checks.has_permissions(manage_messages=True)
@@ -712,21 +716,13 @@ class nsfw(commands.Cog):
                     em = discord.Embed(title="Result")
                     em.set_image(url=res['message'])
                     await interaction.followup.send(embed=em)
+        except:
+            await interaction.followup.send(traceback.print_exc())
 
 
 class Other(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
-
-    @app_commands.command(name="finduser", description="Find Roblox Users")
-    @app_commands.describe(username="Username")
-    async def _boblox(self, interaction: discord.Interaction, username: str):
-        await interaction.response.defer()
-        em = discord.Embed(title=f"Matching user for {username}")
-        async for users in robloxclient.user_search(username, max_items=10):
-            em.add_field(name=f"Name: {user.name} \n Display Name: {user.display_name}", value=user.description)
-        await interaction.followup.send(embed=em)
 
     @app_commands.command(name="userinfo", description="Shows info about a user")
     @app_commands.describe(getuser="the user")
@@ -772,6 +768,20 @@ class Other(commands.Cog):
 
 
         await interaction.response.send_message(embed=e)
+
+    @app_commands.command(name="finduser", description="Find Roblox Users")
+    @app_commands.checks.cooldown(1, 7.0, key=lambda i: (i.guild_id, i.user.id))
+    @app_commands.describe(username="Username")
+    async def _boblox(self, interaction: discord.Interaction, username: str):
+      await interaction.response.defer()
+      try:
+        em = discord.Embed(title=f"Matching user for {username}")
+        finds = await robloxclient.user_search(username, max_items=10)
+        for users in finds:
+            em.add_field(name=f"Name: {user.name} \n Display Name: {user.display_name}", value=user.description)
+        await interaction.followup.send(embed=em)
+      except UserNotFound:
+          await interaction.followup.send("Invalid Username")
 
     @app_commands.command(name="paste", description="Paste something to https://mystb.in")
     @app_commands.checks.cooldown(1, 12.0, key=lambda i: (i.guild_id, i.user.id))
