@@ -676,8 +676,7 @@ class Moderation(commands.Cog):
     @app_commands.command(name="idban", description="Ban using ID (For Unfair Leaver")
     @app_commands.describe(id="ID of Member About to banned", reason="Reason")
     @app_commands.checks.has_permissions(ban_members=True)
-    async def _idban(self, interaction: discord.Interaction, id: int, reason: str = None):
-        user = await bot.fetch_user(int(id))
+    async def _idban(self, interaction: discord.Interaction, id: discord.User, reason: str = None):
         await interaction.guild.ban(user, reason=reason)
         await imteraction.response.send_message(f"Banned @{user.name}#{user.discriminator}, Reason = {reason}")
 
