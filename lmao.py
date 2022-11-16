@@ -114,7 +114,7 @@ tree = bot.tree
 bot.startTime = time.time()
 # mystbin paster
 webpaste = Client()
-rblx = Boblox()
+robloxclient = Boblox()
 
 @tree.error
 async def on_app_command_error(
