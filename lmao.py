@@ -776,7 +776,7 @@ class Other(commands.Cog):
       await interaction.response.defer()
       try:
         em = discord.Embed(title=f"Matching user for {username}")
-        async for users in robloxclient.user_search(username, max_items=10):
+        async for user in robloxclient.user_search(username, max_items=10):
             em.add_field(name=f"Name: {user.name} \n Display Name: {user.display_name}", value=user.description)
         await interaction.followup.send(embed=em)
       except UserNotFound:
