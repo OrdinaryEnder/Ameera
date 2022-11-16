@@ -773,15 +773,15 @@ class Other(commands.Cog):
     @app_commands.checks.cooldown(1, 7.0, key=lambda i: (i.guild_id, i.user.id))
     @app_commands.describe(username="Username")
     async def _boblox(self, interaction: discord.Interaction, username: str):
-      await interaction.response.defer()
-      try:
+        await interaction.response.defer()
         em = discord.Embed(title=f"Matching user for {username}")
-        async for users in robloxclient.user_search(username, max_items=10):
+        try:
+         async for users in robloxclient.user_search(username, max_items=10):
             user = await robloxclient.get_user(users.id)
-            em.add_field(name=f"Name: {user.name} \n Display Name: {user.display_name}", value=user.description)
-        await interaction.followup.send(embed=em)
-      except UserNotFound:
+            em.add_field(name=f"Name: **{user.name}**", value=f"Display Name: {user.display_name} \n Description: {user.description}")
+        except UserNotFound:
           await interaction.followup.send("Invalid Username")
+        await interaction.followup.send(embed=em)
 
     @app_commands.command(name="paste", description="Paste something to https://mystb.in")
     @app_commands.checks.cooldown(1, 12.0, key=lambda i: (i.guild_id, i.user.id))
