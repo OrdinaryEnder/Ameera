@@ -1,8 +1,7 @@
 quart
 hypercorn
 brainfuck-interpreter
-git+https://github.com/Rapptz/discord.py
-youtube-dl
+discord.py
 qrcode
 pillow
 pynacl
