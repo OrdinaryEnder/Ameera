@@ -70,7 +70,8 @@ def restart_bot():
 # setup hook
 # website
 config = Config()
-config.bind = [f"0.0.0.0:{os.getenv('PORT')}"]
+webport = os.getenv('PORT') or 8080
+config.bind = [f"0.0.0.0:{webport}"]
 
 with open("badwords.txt") as f:
     yudi = f.read()
@@ -83,7 +84,7 @@ class MyBot(commands.AutoShardedBot):
 
     async def setup_hook(self):
         print(
-            Fore.BLUE + f"Starting Website at {os.getenv('PORT')} (set PORT in enviroment variable)")
+            Fore.BLUE + f"Starting Website at {webport} (set PORT in enviroment variable)")
         asyncio.create_task(serve(app, config))
         print(Fore.BLUE + "Registering Commands (Wont take long time)....")
         print(Fore.YELLOW + Fore.RED + "Adding Music cogs")
@@ -378,7 +379,7 @@ class YTMusicSelectView(discord.ui.View):
         self.add_item(YTMusicDropDown(track, vc))
 
     async def on_timeout(self):
-        if self.dropdown:
+        if self.dropdown.executed:
             return True
         else:
             await self.vc.ayo.edit(content="Music Timed Out", view=None)
