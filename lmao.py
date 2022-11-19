@@ -281,6 +281,7 @@ class MusicDropDown(discord.ui.Select):
     def __init__(self, track, vc):
         ret = []
         self.vc = vc
+        self.executed = False
         for song in track[:5]:
             ret.append(discord.SelectOption(label=song.title,
                        description=song.author, value=song.uri))
@@ -305,18 +306,23 @@ class MusicDropDown(discord.ui.Select):
         else:
             await self.vc.queue.put_wait(search)
             await self.vc.ayo.edit(content=f"Added {search.title} to the queue", view=None)
+        self.executed = True
         
 
 
 class MusicSelectView(discord.ui.View):
     def __init__(self, track, vc, userid, timeout):
         super().__init__(timeout=timeout)
-        self.add_item(MusicDropDown(track, vc))
+        self.dropdown = MusicDropDown(track, vc)
+        self.add_item(self.dropdown)
         self.userid = userid
         self.vc = vc
 
     async def on_timeout(self):
-        await self.vc.ayo.edit("Music Timed Out", view=None)
+        if self.dropdown.executed:
+            return True
+        else:
+            await self.vc.ayo.edit(content="Music Timed Out", view=None)
 
 
     async def interaction_check(self, interaction: discord.Interaction):
@@ -333,6 +339,7 @@ class YTMusicDropDown(discord.ui.Select):
     def __init__(self, track, vc):
         ret = []
         self.vc = vc
+        self.executed = False
         for song in track[:5]:
             ret.append(discord.SelectOption(label=song.title,
                        description=song.author, value=song.uri))
@@ -358,6 +365,8 @@ class YTMusicDropDown(discord.ui.Select):
         else:
             await self.vc.queue.put_wait(search)
             await self.vc.ayo.edit(content=f"Added {search.title} to the queue", view=None)
+
+        self.executed = True
         
 
 
@@ -369,7 +378,10 @@ class YTMusicSelectView(discord.ui.View):
         self.add_item(YTMusicDropDown(track, vc))
 
     async def on_timeout(self):
-        await self.vc.ayo.edit("Music Timed Out", view=None)
+        if self.dropdown:
+            return True
+        else:
+            await self.vc.ayo.edit(content="Music Timed Out", view=None)
 
 
     async def interaction_check(self, interaction: discord.Interaction):
