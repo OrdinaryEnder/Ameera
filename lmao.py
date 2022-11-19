@@ -376,7 +376,8 @@ class YTMusicSelectView(discord.ui.View):
         super().__init__(timeout=timeout)
         self.userid = userid
         self.vc = vc
-        self.add_item(YTMusicDropDown(track, vc))
+        self.dropdown = YTMusicDropDown(track, vc)
+        self.add_item(self.dropdown)
 
     async def on_timeout(self):
         if self.dropdown.executed:
