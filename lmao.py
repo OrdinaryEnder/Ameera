@@ -85,7 +85,7 @@ class MyBot(commands.AutoShardedBot):
     async def setup_hook(self):
         print(
             Fore.BLUE + f"Starting Website at {webport} (set PORT in enviroment variable)")
-        asyncio.create_task(serve(app, config))
+        bot.loop.create_task(serve(app, config))
         print(Fore.BLUE + "Registering Commands (Wont take long time)....")
         print(Fore.YELLOW + Fore.RED + "Adding Music cogs")
         await bot.add_cog(Music(bot))
@@ -283,7 +283,7 @@ class MusicDropDown(discord.ui.Select):
         ret = []
         self.vc = vc
         self.executed = False
-        for song in track[:5]:
+        for song in track[:10]:
             ret.append(discord.SelectOption(label=song.title,
                        description=song.author, value=song.uri))
 
@@ -341,7 +341,7 @@ class YTMusicDropDown(discord.ui.Select):
         ret = []
         self.vc = vc
         self.executed = False
-        for song in track[:5]:
+        for song in track[:10]:
             ret.append(discord.SelectOption(label=song.title,
                        description=song.author, value=song.uri))
 
@@ -792,7 +792,7 @@ class Other(commands.Cog):
         try:
          async for users in robloxclient.user_search(username, max_items=10):
             user = await robloxclient.get_user(users.id)
-            em.add_field(name=f"Name: **{user.name}**", value=f"Display Name: {user.display_name} \n Description: {user.description}")
+            em.add_field(name=f"Name: **{user.name}**", value=f"Display Name: {user.display_name} \nDescription: {user.description}")
         except UserNotFound:
           await interaction.followup.send("Invalid Username")
         await interaction.followup.send(embed=em)
