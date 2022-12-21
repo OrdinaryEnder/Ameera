@@ -34,7 +34,6 @@ import json
 from wavelink import Node as node
 from mod.botmod import bypass
 from mod.botmod import format_dt, format_relative
-import youtube_dl
 import aiohttp
 import asyncio
 import time

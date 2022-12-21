@@ -32,7 +32,6 @@ from discord.ext import commands
 from discord.ext import tasks
 import json
 from wavelink import Node as node
-import youtube_dl
 import aiohttp
 import asyncio
 import time
