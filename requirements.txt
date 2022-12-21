@@ -1,7 +1,7 @@
 quart
 hypercorn
 brainfuck-interpreter
-discord.py
+git+https://github.com/Rapptz/discord.py
 qrcode
 pillow
 pynacl
@@ -16,3 +16,4 @@ StringProgressBar
 jishaku
 mystbin-py
 roblox
+git+https://github.com/Rapptz/asqlite
