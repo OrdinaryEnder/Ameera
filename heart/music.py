@@ -182,6 +182,9 @@ class YTMusicSelectView(discord.ui.View):
 class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.Cog.listener()
+    async def on_wavelink_node_ready(node: wavelink.Node):
         self.chosenode = [n for n in wavelink.NodePool._nodes.values() if n.is_connected()][0]
 
 
