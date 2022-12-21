@@ -203,15 +203,15 @@ class Other(commands.Cog):
     @app_commands.command(name="stats", description="bot stats")
     async def stats(self, interaction: discord.Interaction):
         embed = discord.Embed(
-            title=f"Bot stats of {bot.user}", description="Stats:")
+            title=f"Bot stats of {self.bot.user}", description="Stats:")
         embed.add_field(
             name="Platform:", value=f"```css \n {platform.system()} {platform.release()} {platform.machine()} \n ```")
         embed.add_field(
             name="Timezone", value=f"```css \n {datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo} \n```")
         embed.add_field(
-            name="Latency", value=f"```css \n{bot.latency * 1000} \n ```")
+            name="Latency", value=f"```css \n{self.bot.latency * 1000} \n ```")
         embed.add_field(
-            name="Uptime", value=f"```css \n {str(datetime.timedelta(seconds=int(round(time.time()-bot.startTime))))} \n ```")
+            name="Uptime", value=f"```css \n {str(datetime.timedelta(seconds=int(round(time.time()-self.bot.startTime))))} \n ```")
         embed.add_field(name="Python Version",
                         value=f"```css \n {sys.version} \n ```")
         embed.add_field(name="Discord.py Version",
@@ -240,6 +240,10 @@ class Other(commands.Cog):
         webhook = await interaction.channel.create_webhook(name=name)
         await interaction.user.send(f"Heres your webhook \n {webhook.url}")
         await interaction.response.send_message(f"Created webhook {name}")
+
+    @app_commands.command(name="uptime", description="bot uptime")
+    async def uptime(self, interaction: discord.Interaction):
+      await interaction.response.send_message(f"{str(datetime.timedelta(seconds=int(round(time.time()-self.bot.startTime))))}")
 
 #
 async def setup(bot):
