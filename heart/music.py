@@ -231,6 +231,7 @@ class Music(commands.Cog):
             else:
                await interaction.followup.send(view=YTMusicSelectView(track, vc, interaction.user.id, (await interaction.original_response()), timeout=30), wait=True)
         setattr(vc, "loop", False)
+        vc.chan = interaction.channel
 
     @app_commands.command(name="playsc", description="Play SoundCloud (Powered by WaveLink)")
     @app_commands.describe(search="Search for song")
@@ -262,6 +263,7 @@ class Music(commands.Cog):
             else:
              await interaction.followup.send(view=MusicSelectView(track, vc, interaction.user.id, (await interaction.original_response()), timeout=30), wait=True)
         setattr(vc, "loop", False)
+        vc.chan = interaction.channel
 
     @app_commands.command(name="pause", description="Pause song")
     async def pause(self, interaction: discord.Interaction):
