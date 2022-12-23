@@ -459,7 +459,7 @@ class Music(commands.Cog):
 
 
 async def node_connect(bot):
-    await wavelink.NodePool.create_node(bot=bot, host="lava.link", port=80, password="Olivia")
+    await wavelink.NodePool.create_node(bot=bot, host="nonssl.freelavalink.ga", port=80, password="www.freelavalink ga")
     await wavelink.NodePool.create_node(bot=bot, host="node1.kartadharta.xyz", port=443, password="kdlavalink", https=True)
 
 async def setup(bot):
