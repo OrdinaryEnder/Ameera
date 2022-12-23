@@ -79,7 +79,6 @@ class MyBot(commands.AutoShardedBot):
         for f in os.listdir("./heart"):
             if f.endswith(".py"):
                 await bot.load_extension(f"heart.{f[:-3]}")
-        await bot.loop.create_task(node_connect(bot))
         await bot.load_extension('jishaku')
         print(Fore.GREEN + "Enabling memory optimizer")
         gc.enable()
