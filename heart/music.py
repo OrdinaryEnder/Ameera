@@ -185,7 +185,7 @@ class Music(commands.Cog):
 
     @commands.Cog.listener()
     async def on_wavelink_node_ready(self, node: wavelink.Node):
-        self.chosenode = [n for n in wavelink.NodePool._nodes.values() if n.is_connected()][0]
+      print(node.identifier)
 
 
     @app_commands.command(name="connect", description="Connect to Your Voice")
@@ -196,7 +196,7 @@ class Music(commands.Cog):
         else:
             channel = interaction.user.voice.channel
             vc: wavelink.Player = channel
-            await vc.connect(cls=wavelink.Player(node=self.chosenode))
+            await vc.connect(cls=wavelink.Player(node=[n for n in wavelink.NodePool._nodes.values() if n.is_connected()][0]))
             await interaction.followup.send(f"Connected to voice channel: '{channel}'")
 
     @app_commands.command(name="play", description="Play Youtube (Powered by WaveLink)")
@@ -206,7 +206,7 @@ class Music(commands.Cog):
           if interaction.user.voice is None:
             return await interaction.response.send_message(f"{interaction.user.mention} Your not connected to a voice, connect it!")
           else:
-            vc: wavelink.Player = await interaction.user.voice.channel.connect(cls=wavelink.Player(node=self.chosenode))
+            vc: wavelink.Player = await interaction.user.voice.channel.connect(cls=wavelink.Player(node=[n for n in wavelink.NodePool._nodes.values() if n.is_connected()][0]))
         else:
             vc: wavelink.Player = interaction.guild.voice_client
         # detect if user put url instead of title
@@ -240,7 +240,7 @@ class Music(commands.Cog):
           if interaction.user.voice is None:
             return await interaction.response.send_message(f"{interaction.user.mention} Your not connected to a voice, connect it!")
           else:
-            vc: wavelink.Player = await interaction.user.voice.channel.connect(cls=wavelink.Player(node=self.chosenode))
+            vc: wavelink.Player = await interaction.user.voice.channel.connect(cls=wavelink.Player(node=[n for n in wavelink.NodePool._nodes.values() if n.is_connected()][0]))
         else:
             vc: wavelink.Player = interaction.guild.voice_client
        # detect if user put url instead of title
