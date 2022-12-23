@@ -256,9 +256,4 @@ bot.help_command = MyHelpCommand()
 
 token = os.getenv("TOKEN")
 
-
-async def node_connect(bot):
-    await wavelink.NodePool.create_node(bot=bot, host="ssl.freelavalink.ga", port=443, password="www.freelavalink.ga", https=True)
-    await wavelink.NodePool.create_node(bot=bot, host="node1.kartadharta.xyz", port=443, password="kdlavalink", https=True)
-
 bot.run(token)
