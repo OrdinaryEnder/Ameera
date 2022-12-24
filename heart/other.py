@@ -31,7 +31,6 @@ import discord
 from discord.ext import commands
 from discord.ext import tasks
 import json
-from wavelink import Node as node
 from mod.botmod import bypass
 from mod.botmod import format_dt, format_relative
 import aiohttp
@@ -40,9 +39,6 @@ import time
 import datetime
 import datetime as dt
 import typing as t
-from email.base64mime import body_encode
-import wavelink
-from enum import Enum
 from dotenv import load_dotenv
 from discord.utils import get
 from discord import NotFound
@@ -50,14 +46,14 @@ import itertools
 from async_timeout import timeout
 from discord.gateway import DiscordWebSocket, _log
 from json import loads
-import wavelink
 import async_timeout
 from roblox import Client as Boblox
 from roblox import UserNotFound
-
+from duckpy import AsyncClient as DuckClient
 
 webpaste = Client()
 robloxclient = Boblox()
+duckyclient = DuckClient()
 
 class Suggestion(discord.ui.Modal, title="Suggestion/Bug Report"):
       suggestion = discord.ui.TextInput(label="Suggestion", placeholder="Type your suggestion/bug report here")
@@ -244,6 +240,26 @@ class Other(commands.Cog):
     @app_commands.command(name="uptime", description="bot uptime")
     async def uptime(self, interaction: discord.Interaction):
       await interaction.response.send_message(f"{str(datetime.timedelta(seconds=int(round(time.time()-self.bot.startTime))))}")
+
+    @app_commands.command(name="ducksearch", description="Search With DuckDuckGo!")
+    async def goduck(self, interaction: discord.Interaction, searchbar: str):
+        await interaction.response.defer()
+        result = await duckyclient.search(searchbar)
+        embed = discord.Embed(title=f"**Search Matching for {searchbar}**")
+        embed.set_author("DuckDuckGo", icon_url="https://upload.wikimedia.org/wikipedia/en/9/90/The_DuckDuckGo_Duck.png")
+        for results in result[:25]:
+            embed.add_field(name=f"[{results.title}]({result.url})", value=results.description)
+
+        await interaction.followup.send(embed=embed)
+
+    @goduck.autocomplete('searchbar')
+    async def autocomplete_bar(self, interaction: discord.Interaction, current: str):
+        result = await duckyclient.search(current)
+        for results in result[:10]:
+           return [
+                     app_commands.Choice(name=results.title, value=results.title)
+            ]
+
 
 #
 async def setup(bot):
