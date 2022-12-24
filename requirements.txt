@@ -17,3 +17,4 @@ jishaku
 mystbin-py
 roblox
 git+https://github.com/Rapptz/asqlite
+duckpy
