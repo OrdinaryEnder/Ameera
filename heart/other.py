@@ -246,7 +246,7 @@ class Other(commands.Cog):
         await interaction.response.defer()
         result = await duckyclient.search(searchbar)
         embed = discord.Embed(title=f"**Search Matching for {searchbar}**")
-        embed.set_author("DuckDuckGo", icon_url="https://upload.wikimedia.org/wikipedia/en/9/90/The_DuckDuckGo_Duck.png")
+        embed.set_author(name="DuckDuckGo", icon_url="https://upload.wikimedia.org/wikipedia/en/9/90/The_DuckDuckGo_Duck.png")
         for results in result[:25]:
             embed.add_field(name=f"[{results.title}]({result.url})", value=results.description)
 
@@ -255,10 +255,11 @@ class Other(commands.Cog):
     @goduck.autocomplete('searchbar')
     async def autocomplete_bar(self, interaction: discord.Interaction, current: str):
         result = await duckyclient.search(current)
+        dalist = []
         for results in result[:10]:
-           return [
-                     app_commands.Choice(name=results.title, value=results.title)
-            ]
+           dalist.append(app_commands.Choice(name=results.title, value=results.title))
+
+        return dalist
 
 
 #
