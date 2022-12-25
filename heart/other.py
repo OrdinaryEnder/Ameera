@@ -247,7 +247,7 @@ class Other(commands.Cog):
         result = await duckyclient.search(searchbar)
         embed = discord.Embed(title=f"**Search Matching for {searchbar}**")
         embed.set_author(name="DuckDuckGo", icon_url="https://upload.wikimedia.org/wikipedia/en/9/90/The_DuckDuckGo_Duck.png")
-        for results in result[:25]:
+        for results in result[:10]:
             embed.add_field(name=f"[{results.title}]({results.url})", value=results.description)
 
         await interaction.followup.send(embed=embed)
