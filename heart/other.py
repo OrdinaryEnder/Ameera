@@ -192,7 +192,7 @@ class Other(commands.Cog):
                title="Result", description="Brainfuck Interpreter")
             embed.add_field(name="Translate:",
                                value=f"{bf}")
-         else:
+        else:
             return await interaction.response.send_message("Invalid Brainfuck")
 
         await interaction.response.send_message(embed=embed)
