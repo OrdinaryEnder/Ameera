@@ -138,23 +138,6 @@ class Fun(commands.Cog):
         embed.add_field(name='Answer: ', value=f'{response}', inline=False)
         await interaction.response.send_message(embed=embed)
 
-    @app_commands.command(name='akinator', description="Lemme guess ur character")
-    async def akinator(self, interaction: discord.Interaction):
-        await interaction.response.send_message("Akinator is disabled for some reason \n Reason: deprecated", ephemeral=True)
-
-    @app_commands.command(name="math", description="Math")
-    @app_commands.describe(num="Needed number", operation="+ for summation ,- for subtraction , * for multiplication, / for divine", num2="another number")
-    async def math(self, interaction: discord.Interaction, num: int, operation: str, num2: int):
-        if operation not in ['+', '-', '*', '/']:
-            await interaction.response.send_message('Please type a valid operation type. (+ for summation ,- for subtraction , * for multiplication, ÷ for divine)')
-        var = f'{num} {operation} {num2}'
-        embed = discord.Embed(title="Result", description="ㅤ",
-                              color=discord.Color.from_rgb(0, 0, 0))
-        embed.add_field(name="Result Of Your Math:",
-                        value=f"{var} = {eval(var)}")
-        embed.set_footer(text="Be Smart Next Time!")
-        await interaction.response.send_message(embed=embed)
-
     @app_commands.command(name="meme", description="Reddit Memes")
     async def meme(self, interaction: discord.Interaction):
         pages = ["memes",

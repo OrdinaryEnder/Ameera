@@ -139,7 +139,6 @@ class YTMusicDropDown(discord.ui.Select):
         # the user's favourite colour or choice. The self object refers to the
         # Select object, and the values attribute gets a list of the user's
         # selected options. We only want the first one.
-        print(self.values[0])
         search = (await self.vc.node.get_tracks(query=self.values[0], cls=wavelink.YouTubeTrack))[0]
         if self.vc.queue.is_empty and not self.vc.is_playing():
             await self.vc.play(search)
@@ -393,9 +392,9 @@ class Music(commands.Cog):
 
         em = discord.Embed(
             title=f" ", description=f"Playing \n **[{vc.track}]({vc.track.uri})** \n Artist: {vc.track.author}")
-        em.set_author(name="Now Playing♪", icon_url=f"{bot.user.avatar.url}")
+        em.set_author(name="Now Playing♪", icon_url=f"{self.bot.user.avatar.url}")
         print(vc.track.thumbnail)
-        if not vc.track.thumbnail:
+        if vc.track.thumbnail is None:
             em.set_thumbnail(
                 url="https://media.discordapp.net/attachments/977216545921073192/1033304783156690984/images2.jpg")
         else:
@@ -404,13 +403,10 @@ class Music(commands.Cog):
             int(vc.track.length), int(vc.position), size=10)
         em.add_field(name="Position", value=f"{bar[0]}")
         em.add_field(name="ㅤ", value="ㅤ")
-        em.add_field(name="ㅤ", value="ㅤ")
         em.add_field(name="Position",
                      value=f"`{datetime.timedelta(seconds=vc.position)}`")
         em.add_field(name="Duration",
                      value=f"`{datetime.timedelta(seconds=vc.track.length)}`")
-        em.add_field(name="ㅤ", value="ㅤ")
-        em.add_field(name="ㅤ", value="ㅤ")
         em.set_footer(icon_url=f"{interaction.user.avatar.url}",
                       text=f"Requested by {interaction.user}")
         return await interaction.response.send_message(embed=em)

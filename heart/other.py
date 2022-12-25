@@ -186,10 +186,15 @@ class Other(commands.Cog):
     @app_commands.describe(code="brainfuck code")
     async def _brainfuck(self, interaction: discord.Interaction, code: str):
         content = re.sub("```brainfuck|```bf|```", "", code)
-        embed = discord.Embed(
-            title="Result", description="Brainfuck Interpreter")
-        embed.add_field(name="Translate:",
-                        value=f"{brainfuck.evaluate(content)}")
+        bf = brainfuck.evaluate(content)
+        if bf:
+            embed = discord.Embed(
+               title="Result", description="Brainfuck Interpreter")
+               embed.add_field(name="Translate:",
+                               value=f"{bf}")
+         else:
+            return await interaction.response.send_message("Invalid Brainfuck")
+
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command(name="ping", description="Pong! <3")
@@ -248,7 +253,7 @@ class Other(commands.Cog):
         embed = discord.Embed(title=f"**Search Matching for {searchbar}**")
         embed.set_author(name="DuckDuckGo", icon_url="https://upload.wikimedia.org/wikipedia/en/9/90/The_DuckDuckGo_Duck.png")
         for results in result[:10]:
-            embed.add_field(name="​", value=f"[{results.title}]({results.url}) \n \n{results.description}")
+            embed.add_field(name="​", value=f"[{results.title}]({results.url}) \n {results.description}")
 
         await interaction.followup.send(embed=embed)
 
