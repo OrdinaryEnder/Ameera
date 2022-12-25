@@ -190,7 +190,7 @@ class Other(commands.Cog):
         if bf:
             embed = discord.Embed(
                title="Result", description="Brainfuck Interpreter")
-               embed.add_field(name="Translate:",
+            embed.add_field(name="Translate:",
                                value=f"{bf}")
          else:
             return await interaction.response.send_message("Invalid Brainfuck")
