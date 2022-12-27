@@ -141,7 +141,7 @@ class Fun(commands.Cog):
 
     @app_commands.command(name="headortails", description="Head or tails? 🤔")
     async def headtails(self, interaction: discord.Interaction):
-            await interaction.response.send_message(f"Its {random.choice(['Head', 'Tails']")
+            await interaction.response.send_message(f"Its {random.choice(['Head', 'Tails'])}")
 
 
 
