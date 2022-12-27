@@ -87,14 +87,14 @@ class Moderation(commands.Cog):
     @app_commands.checks.has_permissions(kick_members=True)
     async def _kick(self, interaction: discord.Interaction, member: discord.Member, reason: str = None):
         await interaction.guild.kick(Member, reason=reason)
-        await interaction.response.send_message(f"{Member} Successfully kicked by {ctx.author.mention}")
+        await interaction.response.send_message(f"{member} Successfully kicked by {interaction.user.mention}")
 
     @app_commands.command(name='ban', description='Ban dumbass from your Holy Server')
     @app_commands.describe(user="Member About to banned", reason="Reason")
     @app_commands.checks.has_permissions(ban_members=True)
     async def _ban(self, interaction: discord.Interaction, user: discord.Member, reason: str = None):
         await interaction.guild.ban(user, reason=reason)
-        await interaction.response.send_message(f"Successfully banned {user} by {ctx.author.mention}, reason={reason}")
+        await interaction.response.send_message(f"Successfully banned {user} by {interaction.user.mention}, reason={reason}")
 
     @app_commands.command(name='unban', description='Unban people who have repented')
     @app_commands.describe(id="ID of Member About to unban")
@@ -102,7 +102,7 @@ class Moderation(commands.Cog):
     async def _unban(self, interaction: discord.Interaction, id: int):
         user = await bot.fetch_user(int(id))
         await interaction.guild.unban(user)
-        await interaction.response.send_message(f"Unbanned @{user.name}#{user.discriminator}")
+        await interaction.response.send_message(f"Unbanned {str(user)}")
 
     @app_commands.command(name="idban", description="Ban using ID (For Unfair Leaver")
     @app_commands.describe(id="ID of Member About to banned", reason="Reason")

@@ -138,6 +138,13 @@ class Fun(commands.Cog):
         embed.add_field(name='Answer: ', value=f'{response}', inline=False)
         await interaction.response.send_message(embed=embed)
 
+
+    @app_commands.command(name="headortails", description="Head or tails? 🤔")
+    async def headtails(self, interaction: discord.Interaction):
+            await interaction.response.send_message(f"Its {random.choice(['Head', 'Tails']")
+
+
+
     @app_commands.command(name="meme", description="Reddit Memes")
     async def meme(self, interaction: discord.Interaction):
         pages = ["memes",
