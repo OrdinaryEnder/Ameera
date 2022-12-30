@@ -1,0 +1,6 @@
+# Olivia config.toml
+
+[main]
+token = "1"
+openaikey = ""
+

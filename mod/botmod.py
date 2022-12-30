@@ -14,6 +14,20 @@ import json
 import requests
 import aiohttp
 
+async def openairequest(key, message):
+
+   headers = {"Authorization": f"Bearer {key}"}
+   async with aiohttp.ClientSession(headers=headers) as session:
+    async with session.post("https://api.openai.com/v1/completions", json={
+        "prompt": message,
+        "model": "text-davinci-003",
+        "max_tokens": 10
+    }) as response:
+       if response.status > 299:
+        return (await response.json())['error']['message']
+       else:
+         return (await response.json())['choices'][0]['text']
+
 async def bypass(url):
 
     payload = {

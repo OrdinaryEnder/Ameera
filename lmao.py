@@ -41,7 +41,6 @@ import typing as t
 from email.base64mime import body_encode
 import wavelink
 from enum import Enum
-from dotenv import load_dotenv
 from discord.utils import get
 from discord import NotFound
 import itertools
@@ -52,7 +51,8 @@ import wavelink
 import async_timeout
 from roblox import Client as Boblox
 from roblox import UserNotFound
-load_dotenv()
+import toml
+
 colorama.init(autoreset=True)
 
 # this is will cached
@@ -91,7 +91,7 @@ bot = MyBot(command_prefix=commands.when_mentioned, intents=intents,
             activity=discord.Game(name="wassup"))
 
 tree = bot.tree
-
+bot.config = toml.load("config.toml")
 bot.startTime = time.time()
 
 
@@ -138,7 +138,6 @@ async def on_wavelink_track_end(player: wavelink.Player, track: wavelink.Track, 
 
     if vc.loop is True:
         return await vc.play(track)
-
     try:
         next_song = vc.queue.get()
         await vc.play(next_song)
@@ -252,7 +251,6 @@ class MyHelpCommand(commands.MinimalHelpCommand):
 # slash support of help
 bot.help_command = MyHelpCommand()
 
-
-token = os.getenv("TOKEN")
+token = os.getenv("TOKEN") or bot.config['main']['token']
 
 bot.run(token)

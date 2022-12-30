@@ -32,7 +32,6 @@ from discord.ext import commands
 from discord.ext import tasks
 import json
 from mod.botmod import bypass
-from mod.botmod import openairequest
 from mod.botmod import format_dt, format_relative
 import aiohttp
 import asyncio
@@ -55,6 +54,7 @@ from duckpy import AsyncClient as DuckClient
 webpaste = Client()
 robloxclient = Boblox()
 duckyclient = DuckClient()
+
 class Suggestion(discord.ui.Modal, title="Suggestion/Bug Report"):
       suggestion = discord.ui.TextInput(label="Suggestion", placeholder="Type your suggestion/bug report here")
       
@@ -267,14 +267,7 @@ class Other(commands.Cog):
         return dalist
 
 
-    @app_commands.command(name="ask", description="Ask Olivia (Powered by OpenAI ChatGPT")
-    @app_commands.describe(question="The Question")
-    async def chatgpt(self, interaction: discord.Interaction, question: str):
-      openaikey = os.getenv("OPENAI_KEY") or self.bot.config['main']['openaikey']
-      await interaction.response.defer()
-      result = await openairequest(openaikey, question)
-      await interaction.followup.send(result)
-
+    @app_commands.command(name="ask", description="Ask
 #
 async def setup(bot):
     await bot.add_cog(Other(bot))
