@@ -21,7 +21,7 @@ async def openairequest(key, message):
     async with session.post("https://api.openai.com/v1/completions", json={
         "prompt": message,
         "model": "text-davinci-003",
-        "max_tokens": 10
+        "max_tokens": 2000
     }) as response:
        if response.status > 299:
         return (await response.json())['error']['message']
