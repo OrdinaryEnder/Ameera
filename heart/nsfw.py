@@ -18,7 +18,6 @@ class nsfw(commands.Cog):
     @app_commands.command(name="image", description="Get Images (NSFW!!!!!)", nsfw=True)
     @app_commands.describe(image="NSFW Image about to show")
     async def _image(self, interaction: discord.Interaction, image: typing.Literal['4k', 'hentai', 'holo', 'neko', 'ass', 'boobs', 'hentai', 'lesbian', 'gasm',  'lewd', 'pussy', 'cum', 'blowjob', 'feet', 'spank', 'anal']):
-        try:
             await interaction.response.defer()
             async with aiohttp.ClientSession() as session:
                 async with session.get(f"http://api.nekos.fun:8080/api/{image}") as r:
