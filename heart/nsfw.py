@@ -24,7 +24,7 @@ class nsfw(commands.Cog):
                 async with session.get(f"http://api.nekos.fun:8080/api/{image}") as r:
                     res = await r.json()
                     em = discord.Embed(title="Result")
-                    em.set_image(url=res['message'])
+                    em.set_image(url=res['image'])
                     await interaction.followup.send(embed=em)
 
 
