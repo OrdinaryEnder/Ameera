@@ -53,7 +53,6 @@ import wavelink
 import async_timeout
 from roblox import Client as Boblox
 from roblox import UserNotFound
-load_dotenv()
 colorama.init(autoreset=True)
 
 

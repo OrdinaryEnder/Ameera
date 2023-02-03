@@ -39,7 +39,6 @@ import time
 import datetime
 import datetime as dt
 import typing as t
-from dotenv import load_dotenv
 from discord.utils import get
 from discord import NotFound
 import itertools

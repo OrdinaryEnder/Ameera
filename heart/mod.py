@@ -42,7 +42,6 @@ import typing as t
 from email.base64mime import body_encode
 import wavelink
 from enum import Enum
-from dotenv import load_dotenv
 from discord.utils import get
 from discord import NotFound
 import itertools
