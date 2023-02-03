@@ -198,8 +198,14 @@ class Music(commands.Cog):
         elif not interaction.guild.voice_client:
             return await interaction.followup.send("No such voice connected")
         else:
+            # prob the best eq values for bass boost
+            bands = [
+    (0, 0.2), (1, 0.15), (2, 0.1), (3, 0.05), (4, 0.0),
+    (5, -0.05), (6, -0.1), (7, -0.1), (8, -0.1), (9, -0.1),
+    (10, -0.1), (11, -0.1), (12, -0.1), (13, -0.1), (14, -0.1)
+]
             vc: wavelink.Player = interaction.guild.voice_client
-            await vc.set_filter(wavelink.Filter(equalizer=wavelink.Equalizer.boost()))
+            await vc.set_filter(wavelink.Filter(equalizer=wavelink.Equalizer(name="Bass Boost", bands=bands))
             return await interaction.followup.send("Set Filter: Bass Boost")
 
     @filterscmd.command(name="nightcore", description="Set Nightcore")
@@ -211,8 +217,10 @@ class Music(commands.Cog):
             return await interaction.followup.send("No such voice connected")
         else:
             vc: wavelink.Player = interaction.guild.voice_client
-            await vc.set_filter(wavelink.Filter(timescale=wavelink.Timescale(speed=1.3, pitch=1.3, rate=1.3)))
+            await vc.set_filter(wavelink.Filter(timescale=wavelink.Timescale(speed=1.2, pitch=1.2, rate=1.2)))
             return await interaction.followup.send("Set Filter: Nightcore")
+
+    @filterscmd.command(name="clear", description="Clear Filters")
 
     @app_commands.command(name="connect", description="Connect to Your Voice")
     async def join(self, interaction: discord.Interaction):
