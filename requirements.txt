@@ -15,3 +15,4 @@ mystbin-py
 roblox
 git+https://github.com/Rapptz/asqlite
 git+https://github.com/AmanoTeam/duckpy
+toml
