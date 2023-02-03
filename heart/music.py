@@ -5,7 +5,6 @@ from typing import List
 import platform
 from bs4 import BeautifulSoup
 import logging
-import aiofiles
 import traceback
 import brainfuck
 import qrcode
