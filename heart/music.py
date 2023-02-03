@@ -221,6 +221,16 @@ class Music(commands.Cog):
             return await interaction.followup.send("Set Filter: Nightcore")
 
     @filterscmd.command(name="clear", description="Clear Filters")
+    async def cleareffect(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+        if not interaction.user.voice:
+            return await interaction.followup.send("You are not connexted to a voice channel")
+        elif not interaction.guild.voice_client:
+            return await interaction.followup.send("No such voice connected")
+        else:
+            vc: wavelink.Player = interaction.guild.voice_client
+            await vc.set_filter(wavelink.Filter(equalizer=None, timescale=None))
+            await interaction.followup.send("Cleared Filters")
 
     @app_commands.command(name="connect", description="Connect to Your Voice")
     async def join(self, interaction: discord.Interaction):
