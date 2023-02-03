@@ -199,7 +199,7 @@ class Music(commands.Cog):
             return await interaction.followup.send("No such voice connected")
         else:
             vc: wavelink.Player = interaction.guild.voice_client
-            await vc.set_filter(wavelink.Filter(wavelink.Equalizer.boost()))
+            await vc.set_filter(wavelink.Filter(equalizer=wavelink.Equalizer.boost()))
             return await interaction.followup.send("Set Filter: Bass Boost")
 
     @filterscmd.command(name="nightcore", description="Set Nightcore")
@@ -211,7 +211,7 @@ class Music(commands.Cog):
             return await interaction.followup.send("No such voice connected")
         else:
             vc: wavelink.Player = interaction.guild.voice_client
-            await vc.set_filter(wavelink.Filter(wavelink.Timescale(speed=1.3, pitch=1.3, rate=1.3)))
+            await vc.set_filter(wavelink.Filter(timescale=wavelink.Timescale(speed=1.3, pitch=1.3, rate=1.3)))
             return await interaction.followup.send("Set Filter: Nightcore")
 
     @app_commands.command(name="connect", description="Connect to Your Voice")
