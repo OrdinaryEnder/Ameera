@@ -205,7 +205,7 @@ class Music(commands.Cog):
     (10, -0.1), (11, -0.1), (12, -0.1), (13, -0.1), (14, -0.1)
 ]
             vc: wavelink.Player = interaction.guild.voice_client
-            await vc.set_filter(wavelink.Filter(equalizer=wavelink.Equalizer(name="Bass Boost", bands=bands))
+            await vc.set_filter(wavelink.Filter(equalizer=wavelink.Equalizer(name="Bass Boost", bands=bands)))
             return await interaction.followup.send("Set Filter: Bass Boost")
 
     @filterscmd.command(name="nightcore", description="Set Nightcore")
