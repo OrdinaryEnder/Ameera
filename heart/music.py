@@ -213,7 +213,7 @@ class Music(commands.Cog):
         else:
             vc: wavelink.Player = interaction.guild.voice_client
             await vc.set_filter(wavelink.Filter(wavelink.Timescale(speed=1.3, pitch=1.3, rate=1.3)))
-                                await interaction.followup.send("Set Filter: Nightcore")
+            return await interaction.followup.send("Set Filter: Nightcore")
 
     @app_commands.command(name="connect", description="Connect to Your Voice")
     async def join(self, interaction: discord.Interaction):
