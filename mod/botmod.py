@@ -30,8 +30,6 @@ async def openairequest(key, message):
 
 async def openaiimage(key, prompt):
     headers = {"Authorization": f"Bearer {key}"}
-    async with aiohttp.ClientSession(headers=headers) as session:
-        async with session.post
 
 async def bypass(url):
 
