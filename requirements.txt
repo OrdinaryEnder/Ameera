@@ -1,11 +1,8 @@
-quart
-hypercorn
 brainfuck-interpreter
 git+https://github.com/Rapptz/discord.py
 qrcode
 pillow
 pynacl
-python-dotenv
 git+https://github.com/PythonistaGuild/Wavelink
 python-dateutil
 git+https://github.com/johnwmillr/LyricsGenius.git

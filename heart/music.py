@@ -187,6 +187,36 @@ class Music(commands.Cog):
       print(node.identifier)
 
 
+    async def cog_unload(self):
+        node = [n for n in wavelink.NodePool._nodes.values()]
+        for sus in node:
+            await node.disconnect()
+
+    filterscmd = app_commands.Group(name="filter",  description="Set Filter")
+    @filterscmd.command(name="bassboost", description="Set Bass Boost")
+    async def bassbooster(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+        if not interaction.user.voice:
+            return await interaction.followup.send("You are not connexted to a voice channel")
+        elif not interaction.guild.voice_client:
+            return await interaction.followup.send("No such voice connected")
+        else:
+            vc: wavelink.Player = interaction.guild.voice_client
+            await vc.set_filter(wavelink.Filter(wavelink.Equalizer.boost()))
+            return await interaction.followup.send("Set Filter: Bass Boost")
+
+    @filterscmd.command(name="nightcore", description="Set Nightcore")
+    async def nightcore(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+        if not interaction.user.voice:
+            return await interaction.followup.send("You are not connexted to a voice channel")
+        elif not interaction.guild.voice_client:
+            return await interaction.followup.send("No such voice connected")
+        else:
+            vc: wavelink.Player = interaction.guild.voice_client
+            await vc.set_filter(wavelink.Filter(wavelink.Timescale(speed=1.3, pitch=1.3, rate=1.3)))
+                                await interaction.followup.send("Set Filter: Nightcore")
+
     @app_commands.command(name="connect", description="Connect to Your Voice")
     async def join(self, interaction: discord.Interaction):
         await interaction.response.defer()
