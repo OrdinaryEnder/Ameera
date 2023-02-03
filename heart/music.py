@@ -217,7 +217,7 @@ class Music(commands.Cog):
             return await interaction.followup.send("No such voice connected")
         else:
             vc: wavelink.Player = interaction.guild.voice_client
-            await vc.set_filter(wavelink.Filter(timescale=wavelink.Timescale(speed=1.2, pitch=1.2, rate=1.2)))
+            await vc.set_filter(wavelink.Filter(timescale=wavelink.Timescale(speed=1.1, pitch=1.2, rate=1.1)))
             return await interaction.followup.send("Set Filter: Nightcore")
 
     @filterscmd.command(name="clear", description="Clear Filters")
