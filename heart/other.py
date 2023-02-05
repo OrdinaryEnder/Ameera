@@ -176,7 +176,7 @@ class CalculatorView(discord.ui.View):
         self.expr = self.expr[:-1]
         await interaction.message.edit(content=f"```\n{self.expr}\n```")
         
-    async def on_error(self, interaction: discord.Interaction, error):
+    async def on_error(self, interaction: discord.Interaction, error: Exception):
         return await interaction.response.send_message(str(error), ephemeral=True)
 
     async def interaction_check(self, interaction: discord.Interaction):
