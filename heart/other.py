@@ -72,6 +72,7 @@ class CalculatorView(discord.ui.View):
         super().__init__()
         self.expr = ""
         self.userid = userid
+        self.message = message
 
     @discord.ui.button(style=discord.ButtonStyle.blurple, label="1", row=0)
     async def one(self, button: discord.ui.Button, interaction: discord.Interaction):
@@ -184,7 +185,10 @@ class CalculatorView(discord.ui.View):
             await interaction.response.send_message("Hey tf are you doing at someones view", ephemeral=True)
         else:
             return True
-    async def on_timeout(self);
+    async def on_timeout(self):
+      for items in self.children:
+          items.disabled = True
+      await self.message.edit(view=self)
 
 
 
