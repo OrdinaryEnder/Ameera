@@ -72,7 +72,6 @@ class CalculatorView(discord.ui.View):
         super().__init__()
         self.expr = ""
         self.userid = userid
-        self.message = message
 
     @discord.ui.button(style=discord.ButtonStyle.blurple, label="1", row=0)
     async def one(self, button: discord.ui.Button, interaction: discord.Interaction):
@@ -400,7 +399,9 @@ class Other(commands.Cog):
 
     @app_commands.command(name="calculator", description="Calculate Something")
     async def basiccalculate(self, interaction: discord.Interaction):
-        await interaction.response.send_message(view=CalculatorView(interaction.user.id))
+        view = CalculatorView(interaction.user.id)
+        await interaction.response.send_message(view=view)
+        view.message = await interaction.original_response()
 #
 async def setup(bot):
     await bot.add_cog(Other(bot))
