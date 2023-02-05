@@ -395,7 +395,7 @@ class Other(commands.Cog):
 
     @app_commands.command(name="calculator", description="Calculate Something")
     async def basiccalculate(self, interaction: discord.Interaction):
-        await interaction.response.send_message(view=CalculatorView(interacton.user.id))
+        await interaction.response.send_message(view=CalculatorView(interaction.user.id))
 #
 async def setup(bot):
     await bot.add_cog(Other(bot))
