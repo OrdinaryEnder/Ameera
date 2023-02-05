@@ -76,72 +76,72 @@ class CalculatorView(discord.ui.View):
     @discord.ui.button(style=discord.ButtonStyle.blurple, label="1", row=0)
     async def one(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr += "1"
-        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+        await self.message.edit(content=f"```\n{self.expr}\n```")
 
     @discord.ui.button(style=discord.ButtonStyle.blurple, label="2", row=0)
     async def two(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr += "2"
-        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+        await self.message.edit(content=f"```\n{self.expr}\n```")
 
     @discord.ui.button(style=discord.ButtonStyle.blurple, label="3", row=0)
     async def three(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr += "3"
-        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+        await self.message.edit(content=f"```\n{self.expr}\n```")
 
     @discord.ui.button(style=discord.ButtonStyle.green, label="+", row=0)
     async def plus(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr += "+"
-        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+        await self.message.edit(content=f"```\n{self.expr}\n```")
 
     @discord.ui.button(style=discord.ButtonStyle.blurple, label="4", row=1)
     async def last(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr += "4"
-        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+        await self.message.edit(content=f"```\n{self.expr}\n```")
 
     @discord.ui.button(style=discord.ButtonStyle.blurple, label="5", row=1)
     async def five(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr += "5"
-        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+        await self.message.edit(content=f"```\n{self.expr}\n```")
 
     @discord.ui.button(style=discord.ButtonStyle.blurple, label="6", row=1)
     async def six(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr += "6"
-        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+        await self.message.edit(content=f"```\n{self.expr}\n```")
 
     @discord.ui.button(style=discord.ButtonStyle.green, label="/", row=1)
     async def divide(self, button: discord.ui.Button, interaction: discord.Interaction):
             self.expr += "/"
-            await interaction.message.edit(content=f"```\n{self.expr}\n```")
+            await self.message.edit(content=f"```\n{self.expr}\n```")
 
     @discord.ui.button(style=discord.ButtonStyle.blurple, label="7", row=2)
     async def seven(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr += "7"
-        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+        await self.message.edit(content=f"```\n{self.expr}\n```")
 
     @discord.ui.button(style=discord.ButtonStyle.blurple, label="8", row=2)
     async def eight(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr += "8"
-        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+        await self.message.edit(content=f"```\n{self.expr}\n```")
 
     @discord.ui.button(style=discord.ButtonStyle.blurple, label="9", row=2)
     async def nine(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr += "9"
-        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+        await self.message.edit(content=f"```\n{self.expr}\n```")
 
     @discord.ui.button(style=discord.ButtonStyle.green, label="*", row=2)
     async def multiply(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr += "*"
-        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+        await self.message.edit(content=f"```\n{self.expr}\n```")
 
     @discord.ui.button(style=discord.ButtonStyle.blurple, label=".", row=3)
     async def dot(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr += "."
-        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+        await self.message.edit(content=f"```\n{self.expr}\n```")
 
     @discord.ui.button(style=discord.ButtonStyle.blurple, label="0", row=3)
     async def zero(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr += "0"
-        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+        await self.message.edit(content=f"```\n{self.expr}\n```")
 
     @discord.ui.button(style=discord.ButtonStyle.green, label="=", row=3)
     async def equal(self, button: discord.ui.Button, interaction: discord.Interaction):
@@ -149,41 +149,42 @@ class CalculatorView(discord.ui.View):
             self.expr = eval(self.expr)
         except errors.BadArgument: # if you are function only, change this to BadArgument
             return await interaction.response.send_message("Um, looks like you provided a wrong expression....")
-        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+        await self.message.edit(content=f"```\n{self.expr}\n```")
 
     @discord.ui.button(style=discord.ButtonStyle.green, label="-", row=3)
     async def minus(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr += "-"
-        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+        await self.message.edit(content=f"```\n{self.expr}\n```")
 
     @discord.ui.button(style=discord.ButtonStyle.green, label="(", row=4)
     async def left_bracket(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr += "("
-        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+        await self.message.edit(content=f"```\n{self.expr}\n```")
 
     @discord.ui.button(style=discord.ButtonStyle.green, label=")", row=4)
     async def right_bracket(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr += ")"
-        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+        await self.message.edit(content=f"```\n{self.expr}\n```")
 
     @discord.ui.button(style=discord.ButtonStyle.red, label="C", row=4)
     async def clear(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr = ""
-        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+        await self.message.edit(content=f"```\n{self.expr}\n```")
 
     @discord.ui.button(style=discord.ButtonStyle.red, label="⌫", row=4)
     async def back(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.expr = self.expr[:-1]
-        await interaction.message.edit(content=f"```\n{self.expr}\n```")
+        await self.message.edit(content=f"```\n{self.expr}\n```")
         
     async def on_error(self, interaction: discord.Interaction, error: Exception):
         return await interaction.response.send_message(str(error), ephemeral=True)
 
     async def interaction_check(self, interaction: discord.Interaction):
         if self.userid != interaction.user.id:
-            return await interaction.response.send_message("Hey tf are you doing at someones view", ephemeral=True)
+            await interaction.response.send_message("Hey tf are you doing at someones view", ephemeral=True)
         else:
             return True
+    async def on_timeout(self);
 
 
 
