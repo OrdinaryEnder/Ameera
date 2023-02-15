@@ -232,7 +232,7 @@ class Music(commands.Cog):
             await vc.set_filter(wavelink.Filter(equalizer=None, timescale=None))
             return await interaction.followup.send("Cleared Filters")
 
-#    @filterscmd.command(name="sloweffect", description="Set Slowdown Filter")
+    @filterscmd.command(name="sloweffect", description="Set Slowdown Filter")
     async def sloweffect(self, interaction: discord.Interaction):
         await interaction.response.defer()
         if not interaction.user.voice:
