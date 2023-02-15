@@ -230,9 +230,9 @@ class Music(commands.Cog):
         else:
             vc: wavelink.Player = interaction.guild.voice_client
             await vc.set_filter(wavelink.Filter(equalizer=None, timescale=None))
-            await interaction.followup.send("Cleared Filters")
+            return await interaction.followup.send("Cleared Filters")
 
-    @filterscmd.command(name="slow", description="Set Slowdown Filter")
+#    @filterscmd.command(name="sloweffect", description="Set Slowdown Filter")
     async def sloweffect(self, interaction: discord.Interaction):
         await interaction.response.defer()
         if not interaction.user.voice:
