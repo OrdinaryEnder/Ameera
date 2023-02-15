@@ -232,6 +232,18 @@ class Music(commands.Cog):
             await vc.set_filter(wavelink.Filter(equalizer=None, timescale=None))
             await interaction.followup.send("Cleared Filters")
 
+    @filterscmd.command(name="slow", description="Set Slowdown Filter")
+    async def sloweffect(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+        if not interaction.user.voice:
+            return await interaction.followup.send("You are not connexted to a voice channel")
+        elif not interaction.guild.voice_client:
+            return await interaction.followup.send("No such voice connected")
+        else:
+            vc: wavelink.Player = interaction.guild.voice_client
+            await vc.set_filter(wavelink.Filter(timescale=wavelink.Timescale(speed=0.8, pitch=0.8, rate=0.7)))
+            await interaction.followup.send("Set Filter: Slowdown")
+
     @app_commands.command(name="connect", description="Connect to Your Voice")
     async def join(self, interaction: discord.Interaction):
         await interaction.response.defer()
