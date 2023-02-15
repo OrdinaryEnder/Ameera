@@ -241,7 +241,7 @@ class Music(commands.Cog):
             return await interaction.followup.send("No such voice connected")
         else:
             vc: wavelink.Player = interaction.guild.voice_client
-            await vc.set_filter(wavelink.Filter(timescale=wavelink.Timescale(speed=0.8, pitch=0.8, rate=0.9)))
+            await vc.set_filter(wavelink.Filter(timescale=wavelink.Timescale(speed=0.9, pitch=0.8, rate=0.9)))
             await interaction.followup.send("Set Filter: Slowdown")
 
     @app_commands.command(name="connect", description="Connect to Your Voice")
