@@ -514,6 +514,7 @@ class Music(commands.Cog):
 async def node_connect(bot):
     await wavelink.NodePool.create_node(bot=bot, host="lavalink.lexnet.cc", port=443, password="lexn3tl@val!nk", https=True)
     await wavelink.NodePool.create_node(bot=bot, host="node1.kartadharta.xyz", port=443, password="kdlavalink", https=True)
+    await wavelink.NodePool.create_node(bot=bot, host="frankfurt1.spiderservers.cloud", port=11109, password="youshallnotpass", https=True)
 
 async def setup(bot):
     await bot.loop.create_task(node_connect(bot))
