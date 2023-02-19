@@ -196,7 +196,7 @@ class Music(commands.Cog):
         embed = discord.Embed(
             title=" ", description=f"Started playing  **[{next_song.title}]({next_song.uri})**")
         await vc.chan.send(embed=embed)
-      except wavelink.errors.QueueEmpty:
+     except wavelink.errors.QueueEmpty:
         embed = discord.Embed(
             title=" ", description="There are no more tracks", color=discord.Color.from_rgb(255, 0, 0))
         await vc.chan.send(embed=embed)
