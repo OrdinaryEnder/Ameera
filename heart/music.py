@@ -186,7 +186,9 @@ class Music(commands.Cog):
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, bef, after):
+        print("ayo")
         if member == self.bot.user and after.channel is None:
+           print("what")
            kicked = self.leave_check.pop(member.guild, False)
            if kicked:
                await after.disconnect()
