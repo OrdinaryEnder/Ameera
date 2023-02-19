@@ -184,11 +184,12 @@ class Music(commands.Cog):
     async def on_wavelink_node_ready(self, node: wavelink.Node):
       print(node.identifier)
 
-    @commands.Cog.listener("on_voice_state_update")
-    async def bruh(self, member, bef, after):
+    @commands.Cog.listener()
+    async def on_voice_state_update(self, member, bef, after):
         if member == self.bot.user and after.channel is None:
            kicked = self.leave_check.pop(member.guild, False)
            if kicked:
+               await after.disconnect()
                return await after.chan.send("I was kicked :(")
            else:
                return
@@ -533,7 +534,7 @@ class Music(commands.Cog):
 async def node_connect(bot):
     await wavelink.NodePool.create_node(bot=bot, host="lavalink.lexnet.cc", port=443, password="lexn3tl@val!nk", https=True)
     await wavelink.NodePool.create_node(bot=bot, host="node1.kartadharta.xyz", port=443, password="kdlavalink", https=True)
-    await wavelink.NodePool.create_node(bot=bot, host="frankfurt1.spiderservers.cloud", port=11109, password="youshallnotpass", https=True)
+    await wavelink.NodePool.create_node(bot=bot, host="frankfurt1.spiderservers.cloud", port=11109, password="youshallnotpass", https=False)
 
 async def setup(bot):
     await bot.loop.create_task(node_connect(bot))
