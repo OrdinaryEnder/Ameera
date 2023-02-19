@@ -191,10 +191,12 @@ class Music(commands.Cog):
            print("what")
            kicked = self.leave_check.pop(member.guild, False)
            if kicked:
+               print("Someone kicked our voice system")
                await after.disconnect()
                return await after.chan.send("I was kicked :(")
            else:
-               return
+               print("We are clear")
+               return None
         # bot disconnected itself
 
     async def cog_unload(self):
