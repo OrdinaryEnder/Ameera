@@ -190,6 +190,8 @@ class Music(commands.Cog):
         if member == self.bot.user and after.channel is None:
            print("what")
            kicked = self.leave_check.pop(member.guild, False)
+           print(kicked)
+           print(bool(kicked))
            if kicked:
                print("Someone kicked our voice system")
                await after.disconnect()
