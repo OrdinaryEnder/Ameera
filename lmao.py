@@ -132,25 +132,6 @@ async def on_wavelink_node_ready(node: wavelink.Node):
 
 
 @bot.event
-async def on_wavelink_track_end(player: wavelink.Player, track: wavelink.Track, reason):
-    vc = player
-
-    if vc.loop is True:
-        return await vc.play(track)
-    try:
-        next_song = vc.queue.get()
-        await vc.play(next_song)
-        embed = discord.Embed(
-            title=" ", description=f"Started playing  **[{next_song.title}]({next_song.uri})**")
-        await vc.chan.send(embed=embed)
-    except wavelink.errors.QueueEmpty:
-        embed = discord.Embed(
-            title=" ", description="There are no more tracks", color=discord.Color.from_rgb(255, 0, 0))
-        await vc.chan.send(embed=embed)
-        await vc.disconnect()
-
-
-@bot.event
 async def on_ready():
     print(Back.RED + Fore.BLACK + "Logged As")
     print(Back.WHITE + Fore.BLACK +

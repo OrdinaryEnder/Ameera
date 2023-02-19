@@ -185,6 +185,25 @@ class Music(commands.Cog):
       print(node.identifier)
 
     @commands.Cog.listener()
+    async def on_wavelink_track_end(player: wavelink.Player, track: wavelink.Track, reason):
+     vc = player
+
+     if vc.loop is True:
+        return await vc.play(track)
+     try:
+        next_song = vc.queue.get()
+        await vc.play(next_song)
+        embed = discord.Embed(
+            title=" ", description=f"Started playing  **[{next_song.title}]({next_song.uri})**")
+        await vc.chan.send(embed=embed)
+      except wavelink.errors.QueueEmpty:
+        embed = discord.Embed(
+            title=" ", description="There are no more tracks", color=discord.Color.from_rgb(255, 0, 0))
+        await vc.chan.send(embed=embed)
+        await vc.disconnect()
+
+
+    @commands.Cog.listener()
     async def on_voice_state_update(self, member, bef, after):
         print("ayo")
         if member == self.bot.user and after.channel is None:
@@ -192,7 +211,7 @@ class Music(commands.Cog):
            kicked = self.leave_check.pop(member.guild, False)
            print(kicked)
            print(bool(kicked))
-           if kicked:
+           if bool(kicked):
                print("Someone kicked our voice system")
                await after.disconnect()
                return await after.chan.send("I was kicked :(")
