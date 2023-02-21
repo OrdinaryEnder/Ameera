@@ -213,7 +213,7 @@ class Music(commands.Cog):
            print(kicked)
            if kicked:
                print("Someone kicked our voice system")
-               await member.guild.change_voice_state(None)
+               await member.guild.change_voice_state(channel=None)
                return await after.chan.send("I was kicked :(")
            else:
                print("We are clear")
