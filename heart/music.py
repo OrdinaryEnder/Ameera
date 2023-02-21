@@ -206,7 +206,7 @@ class Music(commands.Cog):
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, bef, after):
-        print("ayo")
+        print(self.leave_check)
         if member == self.bot.user and after.channel is None:
            print("what")
            kicked = self.leave_check.pop(member.guild.id, False)
@@ -291,6 +291,7 @@ class Music(commands.Cog):
             await vc.connect(cls=wavelink.Player(node=[n for n in wavelink.NodePool._nodes.values() if n.is_connected()][0]))
             if interaction.guild in self.leave_check:
                 del self.leave_check[interaction.guild]
+                self.leave_check[interaction.guild.id] = True
             await interaction.followup.send(f"Connected to voice channel: '{channel}'")
 
     @app_commands.command(name="play", description="Play Youtube (Powered by WaveLink)")
@@ -306,6 +307,7 @@ class Music(commands.Cog):
 
         if interaction.guild in self.leave_check:
                 del self.leave_check[interaction.guild.id]
+                self.leave_check[interaction.guild.id] = True
         # detect if user put url instead of title
         await interaction.response.defer(thinking=True)
         if re.fullmatch("^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$", search):
@@ -342,6 +344,7 @@ class Music(commands.Cog):
             vc: wavelink.Player = interaction.guild.voice_client
         if interaction.guild in self.leave_check:
                 del self.leave_check[interaction.guild.id]
+                self.leave_check[interaction.guild.id] = True
        # detect if user put url instead of title
         await interaction.response.defer(thinking=True)
         if re.fullmatch("http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+", search):
@@ -412,7 +415,7 @@ class Music(commands.Cog):
 
         await vc.disconnect()
         await interaction.response.send_message(f"{interaction.user.mention} send me out :(")
-        self.leave_check[interaction.guild.id] = True
+        del self.leave_check[interaction.guild.id]
 
     @ app_commands.command(name="loop", description="Loops the song")
     async def loop(self, interaction: Interaction):
