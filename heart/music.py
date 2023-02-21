@@ -308,6 +308,8 @@ class Music(commands.Cog):
         if interaction.guild in self.leave_check:
                 del self.leave_check[interaction.guild.id]
                 self.leave_check[interaction.guild.id] = True
+        else:
+                self.leave_check[interaction.guild.id] = True
         # detect if user put url instead of title
         await interaction.response.defer(thinking=True)
         if re.fullmatch("^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$", search):
@@ -344,6 +346,8 @@ class Music(commands.Cog):
             vc: wavelink.Player = interaction.guild.voice_client
         if interaction.guild in self.leave_check:
                 del self.leave_check[interaction.guild.id]
+                self.leave_check[interaction.guild.id] = True
+        else:
                 self.leave_check[interaction.guild.id] = True
        # detect if user put url instead of title
         await interaction.response.defer(thinking=True)
