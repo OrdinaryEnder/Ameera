@@ -201,7 +201,7 @@ class Music(commands.Cog):
             title=" ", description="There are no more tracks", color=discord.Color.from_rgb(255, 0, 0))
         await vc.chan.send(embed=embed)
         await vc.disconnect()
-        del self.leave_check[vc.chan.guild]
+        del self.leave_check[vc.chan.guild.id]
 
 
     @commands.Cog.listener()
@@ -214,7 +214,8 @@ class Music(commands.Cog):
            if kicked:
                print("Someone kicked our voice system")
                chan = member.guild.voice_client.chan
-               await member.guild.change_voice_state(channel=None)
+               vc: wavelink.Player = member.guild.voice_client
+               await vc.disconnect()
                return await chan.send("I was kicked :(")
            else:
                print("We are clear")
@@ -292,6 +293,8 @@ class Music(commands.Cog):
             await vc.connect(cls=wavelink.Player(node=[n for n in wavelink.NodePool._nodes.values() if n.is_connected()][0]))
             if interaction.guild in self.leave_check:
                 del self.leave_check[interaction.guild]
+                self.leave_check[interaction.guild.id] = True
+            else:
                 self.leave_check[interaction.guild.id] = True
             await interaction.followup.send(f"Connected to voice channel: '{channel}'")
 
