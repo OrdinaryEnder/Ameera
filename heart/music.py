@@ -179,6 +179,7 @@ class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.leave_check = {}
+        self.lock = asyncio.Lock()
 
     @commands.Cog.listener()
     async def on_wavelink_node_ready(self, node: wavelink.Node):
@@ -220,6 +221,18 @@ class Music(commands.Cog):
            else:
                print("We are clear")
                return None
+
+        elif sum(not m.bot for m in after.channel.members) < 1 and member == self.bot.user:
+            async with self.lock:
+                await asyncio.sleep(180)
+                if sum(not m.bot for m in after.channel.members) < 1:
+                    vc: wavelink.Player = member.guild.voice_client
+                    await vc.disconnect()
+                    return await vc.chan.send("No one is on voice after 3 minutes, leaving anyway")
+                else:
+                    pass
+
+
         # bot disconnected itself
 
     async def cog_unload(self):
