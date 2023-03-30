@@ -517,22 +517,22 @@ class Music(commands.Cog):
             return await interaction.response.send_message("Nothing is playing")
 
         em = discord.Embed(
-            title=f" ", description=f"Playing \n **[{vc.track}]({vc.track.uri})** \n Artist: {vc.track.author}")
+            title=f" ", description=f"Playing \n **[{vc.current.track}]({vc.current.uri})** \n Artist: {vc.current.author}")
         em.set_author(name="Now Playing♪", icon_url=f"{self.bot.user.avatar.url}")
-        print(vc.track.thumbnail)
-        if vc.track.thumbnail is None:
+        print(vc.current.thumbnail)
+        if vc.current.thumbnail is None:
             em.set_thumbnail(
                 url="https://media.discordapp.net/attachments/977216545921073192/1033304783156690984/images2.jpg")
         else:
-            em.set_thumbnail(url=vc.track.thumbnail)
+            em.set_thumbnail(url=vc.current.thumbnail)
         bar = progressBar.splitBar(
-            int(vc.track.length), int(vc.position), size=10)
+            int(vc.current.length), int(vc.position), size=10)
         em.add_field(name="Position", value=f"{bar[0]}")
         em.add_field(name="ㅤ", value="ㅤ")
         em.add_field(name="Position",
                      value=f"`{datetime.timedelta(seconds=vc.position)}`")
         em.add_field(name="Duration",
-                     value=f"`{datetime.timedelta(seconds=vc.track.length)}`")
+                     value=f"`{datetime.timedelta(seconds=vc.current.length)}`")
         em.set_footer(icon_url=f"{interaction.user.avatar.url}",
                       text=f"Requested by {interaction.user}")
         return await interaction.response.send_message(embed=em)
