@@ -186,8 +186,8 @@ class Music(commands.Cog):
       print(node.id)
 
     @commands.Cog.listener()
-    async def on_wavelink_track_end(self, player: wavelink.Player, track: wavelink.tracks.Playable, reason):
-     vc = player
+    async def on_wavelink_track_end(self, payload: wavelink.TrackEventPayload):
+     vc = payload.player
 
      if vc.loop is True:
         return await vc.play(track)
