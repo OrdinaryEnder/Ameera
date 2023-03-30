@@ -236,7 +236,7 @@ class Music(commands.Cog):
         # bot disconnected itself
 
     async def cog_unload(self):
-        node = [n for n in wavelink.NodePool.nodes]
+        node = wavelink.NodePool.nodes
         for sus in node:
             await node.disconnect()
 
