@@ -581,7 +581,7 @@ class Music(commands.Cog):
 
 
 async def node_connect(bot):
-    node1: wavelink.Node = wavelink.Node(uri="51.81.166.66:13863", password="youshallnotpass")
+    node1: wavelink.Node = wavelink.Node(uri="104.167.222.158:10802", password="youshallnotpass")
     await wavelink.NodePool.connect(client=bot, nodes=[node1])
 
 async def setup(bot):
