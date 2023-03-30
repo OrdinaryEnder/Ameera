@@ -128,7 +128,7 @@ async def deprecate(ctx):
 
 @bot.event
 async def on_wavelink_node_ready(node: wavelink.Node):
-    print(Fore.GREEN + f"Node {node.identifier} is ready!")
+    print(Fore.GREEN + f"Node {node.id} is ready!")
 
 
 @bot.event

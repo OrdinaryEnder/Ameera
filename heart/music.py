@@ -77,7 +77,7 @@ class MusicDropDown(discord.ui.Select):
         # Select object, and the values attribute gets a list of the user's
         # selected options. We only want the first one.
         print(self.values[0])
-        search = (await self.vc.node.get_tracks(query=self.values[0], cls=wavelink.SoundCloudTrack))[0]
+        search = (await self.vc.current_node.get_tracks(query=self.values[0], cls=wavelink.SoundCloudTrack))[0]
         if self.vc.queue.is_empty and not self.vc.is_playing():
             await self.vc.play(search)
             embed = discord.Embed(
@@ -136,7 +136,7 @@ class YTMusicDropDown(discord.ui.Select):
         # the user's favourite colour or choice. The self object refers to the
         # Select object, and the values attribute gets a list of the user's
         # selected options. We only want the first one.
-        search = (await self.vc.node.get_tracks(query=self.values[0], cls=wavelink.YouTubeTrack))[0]
+        search = (await self.vc.current_node.get_tracks(query=self.values[0], cls=wavelink.YouTubeTrack))[0]
         if self.vc.queue.is_empty and not self.vc.is_playing():
             await self.vc.play(search)
             embed = discord.Embed(
@@ -183,10 +183,10 @@ class Music(commands.Cog):
 
     @commands.Cog.listener()
     async def on_wavelink_node_ready(self, node: wavelink.Node):
-      print(node.identifier)
+      print(node.id)
 
     @commands.Cog.listener()
-    async def on_wavelink_track_end(self, player: wavelink.Player, track: wavelink.Track, reason):
+    async def on_wavelink_track_end(self, player: wavelink.Player, track: wavelink.tracks.Playable, reason):
      vc = player
 
      if vc.loop is True:
@@ -236,7 +236,7 @@ class Music(commands.Cog):
         # bot disconnected itself
 
     async def cog_unload(self):
-        node = [n for n in wavelink.NodePool._nodes.values()]
+        node = [n for n in wavelink.NodePool.nodes]
         for sus in node:
             await node.disconnect()
 
@@ -303,7 +303,7 @@ class Music(commands.Cog):
         else:
             channel = interaction.user.voice.channel
             vc: wavelink.Player = channel
-            await vc.connect(cls=wavelink.Player(node=[n for n in wavelink.NodePool._nodes.values() if n.is_connected()][0]))
+            await vc.connect(cls=wavelink.Player())
             if interaction.guild in self.leave_check:
                 del self.leave_check[interaction.guild]
                 self.leave_check[interaction.guild.id] = True
@@ -318,7 +318,7 @@ class Music(commands.Cog):
           if interaction.user.voice is None:
             return await interaction.response.send_message(f"{interaction.user.mention} Your not connected to a voice, connect it!")
           else:
-            vc: wavelink.Player = await interaction.user.voice.channel.connect(cls=wavelink.Player(node=[n for n in wavelink.NodePool._nodes.values() if n.is_connected()][0]))
+            vc: wavelink.Player = await interaction.user.voice.channel.connect(cls=wavelink.Player())
         else:
             vc: wavelink.Player = interaction.guild.voice_client
 
@@ -330,7 +330,7 @@ class Music(commands.Cog):
         # detect if user put url instead of title
         await interaction.response.defer(thinking=True)
         if re.fullmatch("^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$", search):
-            scsong = (await vc.node.get_tracks(query=search, cls=wavelink.YouTubeTrack))[0]
+            scsong = (await vc.current_node.get_tracks(query=search, cls=wavelink.YouTubeTrack))[0]
             embed = discord.Embed(
                 title="Now playing", description=f"[{scsong.title}]({scsong.uri})\n \n Uploader: {scsong.author}")
             embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
@@ -343,7 +343,7 @@ class Music(commands.Cog):
              await vc.queue.put_wait(scsong)
              await interaction.followup.send("Added: " + scsong.title)
         else:
-            track = await wavelink.YouTubeTrack.search(query=search, return_first=False)
+            track = await wavelink.YouTubeTrack.search(search, return_first=False)
             if not track:
                return await interaction.followup.send("Song not found")
             else:
@@ -358,7 +358,7 @@ class Music(commands.Cog):
           if interaction.user.voice is None:
             return await interaction.response.send_message(f"{interaction.user.mention} Your not connected to a voice, connect it!")
           else:
-            vc: wavelink.Player = await interaction.user.voice.channel.connect(cls=wavelink.Player(node=[n for n in wavelink.NodePool._nodes.values() if n.is_connected()][0]))
+            vc: wavelink.Player = await interaction.user.voice.channel.connect(cls=wavelink.Player())
         else:
             vc: wavelink.Player = interaction.guild.voice_client
         if interaction.guild in self.leave_check:
@@ -368,8 +368,8 @@ class Music(commands.Cog):
                 self.leave_check[interaction.guild.id] = True
        # detect if user put url instead of title
         await interaction.response.defer(thinking=True)
-        if re.fullmatch("http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+", search):
-            scsong = (await vc.node.get_tracks(query=search, cls=wavelink.SoundCloudTrack))[0]
+        if re.fullmatch("/^(?:https?:\/\/)((?:www\.)|(?:m\.))?soundcloud\.com\/[a-z0-9](?!.*?(-|_){2})[\w-]{1,23}[a-z0-9](?:\/.+)?$/gm", search):
+            scsong = (await vc.current_node.get_tracks(query=search, cls=wavelink.SoundCloudTrack))[0]
             embed = discord.Embed(
                 title="Now playing", description=f"[{scsong.title}]({scsong.uri})\n \n Uploader: {scsong.author}")
             embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
@@ -380,7 +380,7 @@ class Music(commands.Cog):
              await vc.queue.put_wait(scsong)
              await interaction.followup.send("Added: " + scsong.title)
         else:
-            track = await wavelink.SoundCloudTrack.search(query=search, return_first=False)
+            track = await wavelink.SoundCloudTrack.search(search, return_first=False)
             if not track:
              await interaction.followup.send("Song not found")
             else:
@@ -581,9 +581,8 @@ class Music(commands.Cog):
 
 
 async def node_connect(bot):
-    await wavelink.NodePool.create_node(bot=bot, host="lavalink.lexnet.cc", port=443, password="lexn3tl@val!nk", https=True)
-    await wavelink.NodePool.create_node(bot=bot, host="node1.kartadharta.xyz", port=443, password="kdlavalink", https=True)
-    await wavelink.NodePool.create_node(bot=bot, host="frankfurt1.spiderservers.cloud", port=11109, password="youshallnotpass", https=False)
+    node1: wavelink.Node = wavelink.Node(uri="51.81.166.66:13863", password="youshallnotpass")
+    await wavelink.NodePool.connect(client=bot, nodes=[node1])
 
 async def setup(bot):
     await bot.loop.create_task(node_connect(bot))
