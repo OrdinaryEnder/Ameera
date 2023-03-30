@@ -197,7 +197,7 @@ class Music(commands.Cog):
         embed = discord.Embed(
             title=" ", description=f"Started playing  **[{next_song.title}]({next_song.uri})**")
         await vc.chan.send(embed=embed)
-     except wavelink.errors.QueueEmpty:
+     except wavelink.QueueEmpty:
         embed = discord.Embed(
             title=" ", description="There are no more tracks", color=discord.Color.from_rgb(255, 0, 0))
         await vc.chan.send(embed=embed)
@@ -547,7 +547,7 @@ class Music(commands.Cog):
             vc: wavelink.Player = interaction.guild.voice_client
 
         embed = discord.Embed(
-            title=" ", description=f"[{vc.track}]({vc.track.uri}) has been skipped", color=discord.Color.from_rgb(0, 255, 0))
+            title=" ", description=f"[{vc.current.title}]({vc.current.uri}) has been skipped", color=discord.Color.from_rgb(0, 255, 0))
         await interaction.response.send_message(embed=embed)
         await vc.stop()
 
