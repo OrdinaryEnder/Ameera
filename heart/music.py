@@ -77,7 +77,7 @@ class MusicDropDown(discord.ui.Select):
         # Select object, and the values attribute gets a list of the user's
         # selected options. We only want the first one.
         print(self.values[0])
-        search = (await self.vc.current_node.get_tracks(query=self.values[0], cls=wavelink.SoundCloudTrack))[0]
+        search = (await wavelink.NodePool.get_connected_node().get_tracks(query=self.values[0], cls=wavelink.SoundCloudTrack))[0]
         if self.vc.queue.is_empty and not self.vc.is_playing():
             await self.vc.play(search)
             embed = discord.Embed(
@@ -136,7 +136,7 @@ class YTMusicDropDown(discord.ui.Select):
         # the user's favourite colour or choice. The self object refers to the
         # Select object, and the values attribute gets a list of the user's
         # selected options. We only want the first one.
-        search = (await self.vc.current_node.get_tracks(query=self.values[0], cls=wavelink.YouTubeTrack))[0]
+        search = (await wavelink.NodePool.get_connected_node().get_tracks(query=self.values[0], cls=wavelink.YouTubeTrack))[0]
         if self.vc.queue.is_empty and not self.vc.is_playing():
             await self.vc.play(search)
             embed = discord.Embed(
@@ -330,7 +330,7 @@ class Music(commands.Cog):
         # detect if user put url instead of title
         await interaction.response.defer(thinking=True)
         if re.fullmatch("^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$", search):
-            scsong = (await vc.current_node.get_tracks(query=search, cls=wavelink.YouTubeTrack))[0]
+            scsong = (await wavelink.NodePool.get_connected_node().get_tracks(query=search, cls=wavelink.YouTubeTrack))[0]
             embed = discord.Embed(
                 title="Now playing", description=f"[{scsong.title}]({scsong.uri})\n \n Uploader: {scsong.author}")
             embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
@@ -369,7 +369,7 @@ class Music(commands.Cog):
        # detect if user put url instead of title
         await interaction.response.defer(thinking=True)
         if re.fullmatch("/^(?:https?:\/\/)((?:www\.)|(?:m\.))?soundcloud\.com\/[a-z0-9](?!.*?(-|_){2})[\w-]{1,23}[a-z0-9](?:\/.+)?$/gm", search):
-            scsong = (await vc.current_node.get_tracks(query=search, cls=wavelink.SoundCloudTrack))[0]
+            scsong = (await wavelink.NodePool.get_connected_node().get_tracks(query=search, cls=wavelink.SoundCloudTrack))[0]
             embed = discord.Embed(
                 title="Now playing", description=f"[{scsong.title}]({scsong.uri})\n \n Uploader: {scsong.author}")
             embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
