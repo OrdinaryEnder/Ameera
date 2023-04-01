@@ -76,7 +76,7 @@ class MyBot(commands.AutoShardedBot):
     async def setup_hook(self):
         print(Fore.BLUE + "Registering Commands (Wont take long time)....")
         print(Fore.YELLOW + "Adding cogs")
-        extension = [m.name for m in pkgutil.iter_modules(['heart'], prefix="cogs.")]
+        extension = [m.name for m in pkgutil.iter_modules(['heart'], prefix="heart.")]
         for ex in extension:
           await bot.load_extension(ex)
         await bot.load_extension('jishaku')
