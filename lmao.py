@@ -18,6 +18,7 @@ from discord.app_commands import AppCommandError
 from discord import Interaction
 from discord import ClientException
 import re
+import pkgutil
 import os
 import subprocess
 import math
@@ -75,9 +76,9 @@ class MyBot(commands.AutoShardedBot):
     async def setup_hook(self):
         print(Fore.BLUE + "Registering Commands (Wont take long time)....")
         print(Fore.YELLOW + "Adding cogs")
-        for f in os.listdir("./heart"):
-            if f.endswith(".py"):
-                await bot.load_extension(f"heart.{f[:-3]}")
+        extension = [m.name for m in pkgutil.iter_modules(['heart'], prefix="cogs.")]
+        for ex in extension:
+          await bot.load_extension(ex)
         await bot.load_extension('jishaku')
         print(Fore.GREEN + "Enabling memory optimizer")
         gc.enable()
