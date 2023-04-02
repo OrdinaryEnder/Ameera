@@ -214,10 +214,9 @@ class Music(commands.Cog):
            print(kicked)
            if kicked:
                print("Someone kicked our voice system")
-               chan = member.guild.voice_client.chan
                vc: wavelink.Player = member.guild.voice_client
                await vc.disconnect()
-               return await chan.send("I was kicked :(")
+               return await vc.chan.send("I was kicked :(")
            else:
                print("We are clear")
                return None
@@ -319,6 +318,8 @@ class Music(commands.Cog):
             return await interaction.response.send_message(f"{interaction.user.mention} Your not connected to a voice, connect it!")
           else:
             vc: wavelink.Player = await interaction.user.voice.channel.connect(cls=wavelink.Player())
+        elif interaction.user.voice is None:
+            return await interaction.response.send_message(f"{interaction.user.mention} Your not connected to a voice, connect it!")
         else:
             vc: wavelink.Player = interaction.guild.voice_client
 
@@ -359,6 +360,8 @@ class Music(commands.Cog):
             return await interaction.response.send_message(f"{interaction.user.mention} Your not connected to a voice, connect it!")
           else:
             vc: wavelink.Player = await interaction.user.voice.channel.connect(cls=wavelink.Player())
+        elif interaction.user.voice is None:
+            return await interaction.response.send_message(f"{interaction.user.mention} Your not connected to a voice, connect it!")
         else:
             vc: wavelink.Player = interaction.guild.voice_client
         if interaction.guild in self.leave_check:
@@ -391,7 +394,7 @@ class Music(commands.Cog):
     @app_commands.command(name="pause", description="Pause song")
     async def pause(self, interaction: discord.Interaction):
         if not interaction.guild.voice_client:
-            return await interaction.response.send_message(f"Hey {interaction.user.mention}, you are not connected to a voice channel")
+            return await interaction.response.send_message(f"Hey {interaction.user.mention}, the bot are not connected to a voice channel")
         elif not getattr(interaction.user.voice, "channel", None):
             return await interaction.response.send_message(f"{interaction.user.mention} first you need to join a voice channel")
         else:
@@ -403,7 +406,7 @@ class Music(commands.Cog):
     @ app_commands.command(name="resume", description="Resume playing")
     async def resume(self, interaction: discord.Interaction):
         if not interaction.guild.voice_client:
-            return await interaction.response.send_message(f"Hey {interaction.user.mention}, you are not connected to a voice channel")
+            return await interaction.response.send_message(f"Hey {interaction.user.mention}, the bot are not connected to a voice channel")
         elif not getattr(interaction.user.voice, "channel", None):
             return await interaction.response.send_message(f"{interaction.user.mention} first you need to join a voice channel")
         else:
@@ -415,7 +418,7 @@ class Music(commands.Cog):
     @ app_commands.command(name="stop", description="Stop Player")
     async def stop(self, interaction: Interaction):
         if not interaction.guild.voice_client:
-            return await interaction.response.send_message(f"Hey {interaction.user.mention}, you are not connected to a voice channel")
+            return await interaction.response.send_message(f"Hey {interaction.user.mention}, the bot are not connected to a voice channel")
         elif not getattr(interaction.user.voice, "channel", None):
             return await interaction.response.send_message(f"{interaction.user.mention} first you need to join a voice channel")
         else:
@@ -428,7 +431,7 @@ class Music(commands.Cog):
     @ app_commands.command(name="disconnect", description="Disconnect the Bot from VC")
     async def disconnect(self, interaction: Interaction):
         if not interaction.guild.voice_client:
-            return await interaction.response.send_message(f"Hey {interaction.user.mention}, you are not connected to a voice channel")
+            return await interaction.response.send_message(f"Hey {interaction.user.mention}, the bot are not connected to a voice channel")
         elif not getattr(interaction.user.voice, "channel", None):
             return await interaction.response.send_message(f"{interaction.user.mention} first you need to join a voice channel")
         else:
@@ -441,7 +444,7 @@ class Music(commands.Cog):
     @ app_commands.command(name="loop", description="Loops the song")
     async def loop(self, interaction: Interaction):
         if not interaction.guild.voice_client:
-            return await interaction.response.send_message(f"Hey {interaction.user.mention}, you are not connected to a voice channel")
+            return await interaction.response.send_message(f"Hey {interaction.user.mention}the bot are not connected to a voice channel")
         elif not getattr(interaction.user.voice, "channel", None):
             return await interaction.response.send_message(f"{interaction.user.mention} first you need to join a voice channel")
         else:
@@ -466,7 +469,7 @@ class Music(commands.Cog):
         if not interaction.guild.voice_client:
             return await interaction.response.send_message(f"Hey {interaction.user.mention}, im not connected to a voice channel")
         elif not interaction.user.voice:
-            return await interaction.response.send_message(f"Hey {interaction.user.mention}, you are not connected to a voice channel")
+            return await interaction.response.send_message(f"Hey {interaction.user.mention}the bot are not connected to a voice channel")
         else:
             vc: wavelink.Player = interaction.guild.voice_client
 
@@ -487,7 +490,7 @@ class Music(commands.Cog):
     async def volume(self, interaction: discord.Interaction, volume: int):
         await interaction.response.defer()
         if not interaction.guild.voice_client:
-            return await interaction.response.send_message(f"Hey {interaction.user.mention}, you are not connected to a voice channel")
+            return await interaction.response.send_message(f"Hey {interaction.user.mention}the bot are not connected to a voice channel")
         elif not getattr(interaction.user.voice, "channel", None):
             return await interaction.response.send_message(f"{interaction.user.mention} first you need to join a voice channel")
         else:
@@ -507,7 +510,7 @@ class Music(commands.Cog):
     @app_commands.command(name="nowplaying", description="Show what playing")
     async def playing(self, interaction: discord.Interaction):
         if not interaction.guild.voice_client:
-            return await interaction.response.send_message(f"Hey {interaction.user.mention}, you are not connected to a voice channel")
+            return await interaction.response.send_message(f"Hey {interaction.user.mention}the bot are not connected to a voice channel")
         elif not getattr(interaction.user.voice, "channel", None):
             return await interaction.response.send_message(f"{interaction.user.mention} first you need to join a voice channel")
         else:
@@ -540,7 +543,7 @@ class Music(commands.Cog):
     @app_commands.command(name="skip", description="Skip a song")
     async def skip(self, interaction: discord.Interaction):
         if interaction.guild.voice_client is None:
-            return await interaction.response.send_message(f"Hey {interaction.user.mention}, you are not connected to a voice channel")
+            return await interaction.response.send_message(f"Hey {interaction.user.mention}the bot are not connected to a voice channel")
         elif not getattr(interaction.user.voice, "channel", None):
             return await interaction.response.send_message(f"{interaction.user.mention} first you need to join a voice channel")
         else:
@@ -554,7 +557,7 @@ class Music(commands.Cog):
     @app_commands.command(name="qremove", description="Remove amount of queue")
     async def qremove(self, interaction: discord.Interaction, index: int):
         if not interaction.guild.voice_client:
-            return await interaction.response.send_message(f"Hey {interaction.user.mention}, you are not connected to a voice channel")
+            return await interaction.response.send_message(f"Hey {interaction.user.mention}the bot are not connected to a voice channel")
         elif not getattr(interaction.user.voice, "channel", None):
             return await interaction.response.send_message(f"{interaction.user.mention} first you need to join a voice channel")
         else:
@@ -570,7 +573,7 @@ class Music(commands.Cog):
     @app_commands.command(name="qclean", description="Clear queue")
     async def qclear(self, interaction: discord.Interaction):
         if not interaction.guild.voice_client:
-            return await interaction.response.send_message(f"Hey {interaction.user.mention}, you are not connected to a voice channel")
+            return await interaction.response.send_message(f"Hey {interaction.user.mention}the bot are not connected to a voice channel")
         elif not getattr(interaction.user.voice, "channel", None):
             return await interaction.response.send_message(f"{interaction.user.mention} first you need to join a voice channel")
         else:
