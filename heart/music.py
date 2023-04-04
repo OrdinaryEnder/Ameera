@@ -214,9 +214,8 @@ class Music(commands.Cog):
            print(kicked)
            if kicked:
                print("Someone kicked our voice system")
-               vc: wavelink.Player = member.guild.voice_client
-               await vc.disconnect()
-               return await vc.chan.send("I was kicked :(")
+               chan = before.guild.voice_client.chan      
+               return await chan.send("I was kicked :(")
            else:
                print("We are clear")
                return None
@@ -584,9 +583,7 @@ class Music(commands.Cog):
 
 
 async def node_connect(bot):
-    node1: wavelink.Node = wavelink.Node(uri="104.167.222.158:10802", password="youshallnotpass")
-    await wavelink.NodePool.connect(client=bot, nodes=[node1])
-
+    await wavelink.NodePool.connect(client=bot, nodes=[wavelink.Node(uri="104.167.222.158:10802", password="youshallnotpass"), wavelink.Node(uri="lavalink.clxud.pro:2333", password="youshallnotpass", use_http=True)
 async def setup(bot):
     await bot.loop.create_task(node_connect(bot))
     await bot.add_cog(Music(bot))
