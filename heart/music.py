@@ -583,7 +583,7 @@ class Music(commands.Cog):
 
 
 async def node_connect(bot):
-    await wavelink.NodePool.connect(client=bot, nodes=[wavelink.Node(uri="104.167.222.158:10802", password="youshallnotpass"), wavelink.Node(uri="lavalink.clxud.pro:2333", password="youshallnotpass", use_http=True)
+    await wavelink.NodePool.connect(client=bot, nodes=[wavelink.Node(uri="104.167.222.158:10802", password="youshallnotpass"), wavelink.Node(uri="lavalink.clxud.pro:2333", password="youshallnotpass", use_http=True)]
 async def setup(bot):
     await bot.loop.create_task(node_connect(bot))
     await bot.add_cog(Music(bot))
