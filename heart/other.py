@@ -260,7 +260,7 @@ class Other(commands.Cog):
         await interaction.response.send_message(embed=e)
 
     @app_commands.command(name='help', description="Stop it, get some help")
-    async def _help(interaction: discord.Interaction, command: str):
+    async def _help(self, interaction: discord.Interaction, command: str):
       cmd = get_nested_command(command, guild=interaction.guild)
       if cmd is None:
         await interaction.response.send_message(f'Could not find a command named {command}', ephemeral=True)
@@ -277,7 +277,7 @@ class Other(commands.Cog):
 
 
     @_help.autocomplete('command')
-    async def help_autocomplete(interaction: discord.Interaction, current: str) -> List[app_commands.Choice[str]]:
+    async def help_autocomplete(self, interaction: discord.Interaction, current: str) -> List[app_commands.Choice[str]]:
       commands = list(bot.tree.walk_commands(guild=None, type=discord.AppCommandType.chat_input))
 
       if interaction.guild is not None:
