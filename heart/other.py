@@ -194,7 +194,7 @@ def get_nested_command(
     name: str, guild: Optional[discord.Guild]
 ) -> Optional[Union[app_commands.Command, app_commands.Group]]:
     key, *keys = name.split(' ')
-    cmd = bot.tree.get_command(key, guild=guild) or bot.tree.get_command(key)
+    cmd = self.bot.tree.get_command(key, guild=guild) or self.bot.tree.get_command(key)
 
     for key in keys:
         if cmd is None:
@@ -278,10 +278,10 @@ class Other(commands.Cog):
 
     @_help.autocomplete('command')
     async def help_autocomplete(self, interaction: discord.Interaction, current: str) -> List[app_commands.Choice[str]]:
-      commands = list(bot.tree.walk_commands(guild=None, type=discord.AppCommandType.chat_input))
+      commands = list(self.bot.tree.walk_commands(guild=None, type=discord.AppCommandType.chat_input))
 
       if interaction.guild is not None:
-        commands.extend(bot.tree.walk_commands(guild=interaction.guild, type=discord.AppCommandType.chat_input))
+        commands.extend(self.bot.tree.walk_commands(guild=interaction.guild, type=discord.AppCommandType.chat_input))
 
       choices: List[app_commands.Choice[str]] = []
       for command in commands:
