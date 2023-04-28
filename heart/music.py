@@ -60,12 +60,14 @@ colorama.init(autoreset=True)
 class MusicDropDown(discord.ui.Select):
     def __init__(self, track, vc, message):
         ret = []
+        self.lel = {} # because long ass sc links
         self.vc = vc
         self.message = message
         self.executed = False
         for song in track[:10]:
             ret.append(discord.SelectOption(label=song.title,
-                       description=song.author, value=song.uri))
+                       description=song.author, value=song.title))
+            self.lel[song.title] = song.uri
 
         super().__init__(placeholder='Choose song ...',
                          min_values=1, max_values=1, options=ret)
@@ -77,7 +79,7 @@ class MusicDropDown(discord.ui.Select):
         # Select object, and the values attribute gets a list of the user's
         # selected options. We only want the first one.
         print(self.values[0])
-        search = (await wavelink.NodePool.get_connected_node().get_tracks(query=self.values[0], cls=wavelink.SoundCloudTrack))[0]
+        search = (await wavelink.NodePool.get_connected_node().get_tracks(query=self.lel[self.values[0]], cls=wavelink.SoundCloudTrack))[0]
         if self.vc.queue.is_empty and not self.vc.is_playing():
             await self.vc.play(search)
             embed = discord.Embed(
@@ -583,7 +585,7 @@ class Music(commands.Cog):
 
 
 async def node_connect(bot):
-    await wavelink.NodePool.connect(client=bot, nodes=[wavelink.Node(uri="104.167.222.158:10802", password="youshallnotpass"), wavelink.Node(uri="lavalink.clxud.pro:2333", password="youshallnotpass", use_http=True)])
+    await wavelink.NodePool.connect(client=bot, nodes=[wavelink.Node(uri="http://lavalink.clxud.pro:2333", password="youshallnotpass", use_http=True)])
 async def setup(bot):
     await bot.loop.create_task(node_connect(bot))
     await bot.add_cog(Music(bot))

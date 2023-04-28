@@ -1,7 +1,8 @@
+from __future__ import annotations
 import asqlite
 from mystbin import Client
 from StringProgressBar import progressBar
-from typing import List
+from typing import List, Optional, Union
 import platform
 from bs4 import BeautifulSoup
 import logging
@@ -189,6 +190,23 @@ class CalculatorView(discord.ui.View):
           items.disabled = True
       await self.message.edit(view=self)
 
+def get_nested_command(
+    name: str, guild: Optional[discord.Guild]
+) -> Optional[Union[app_commands.Command, app_commands.Group]]:
+    key, *keys = name.split(' ')
+    cmd = bot.tree.get_command(key, guild=guild) or bot.tree.get_command(key)
+
+    for key in keys:
+        if cmd is None:
+            return None
+        if isinstance(cmd, app_commands.Command):
+            break
+
+        cmd = cmd.get_command(key)
+
+    return cmd
+
+
 
 
 class Other(commands.Cog):
@@ -240,6 +258,42 @@ class Other(commands.Cog):
 
 
         await interaction.response.send_message(embed=e)
+
+    @app_commands.command(name='help', description="Stop it, get some help")
+    async def _help(interaction: discord.Interaction, command: str):
+      cmd = get_nested_command(command, guild=interaction.guild)
+      if cmd is None:
+        await interaction.response.send_message(f'Could not find a command named {command}', ephemeral=True)
+        return
+
+      description = (
+        cmd.callback.__doc__ or cmd.description if isinstance(cmd, app_commands.Command) else cmd.__doc__ or cmd.description
+      )
+      embed = discord.Embed(title=cmd.qualified_name, description=description)
+
+    # whatever other fancy thing you want
+    # idk
+      await interaction.response.send_message(embed=embed, ephemeral=True)
+
+
+    @_help.autocomplete('command')
+    async def help_autocomplete(interaction: discord.Interaction, current: str) -> List[app_commands.Choice[str]]:
+      commands = list(bot.tree.walk_commands(guild=None, type=discord.AppCommandType.chat_input))
+
+      if interaction.guild is not None:
+        commands.extend(bot.tree.walk_commands(guild=interaction.guild, type=discord.AppCommandType.chat_input))
+
+      choices: List[app_commands.Choice[str]] = []
+      for command in commands:
+        name = command.qualified_name
+        if current in name:
+            choices.append(app_commands.Choice(name=name, value=name))
+
+    # Only show unique commands
+      choices = sorted(set(choices), key=lambda c: c.name)
+      return choices[:25]
+
+
 
     @app_commands.command(name="finduser", description="Find Roblox Users")
     @app_commands.checks.cooldown(1, 7.0, key=lambda i: (i.guild_id, i.user.id))
