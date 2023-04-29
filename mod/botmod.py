@@ -18,15 +18,16 @@ async def openairequest(key, message):
 
    headers = {"Authorization": f"Bearer {key}"}
    async with aiohttp.ClientSession(headers=headers) as session:
-    async with session.post("https://api.openai.com/v1/completions", json={
-        "prompt": message,
-        "model": "text-davinci-003",
-        "max_tokens": 4000
-    }) as response:
+     async with session.post("https://api.openai.com/v1/chat/completions", json={
+         "messages": [
+          {"role": "system", 'content': "You are Olivia, a funny, attractive, smart, and cute girl, you're an aussie-british smart scientist and also devout muslim, you're answering user prompts using british accent"},
+          {"role": "user", "content": message}],
+         "model": "gpt-3.5-turbo"
+     }) as response:
        if response.status > 299:
         return (await response.json())['error']['message']
        else:
-         return (await response.json())['choices'][0]['text']
+         return (await response.json())['choices'][0]['message']['content']
 
 async def openaiimage(key, prompt):
     headers = {"Authorization": f"Bearer {key}"}
