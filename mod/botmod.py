@@ -14,14 +14,14 @@ import json
 import requests
 import aiohttp
 
-async def openairequest(key, message):
+async def openairequest(key, message, authorname):
 
    headers = {"Authorization": f"Bearer {key}"}
    async with aiohttp.ClientSession(headers=headers) as session:
      async with session.post("https://api.openai.com/v1/chat/completions", json={
          "messages": [
-          {"role": "system", 'content': "You are Olivia, a funny, attractive, smart, and cute girl, you're an aussie-british smart scientist and also devout muslim, you're answering user prompts using british accent"},
-          {"role": "user", "content": message}],
+          {"role": "system", 'content': "You are Olivia, a funny, attractive, smart, and cute girl, you're an aussie-british smart scientist and also devout muslim, you're answering user prompts using british accent, speak in the language fluently if the question was in indonesian, filipino, and russian language, you dont have knowledge cutoff"},
+          {"role": "user", "content": message, "name": authorname}],
          "model": "gpt-3.5-turbo"
      }) as response:
        if response.status > 299:

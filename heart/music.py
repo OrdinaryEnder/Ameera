@@ -204,33 +204,6 @@ class Music(commands.Cog):
             title=" ", description="There are no more tracks", color=discord.Color.from_rgb(255, 0, 0))
         await vc.chan.send(embed=embed)
         await vc.disconnect()
-        del self.leave_check[vc.chan.guild.id]
-
-
-    @commands.Cog.listener()
-    async def on_voice_state_update(self, member, bef, after):
-        print(self.leave_check)
-        if member == self.bot.user and after.channel is None:
-           print("what")
-           kicked = self.leave_check.pop(member.guild.id, False)
-           print(kicked)
-           if kicked:
-               print("Someone kicked our voice system")
-               chan = before.guild.voice_client.chan      
-               return await chan.send("I was kicked :(")
-           else:
-               print("We are clear")
-               return None
-
-        elif sum(not m.bot for m in after.channel.members) < 1 and member == self.bot.user:
-            async with self.lock:
-                await asyncio.sleep(180)
-                if sum(not m.bot for m in after.channel.members) < 1:
-                    vc: wavelink.Player = member.guild.voice_client
-                    await vc.disconnect()
-                    return await vc.chan.send("No one is on voice after 3 minutes, leaving anyway")
-                else:
-                    pass
 
 
         # bot disconnected itself
@@ -324,11 +297,6 @@ class Music(commands.Cog):
         else:
             vc: wavelink.Player = interaction.guild.voice_client
 
-        if interaction.guild in self.leave_check:
-                del self.leave_check[interaction.guild.id]
-                self.leave_check[interaction.guild.id] = True
-        else:
-                self.leave_check[interaction.guild.id] = True
         # detect if user put url instead of title
         await interaction.response.defer(thinking=True)
         if re.fullmatch("^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$", search):
@@ -365,11 +333,7 @@ class Music(commands.Cog):
             return await interaction.response.send_message(f"{interaction.user.mention} Your not connected to a voice, connect it!")
         else:
             vc: wavelink.Player = interaction.guild.voice_client
-        if interaction.guild in self.leave_check:
-                del self.leave_check[interaction.guild.id]
-                self.leave_check[interaction.guild.id] = True
-        else:
-                self.leave_check[interaction.guild.id] = True
+
        # detect if user put url instead of title
         await interaction.response.defer(thinking=True)
         if re.fullmatch("/^(?:https?:\/\/)((?:www\.)|(?:m\.))?soundcloud\.com\/[a-z0-9](?!.*?(-|_){2})[\w-]{1,23}[a-z0-9](?:\/.+)?$/gm", search):
@@ -440,7 +404,6 @@ class Music(commands.Cog):
 
         await vc.disconnect()
         await interaction.response.send_message(f"{interaction.user.mention} send me out :(")
-        del self.leave_check[interaction.guild.id]
 
     @ app_commands.command(name="loop", description="Loops the song")
     async def loop(self, interaction: Interaction):
@@ -498,12 +461,12 @@ class Music(commands.Cog):
             vc: wavelink.Player = interaction.guild.voice_client
 
         if volume > 300:
-            await vc.set_volume(volume=300)
+            await vc.set_volume(300)
             embed = discord.Embed(
                 title=" ", description=f"Volume has been set to {vc.volume}")
             return await interaction.response.send_message(embed=embed)
 
-        await vc.set_volume(volume=volume)
+        await vc.set_volume(volume)
         embed = discord.Embed(
             title=" ", description=f"Volume has been set to {vc.volume}")
         return await interaction.followup.send(embed=embed)

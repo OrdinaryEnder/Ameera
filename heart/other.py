@@ -190,21 +190,6 @@ class CalculatorView(discord.ui.View):
           items.disabled = True
       await self.message.edit(view=self)
 
-def get_nested_command(
-    name: str, guild: Optional[discord.Guild]
-) -> Optional[Union[app_commands.Command, app_commands.Group]]:
-    key, *keys = name.split(' ')
-    cmd = self.bot.tree.get_command(key, guild=guild) or self.bot.tree.get_command(key)
-
-    for key in keys:
-        if cmd is None:
-            return None
-        if isinstance(cmd, app_commands.Command):
-            break
-
-        cmd = cmd.get_command(key)
-
-    return cmd
 
 
 
@@ -213,6 +198,23 @@ class Other(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.expr_states = {}
+
+    def get_nested_command(
+     self, name: str, guild: Optional[discord.Guild]
+) -> Optional[Union[app_commands.Command, app_commands.Group]]:
+     key, *keys = name.split(' ')
+     cmd = self.bot.tree.get_command(key, guild=guild) or self.bot.tree.get_command(key)
+
+     for key in keys:
+        if cmd is None:
+            return None
+        if isinstance(cmd, app_commands.Command):
+            break
+
+        cmd = cmd.get_command(key)
+
+     return cmd
+
 
     @app_commands.command(name="userinfo", description="Shows info about a user")
     @app_commands.describe(getuser="the user")
@@ -261,7 +263,7 @@ class Other(commands.Cog):
 
     @app_commands.command(name='help', description="Stop it, get some help")
     async def _help(self, interaction: discord.Interaction, command: str):
-      cmd = get_nested_command(command, guild=interaction.guild)
+      cmd = self.get_nested_command(command, guild=interaction.guild)
       if cmd is None:
         await interaction.response.send_message(f'Could not find a command named {command}', ephemeral=True)
         return
@@ -443,12 +445,12 @@ class Other(commands.Cog):
         return dalist
 
 
-    @app_commands.command(name="ask", description="Ask Olivia (Powered by OpenAI ChatGPT")
+    @app_commands.command(name="ask", description="Ask Olivia (Powered by OpenAI ChatGPT GPT-3.5-Turbo)")
     @app_commands.describe(question="The Question")
     async def chatgpt(self, interaction: discord.Interaction, question: str):
       openaikey = os.getenv("OPENAI_KEY") or self.bot.config['main']['openaikey']
       await interaction.response.defer()
-      result = await openairequest(openaikey, question)
+      result = await openairequest(openaikey, question, interaction.user.name)
       await interaction.followup.send(result)
 
     @app_commands.command(name="calculator", description="Calculate Something")
