@@ -64,9 +64,9 @@ class MusicDropDown(discord.ui.Select):
         self.vc = vc
         self.message = message
         self.executed = False
-        for song in track[:10]:
+        for index, song in enumrate(track[:10]):
             ret.append(discord.SelectOption(label=song.title,
-                       description=song.author, value=song.title))
+                       description=song.author, value=str(index)))
             self.lel[song.title] = song.uri
 
         super().__init__(placeholder='Choose song ...',
