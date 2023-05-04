@@ -67,7 +67,7 @@ class MusicDropDown(discord.ui.Select):
         for index, song in enumerate(track[:10]):
             ret.append(discord.SelectOption(label=song.title,
                        description=song.author, value=str(index)))
-            self.lel.append(song.uri)
+            self.lel.append(song)
 
         super().__init__(placeholder='Choose song ...',
                          min_values=1, max_values=1, options=ret)
@@ -79,7 +79,7 @@ class MusicDropDown(discord.ui.Select):
         # Select object, and the values attribute gets a list of the user's
         # selected options. We only want the first one.
         print(self.values[0])
-        search = (await wavelink.NodePool.get_connected_node().get_tracks(query=self.lel[self.values[0]], cls=wavelink.SoundCloudTrack))[0]
+        search = self.lel[self.values[0]]
         if self.vc.queue.is_empty and not self.vc.is_playing():
             await self.vc.play(search)
             embed = discord.Embed(
