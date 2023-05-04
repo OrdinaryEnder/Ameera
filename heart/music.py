@@ -79,7 +79,7 @@ class MusicDropDown(discord.ui.Select):
         # Select object, and the values attribute gets a list of the user's
         # selected options. We only want the first one.
         print(self.values[0])
-        search = self.lel[self.values[0]]
+        search = self.lel[int(self.values[0])]
         if self.vc.queue.is_empty and not self.vc.is_playing():
             await self.vc.play(search)
             embed = discord.Embed(
