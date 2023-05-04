@@ -67,7 +67,7 @@ class MusicDropDown(discord.ui.Select):
         for index, song in enumerate(track[:10]):
             ret.append(discord.SelectOption(label=song.title,
                        description=song.author, value=str(index)))
-            self.lel.append(song.url)
+            self.lel.append(song.uri)
 
         super().__init__(placeholder='Choose song ...',
                          min_values=1, max_values=1, options=ret)
