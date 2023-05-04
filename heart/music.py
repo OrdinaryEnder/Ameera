@@ -548,7 +548,7 @@ class Music(commands.Cog):
 
 
 async def node_connect(bot):
-    await wavelink.NodePool.connect(client=bot, nodes=[wavelink.Node(uri="http://lava1.horizxon.studio:80", password="horizxon.studio", use_http=True), wavelink.Node(uri="http://lava3.horizxon.studio:80", password="horizxon.studio", use_http=True)])
+    await wavelink.NodePool.connect(client=bot, nodes=[wavelink.Node(uri="http://lava1.horizxon.studio:80", password="horizxon.studio", use_http=True)])
 async def setup(bot):
     await bot.loop.create_task(node_connect(bot))
     await bot.add_cog(Music(bot))
