@@ -219,15 +219,15 @@ class MyHelpCommand(commands.MinimalHelpCommand):
         commands = await tree.fetch_commands()
         for command in commands:
             embed = discord.Embed(
-                title="Alexandra ", url="https://discord.com/api/oauth2/authorize?client_id=972459217548099584&permissions=0&scope=bot%20applications.commands", description="")
-            embed.set_author(name="ZairullahDeveloper", url="https://github.com/zairullahdev",
-                             icon_url="https://i.ibb.co/gD6mLh7/Png.png")
+                title="Olivia ", url="https://discord.com/api/oauth2/authorize?client_id=972459217548099584&permissions=0&scope=bot%20applications.commands", description="")
+            embed.set_author(name="OrdinaryEnder", url="https://github.com/OrdinaryEnder",
+                             icon_url="https://cdn.discordapp.com/avatars/796915832617828352/c482794784b53f29bf5a58134e7f8825.png")
             embed.set_thumbnail(
                 url="https://i.ibb.co/fp247vT/Untitled1-20220728065509.png")
             embed.add_field(
-                name='By OrdinaryEnder Feat ZairullahDeveloper', value='GPL-2.0 License')
+                name='By OrdinaryEnder', value='GPL-2.0 License')
             embed.set_footer(
-                text="Any suggestions contact ZairullahDeveloper in GitHub (zairullahdev)")
+                text="Any suggestions open an issue in our github")
         for page in self.paginator.pages:
             embed.description += page
         await destination.send(embed=embed)

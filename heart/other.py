@@ -345,8 +345,10 @@ class Other(commands.Cog):
     @app_commands.describe(avamember="Member")
     async def _avatar(self, interaction: discord.Interaction, avamember: discord.Member = None):
         avamember = avamember or interaction.user
-        userAvatarUrl = avamember.avatar.url
-        await interaction.response.send_message(userAvatarUrl)
+        userAvatarUrl = avamember.display_avatar
+        embed = discord.Embed(title=f"{str(avamember)} Avatar")
+        embed.set_image(userAvatarUrl)
+        await interaction.response.send_message(embed=embed)
 
     @commands.command(name='say', description='say smth')
     @commands.is_owner()
