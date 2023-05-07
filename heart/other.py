@@ -1,4 +1,5 @@
 from __future__ import annotations
+from pyston import PystonClient, File
 import asqlite
 from mystbin import Client
 from StringProgressBar import progressBar
@@ -198,6 +199,7 @@ class Other(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.expr_states = {}
+        self.supported_lang = ['awk, bash, basic, basic.net, befunge93, bqn, brachylog, brainfuck, c, c++, cjam, clojure, cobol, coffeescript, cow, crystal, csharp, csharp.net, d, dart, dash, dragon, elixir, emacs, emojicode, erlang, file, forte, forth, fortran, freebasic, fsharp.net, fsi, go, golfscript, groovy, haskell, husk, iverilog, japt, java, javascript, jelly, julia, kotlin, lisp, llvm_ir, lolcode, lua, matl, nasm, nasm64, nim, ocaml, octave, osabie, paradoc, pascal, perl, php, ponylang, powershell, prolog, pure, pyth, python, python2, racket, raku, retina, rockstar, rscript, ruby, rust, samarium, scala, smalltalk, sqlite3, swift, typescript, vlang, vyxal, yeethon, zig']
 
     def get_nested_command(
      self, name: str, guild: Optional[discord.Guild]
@@ -215,6 +217,15 @@ class Other(commands.Cog):
 
      return cmd
 
+# looping every 10 secs 
+    @tasks.loop(seconds=10)
+    async def checkruntime(self):
+     self.coderuntimes = await self.codeclient.runtimes()
+
+    async def cog_load(self):
+     # initializing Pyston Client
+     self.codeclient = PystonClient()
+     self.checkruntime.start()
 
     @app_commands.command(name="userinfo", description="Shows info about a user")
     @app_commands.describe(getuser="the user")
@@ -458,6 +469,8 @@ class Other(commands.Cog):
         view = CalculatorView(interaction.user.id)
         await interaction.response.send_message(view=view)
         view.message = await interaction.original_response()
+
+
 #
 async def setup(bot):
     await bot.add_cog(Other(bot))

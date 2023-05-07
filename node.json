@@ -1,0 +1,9 @@
+{
+  "__note__": "You can add many nodes you like (requires 1 active)",
+  "lavalink": [
+    {
+     "NODE_HOST": "node1.lewdhutao.tech:1183",
+     "NODE_AUTH": "lewdhutao"
+    }
+  ]
+}

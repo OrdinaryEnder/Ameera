@@ -484,10 +484,10 @@ class Music(commands.Cog):
             return await interaction.response.send_message("Nothing is playing")
 
         em = discord.Embed(
-            title=f" ", description=f"Playing \n **[{vc.current.track}]({vc.current.uri})** \n Artist: {vc.current.author}")
+            title=f" ", description=f"Playing \n **[{vc.current.title}]({vc.current.uri})** \n Artist: {vc.current.author}")
         em.set_author(name="Now Playing♪", icon_url=f"{self.bot.user.avatar.url}")
         print(vc.current.thumbnail)
-        if vc.current.thumbnail is None:
+        if not vc.current.thumbnail:
             em.set_thumbnail(
                 url="https://media.discordapp.net/attachments/977216545921073192/1033304783156690984/images2.jpg")
         else:
@@ -548,7 +548,9 @@ class Music(commands.Cog):
 
 
 async def node_connect(bot):
-    await wavelink.NodePool.connect(client=bot, nodes=[wavelink.Node(uri="http://lava1.horizxon.studio:80", password="horizxon.studio", use_http=True)])
+    jsonnode = json.load(open('node.json'))
+    listnode = [wavelink.Node(uri=lol['NODE_HOST'], password=lol['NODE_AUTH']) for lol in jsonnode['lavalink']]
+    await wavelink.NodePool.connect(client=bot, nodes=listnode)
 async def setup(bot):
     await bot.loop.create_task(node_connect(bot))
     await bot.add_cog(Music(bot))

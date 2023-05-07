@@ -84,10 +84,14 @@ class MyBot(commands.AutoShardedBot):
         gc.enable()
         print(Back.WHITE + Fore.RED + "Support" + Fore.YELLOW + " us" + Fore.BLUE +
               " at" + Fore.GREEN + " https://github.com/OrdinaryEnder/Olivia")
+        self.session = aiohttp.ClientSession()
 
+    async def close(self):
+      await self.session.close()
+      await super().close()
 
 intents = discord.Intents().all()
-bot = MyBot(command_prefix=commands.when_mentioned, intents=intents,
+bot = MyBot(command_prefix=commands.when_mentioned_or("./"), intents=intents,
             activity=discord.Game(name="wassup"))
 
 tree = bot.tree
@@ -102,20 +106,20 @@ async def on_app_command_error(
 ):
     if isinstance(error, app_commands.CommandOnCooldown):
         if interaction.response.is_done():
-            await interaction.followup.send(str(error), ephemeral=True)
+            await interaction.followup.send(str(traceback.format_exc()), ephemeral=True)
         else:
-            await interaction.response.send_message(str(error), ephemeral=True)
+            await interaction.response.send_message(str(traceback.format_exc()), ephemeral=True)
 
     elif isinstance(error, app_commands.MissingPermissions):
         if interaction.response.is_done():
-            await interaction.followup.send(str(error), ephemeral=True)
+            await interaction.followup.send(str(traceback.format_exc()), ephemeral=True)
         else:
-            await interaction.response.send_message(str(error), ephemeral=True)
+            await interaction.response.send_message(str(traceback.format_exc()), ephemeral=True)
     else:
         if interaction.response.is_done():
-            await interaction.followup.send(str(error), ephemeral=True)
+            await interaction.followup.send(str(traceback.format_exc()), ephemeral=True)
         else:
-            await interaction.response.send_message(str(error), ephemeral=True)
+            await interaction.response.send_message(str(traceback.format_exc()), ephemeral=True)
 
 
 @bot.before_invoke
