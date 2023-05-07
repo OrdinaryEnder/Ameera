@@ -347,7 +347,7 @@ class Other(commands.Cog):
         avamember = avamember or interaction.user
         userAvatarUrl = avamember.display_avatar
         embed = discord.Embed(title=f"{str(avamember)} Avatar")
-        embed.set_image(userAvatarUrl)
+        embed.set_image(image=userAvatarUrl)
         await interaction.response.send_message(embed=embed)
 
     @commands.command(name='say', description='say smth')
