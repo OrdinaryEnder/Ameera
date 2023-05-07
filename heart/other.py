@@ -1,5 +1,4 @@
 from __future__ import annotations
-from pyston import PystonClient, File
 import asqlite
 from mystbin import Client
 from StringProgressBar import progressBar
