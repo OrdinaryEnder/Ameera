@@ -217,14 +217,6 @@ class Other(commands.Cog):
      return cmd
 
 # looping every 10 secs 
-    @tasks.loop(seconds=10)
-    async def checkruntime(self):
-     self.coderuntimes = await self.codeclient.runtimes()
-
-    async def cog_load(self):
-     # initializing Pyston Client
-     self.codeclient = PystonClient()
-     self.checkruntime.start()
 
     @app_commands.command(name="userinfo", description="Shows info about a user")
     @app_commands.describe(getuser="the user")
