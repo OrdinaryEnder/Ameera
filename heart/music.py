@@ -498,7 +498,7 @@ class Music(commands.Cog):
         em.add_field(name="Position",
                      value=f"`{datetime.timedelta(milliseconds=vc.position)}`")
         em.add_field(name="Duration",
-                     value=f"`{datetime.timedelta(milliseconds=vc.current.length}`")
+                     value=f"`{datetime.timedelta(milliseconds=vc.current.length)}`")
         em.set_footer(icon_url=f"{interaction.user.avatar.url}",
                       text=f"Requested by {interaction.user}")
         return await interaction.response.send_message(embed=em)
