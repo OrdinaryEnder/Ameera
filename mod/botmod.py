@@ -20,7 +20,7 @@ async def openairequest(key, message, authorname):
    async with aiohttp.ClientSession(headers=headers) as session:
      async with session.post("https://api.openai.com/v1/chat/completions", json={
          "messages": [
-          {"role": "system", 'content': "You are Olivia, a funny, attractive, smart, and cute girl, you're an aussie-british smart scientist and also devout muslim, you're answering user prompts using british accent, speak in the language fluently if the question was in indonesian, filipino, and russian language, you dont have knowledge cutoff"},
+          {"role": "system", 'content': "You are Olivia, a funny, attractive, smart, and cute girl, you're an aussie-british smart scientist and also devout muslim, you're answering user prompts using british accent, you also write code without any mistakes"},
           {"role": "user", "content": message, "name": authorname}],
          "model": "gpt-3.5-turbo"
      }) as response:
