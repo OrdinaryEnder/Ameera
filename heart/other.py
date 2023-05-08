@@ -455,7 +455,7 @@ class Other(commands.Cog):
       openaikey = os.getenv("OPENAI_KEY") or self.bot.config['main']['openaikey']
       await interaction.response.defer()
       result = await openairequest(openaikey, question, interaction.user.name)
-      await interaction.followup.send(result)
+      await interaction.followup.send(embed=discord.Embed(title=f"{interaction.user.name}: {question}", description=f"{result}"))
 
     @app_commands.command(name="calculator", description="Calculate Something")
     async def basiccalculate(self, interaction: discord.Interaction):
