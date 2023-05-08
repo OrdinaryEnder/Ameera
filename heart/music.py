@@ -486,7 +486,8 @@ class Music(commands.Cog):
         em = discord.Embed(
             title=f" ", description=f"Playing \n **[{vc.current.title}]({vc.current.uri})** \n Artist: {vc.current.author}")
         em.set_author(name="Now Playing♪", icon_url=f"{self.bot.user.avatar.url}")
-        if not vc.current.thumbnail:
+        print(getattr(vc.current, "thumbnail"))
+        if not getattr(vc.current, "thumbnail"):
             em.set_thumbnail(
                 url="https://media.discordapp.net/attachments/977216545921073192/1033304783156690984/images2.jpg")
         else:
