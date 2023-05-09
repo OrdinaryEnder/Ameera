@@ -127,7 +127,7 @@ async def deprecate(ctx):
     if ctx.interaction is None:
         if ctx.author.id == 796915832617828352:
             return
-        elif ctx.command.name = "run":
+        elif ctx.command.name == "run":
          return
         else:
             return await ctx.send("Message command are going EOL \n Ender Been decide to make move too, any command like +meme going to not work \n Prediction: End of October 2022 \n \n INFO: <https://pastebin.com/9Ci5fq96>")
