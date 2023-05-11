@@ -1,3 +1,4 @@
+import pytz
 import asqlite
 from mystbin import Client
 from StringProgressBar import progressBar
@@ -36,7 +37,7 @@ import aiohttp
 import asyncio
 import time
 import datetime
-import datetime as dt
+from datetime import datetime as dt
 import typing as t
 from email.base64mime import body_encode
 import wavelink
@@ -85,10 +86,22 @@ class MyBot(commands.AutoShardedBot):
         print(Back.WHITE + Fore.RED + "Support" + Fore.YELLOW + " us" + Fore.BLUE +
               " at" + Fore.GREEN + " https://github.com/OrdinaryEnder/Olivia")
         self.session = aiohttp.ClientSession()
+        self.presencetask.start()
 
     async def close(self):
       await self.session.close()
       await super().close()
+
+    @tasks.loop(minutes=1)
+    async def presencetask(self):
+     self.currentime = dt.now(pytz.timezone('Asia/Jakarta'))
+     await self.change_presence(activity=discord.Game(name=f"Current Clock: {self.currentime.strftime('%H:%M %Z')}"))
+
+    @presencetask.before_loop
+    async def before_presence(self):
+     print("Task Executed")
+     await self.wait_until_ready()
+
 
 intents = discord.Intents().all()
 bot = MyBot(command_prefix=commands.when_mentioned_or(">"), intents=intents,
@@ -143,7 +156,6 @@ async def on_ready():
     print(Back.RED + Fore.BLACK + "Logged As")
     print(Back.WHITE + Fore.BLACK +
           f"@{bot.user.name}#{bot.user.discriminator}")
-
 
 @bot.event
 async def on_member_join(member):

@@ -181,11 +181,27 @@ class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.leave_check = {}
-        self.lock = asyncio.Lock()
+
 
     @commands.Cog.listener()
     async def on_wavelink_node_ready(self, node: wavelink.Node):
       print(node.id)
+
+    @commands.Cog.listener()
+    async def on_voice_state_update(self, member, before, after):
+     if not after.channel:
+      # check if the user was bot
+      if member.bot:
+       return
+      # someone left the vc
+      if before.channel.id == member.guild.voice_client.channel.id:
+       # counts "real" user still in vc
+       vcchan = self.bot.get_channel(before.channel.id) # gets current state
+       if sum(not m.bot for m in vcchan.members) < 1:
+        # leave.
+        wlvc: wavelink.Player = member.guild.voice_client
+        await wlvc.disconnect()
+        await wlvc.chan.send(embed=discord.Embed(title="Leaving due to no user in vc anymore", description=f"Thanks for using {self.bot.user.name} service!, i will be available any times (If {str(self.bot.application.owner)} didnt shutdown my service)", colour=self.bot.user.colour))
 
     @commands.Cog.listener()
     async def on_wavelink_track_end(self, payload: wavelink.TrackEventPayload):
