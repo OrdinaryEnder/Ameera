@@ -256,9 +256,9 @@ class Music(commands.Cog):
             return await interaction.followup.send("You are not connexted to a voice channel")
         elif not interaction.guild.voice_client:
             return await interaction.followup.send("No such voice connected")
-        else;
+        else:
             vc: wavelink.Player = interaction.guild.voice_client
-            await vc.set_filter(wavelink.Filter(wavelink.Rotation(speed=15))
+            await vc.set_filter(wavelink.Filter(wavelink.Rotation(speed=15)))
             return await interaction.followup.send("Set Filter: 8D")
 
     @filterscmd.command(name="nightcore", description="Set Nightcore")
