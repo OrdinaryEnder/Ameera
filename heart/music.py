@@ -248,6 +248,19 @@ class Music(commands.Cog):
             await vc.set_filter(wavelink.Filter(equalizer=wavelink.Equalizer(name="Bass Boost", bands=bands)))
             return await interaction.followup.send("Set Filter: Bass Boost")
 
+
+    @filterscmd.command(name="8d", description="Set Nightcore")
+    async def 8ffilter(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+        if not interaction.user.voice:
+            return await interaction.followup.send("You are not connexted to a voice channel")
+        elif not interaction.guild.voice_client:
+            return await interaction.followup.send("No such voice connected")
+        else;
+            vc: wavelink.Player = interaction.guild.voice_client
+            await vc.set_filter(wavelink.Filter(wavelink.Rotation(speed=15))
+            return await interaction.followup.send("Set Filter: 8D")
+
     @filterscmd.command(name="nightcore", description="Set Nightcore")
     async def nightcore(self, interaction: discord.Interaction):
         await interaction.response.defer()
