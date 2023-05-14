@@ -250,7 +250,7 @@ class Music(commands.Cog):
 
 
     @filterscmd.command(name="8d", description="Set Nightcore")
-    async def 8ffilter(self, interaction: discord.Interaction):
+    async def epicfilter(self, interaction: discord.Interaction):
         await interaction.response.defer()
         if not interaction.user.voice:
             return await interaction.followup.send("You are not connexted to a voice channel")
