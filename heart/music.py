@@ -249,7 +249,7 @@ class Music(commands.Cog):
             return await interaction.followup.send("Set Filter: Bass Boost")
 
 
-    @filterscmd.command(name="8d", description="Set Nightcore")
+    @filterscmd.command(name="8d", description="Set 8D")
     async def epicfilter(self, interaction: discord.Interaction):
         await interaction.response.defer()
         if not interaction.user.voice:
