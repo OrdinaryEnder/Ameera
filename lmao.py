@@ -173,7 +173,7 @@ async def on_message(message):
 
     # Assassin Clan Exclusive Troll feature
     if message.guild.id == 1053610219353145374:
-     if re.fullmatch("(http?s:\/\/(media\.)?tenor\.com(\/images\/[a-f0-9]+\/tenor\.gif|\/view\/[\w\-]+-\d{8}))", message.content);
+     if re.fullmatch("(http?s:\/\/(media\.)?tenor\.com(\/images\/[a-f0-9]+\/tenor\.gif|\/view\/[\w\-]+-\d{8}))", message.content):
        if not message.embeds:
         await message.channel.send("https://media.tenor.com/7OZvk7ivrRkAAAAM/epic-embed-fail-gypsy-crusader.gif")
 #    if any(badword in message.content.lower().split() for badword in badwords):
