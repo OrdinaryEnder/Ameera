@@ -171,6 +171,10 @@ async def on_message(message):
     if message.author.bot:
         return
 
+    # Assassin Clan Exclusive Troll feature
+    if message.guild.id == 1053610219353145374:
+     if not message.embeds:
+        await message.channel.send("https://media.tenor.com/7OZvk7ivrRkAAAAM/epic-embed-fail-gypsy-crusader.gif")
 #    if any(badword in message.content.lower().split() for badword in badwords):
 #        authorava = await message.author.avatar.read()
 #        await message.delete()
