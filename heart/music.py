@@ -65,7 +65,7 @@ class MusicDropDown(discord.ui.Select):
         self.message = message
         self.executed = False
         for index, song in enumerate(track[:10]):
-            ret.append(discord.SelectOption(label=song.title,
+            ret.append(discord.SelectOption(label=f"{song.title}"[:100],
                        description=song.author, value=str(index)))
             self.lel.append(song)
 
@@ -126,7 +126,7 @@ class YTMusicDropDown(discord.ui.Select):
         self.executed = False
         self.message = message
         for song in track[:10]:
-            ret.append(discord.SelectOption(label=song.title,
+            ret.append(discord.SelectOption(label=f"{song.title}"[:100],
                        description=song.author, value=song.uri))
 
         super().__init__(placeholder='Choose song ...',

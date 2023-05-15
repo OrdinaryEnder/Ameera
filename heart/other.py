@@ -314,7 +314,7 @@ class Other(commands.Cog):
         await interaction.followup.send(embed=em)
 
     @app_commands.command(name="paste", description="Paste something to https://mystb.in")
-    @app_commands.checks.cooldown(1, 12.0, key=lambda i: (i.guild_id, i.user.id))
+    @app_commands.checks.cooldown(1, 12.0, key=None)
     async def mystpaste(self, interaction: Interaction, text: str):
         await interaction.response.defer()
         textpaste = await webpaste.create_paste(filename="file.txt", content=text)
@@ -406,14 +406,18 @@ class Other(commands.Cog):
     @app_commands.describe(search="Youtube Video To Search")
     async def yt(self, interaction: discord.Interaction, search: str):
         await interaction.response.defer()
-        query_string = urllib.parse.urlencode({
-            "search_query": search
-        })
-        html_content = urllib.request.urlopen(
+        # nesting function
+        def blockingsearch(search):
+          query_string = urllib.parse.urlencode({
+             "search_query": search
+          })
+          html_content = urllib.request.urlopen(
             "http://www.youtube.com/results?" + query_string
-        )
-        search_results = re.findall(
+          )
+          search_results = re.findall(
             r"watch\?v=(\S{11})", html_content.read().decode())
+          return search_results
+        search_results = await asyncio.to_thread(blockingsearch, search)
         await interaction.followup.send("http://www.youtube.com/watch?v=" + search_results[0])
 
     @app_commands.command(name="webhookspawn", description="Creates webhook")
@@ -451,6 +455,7 @@ class Other(commands.Cog):
 
     @app_commands.command(name="ask", description="Ask Olivia (Powered by OpenAI ChatGPT GPT-3.5-Turbo)")
     @app_commands.describe(question="The Question")
+    @app_commands.checks.cooldown(1, 12.0, key=None)
     async def chatgpt(self, interaction: discord.Interaction, question: str):
       openaikey = os.getenv("OPENAI_KEY") or self.bot.config['main']['openaikey']
       await interaction.response.defer()
