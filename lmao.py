@@ -181,16 +181,17 @@ async def on_message(message):
     if message.guild.id in (948712005223735336, 1053610219353145374):
      if re.fullmatch("(?:https?://)(?:(?:canary|ptb)\.)?discord(?:app)?\.com/channels/(?P<guild>\d{16,20})/(?P<channel>\d{16,20})/(?P<message>\d{16,20})/?", message.content):
       print("Nice")
-      lol = (bot.get_channel(int(message.content.split("/")[5])) if bot.get_channel(int(message.content.split("/")[5])) else await bot.fetch_channel(int(message.content.split("/")[5])))
-      lolmsg = await lol.fetch_message(int(message.content.split("/")[6]))
-      lolweb = await message.channel.create_webhook(name=message.author.name, avatar=(await message.author.display_avatar.read()))
-      embed = discord.Embed(title=f"#{lol.name}", description=lolmsg.content, url=str(lolmsg.jump_url))
-      embed.set_author(name=message.author.name, icon_url=message.author.display_avatar.url)
-      if lolmsg.attachments:
-       embed.set_image(url=lolmsg.attachments[0].url)
+      if message.content.split("/")[4] in (948712005223735336, 1053610219353145374);
+       lol = (bot.get_channel(int(message.content.split("/")[5])) if bot.get_channel(int(message.content.split("/")[5])) else await bot.fetch_channel(int(message.content.split("/")[5])))
+       lolmsg = await lol.fetch_message(int(message.content.split("/")[6]))
+       lolweb = await message.channel.create_webhook(name=message.author.name, avatar=(await message.author.display_avatar.read()))
+       embed = discord.Embed(title=f"#{lol.name}", description=lolmsg.content, url=str(lolmsg.jump_url))
+       embed.set_author(name=message.author.name, icon_url=message.author.display_avatar.url)
+       if lolmsg.attachments:
+        embed.set_image(url=lolmsg.attachments[0].url)
 
-      await message.delete()
-      await lolweb.send(embed=embed)
+       await message.delete()
+       await lolweb.send(embed=embed)
 #    if any(badword in message.content.lower().split() for badword in badwords):
 #        authorava = await message.author.avatar.read()
 #        await message.delete()
