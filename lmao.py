@@ -177,7 +177,7 @@ async def on_message(message):
        await asyncio.sleep(2)
        if not message.embeds:
         await message.channel.send("https://media.tenor.com/7OZvk7ivrRkAAAAM/epic-embed-fail-gypsy-crusader.gif")
-    # Kizzy Server Testing 
+    # Kizzy Server Testing
     if message.guild.id in (948712005223735336, 1053610219353145374):
      if re.fullmatch("(?:https?://)(?:(?:canary|ptb)\.)?discord(?:app)?\.com/channels/(?P<guild>\d{16,20})/(?P<channel>\d{16,20})/(?P<message>\d{16,20})/?", message.content):
       print("Nice")
@@ -198,6 +198,8 @@ async def on_message(message):
 #        lmao = await message.channel.create_webhook(name=message.author.name, avatar=authorava)
 #        await lmao.send("#" * len(message.content))
 #        await lmao.delete()
+     if re.fullmatch(rf"<@!?<bot.user.id>", message.content):
+      await message.channel.send(f"Huh, No command?, You can use {bot.command_prefix} to use my service")
 
 
 @bot.event
