@@ -455,7 +455,7 @@ class Other(commands.Cog):
 
     @app_commands.command(name="ask", description="Ask Olivia (Powered by OpenAI ChatGPT GPT-3.5-Turbo)")
     @app_commands.describe(question="The Question")
-    @app_commands.checks.cooldown(1, 12.0, key=None)
+    @app_commands.checks.cooldown(1, 15.0, key=None)
     async def chatgpt(self, interaction: discord.Interaction, question: str):
       openaikey = os.getenv("OPENAI_KEY") or self.bot.config['main']['openaikey']
       await interaction.response.defer()
