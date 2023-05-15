@@ -119,15 +119,15 @@ async def on_app_command_error(
 ):
     if isinstance(error, app_commands.CommandOnCooldown):
         if interaction.response.is_done():
-            await interaction.followup.send(str(traceback.format_exc()), ephemeral=True)
+            await interaction.followup.send(str(error), ephemeral=True)
         else:
-            await interaction.response.send_message(str(traceback.format_exc()), ephemeral=True)
+            await interaction.response.send_message(str(error), ephemeral=True)
 
     elif isinstance(error, app_commands.MissingPermissions):
         if interaction.response.is_done():
-            await interaction.followup.send(str(traceback.format_exc()), ephemeral=True)
+            await interaction.followup.send(str(error), ephemeral=True)
         else:
-            await interaction.response.send_message(str(traceback.format_exc()), ephemeral=True)
+            await interaction.response.send_message(str(error), ephemeral=True)
     else:
         if interaction.response.is_done():
             await interaction.followup.send(str(traceback.format_exc()), ephemeral=True)
