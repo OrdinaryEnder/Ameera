@@ -186,7 +186,7 @@ async def on_message(message):
        lolmsg = await lol.fetch_message(int(message.content.split("/")[6]))
        lolweb = await message.channel.create_webhook(name=message.author.name, avatar=(await message.author.display_avatar.read()))
        embed = discord.Embed(title=f"#{lol.name}", description=lolmsg.content, url=str(lolmsg.jump_url))
-       embed.set_author(name=message.author.name, icon_url=message.author.display_avatar.url)
+       embed.set_author(name=lolmsg.author.name, icon_url=lolmsg.author.display_avatar.url)
        if lolmsg.attachments:
         embed.set_image(url=lolmsg.attachments[0].url)
 
