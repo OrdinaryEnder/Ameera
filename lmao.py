@@ -95,6 +95,8 @@ class MyBot(commands.AutoShardedBot):
     @tasks.loop(minutes=1)
     async def presencetask(self):
      self.currentime = dt.now(pytz.timezone('Asia/Jakarta'))
+     await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="Al-Qariah"))
+     await asyncio.sleep(30)
      await self.change_presence(activity=discord.Game(name=f"Current Clock: {self.currentime.strftime('%H:%M %Z')}"))
 
     @presencetask.before_loop
