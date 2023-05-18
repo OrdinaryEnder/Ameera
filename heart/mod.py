@@ -120,7 +120,7 @@ class Moderation(commands.Cog):
         await interaction.response.defer(ephemeral=True)
         await interaction.channel.purge(limit=messcount)
         await interaction.followup.send(f"Successfully Purged {limit}")
-        await interaction.channel.send(f"Purged {limit} messages by {interaction.user.mention}")
+        await interaction.channel.send(f"Purged {limit} messages", delete_after=3)
 
     @app_commands.command(name='nick', description='Change Nickname of people')
     @app_commands.checks.has_permissions(manage_nicknames=True)
