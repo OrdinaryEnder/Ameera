@@ -212,7 +212,7 @@ async def on_message(message):
      if re.fullmatch(rf"<@!?<bot.user.id>", message.content):
       await message.channel.send(f"Huh, No command?, You can use {bot.command_prefix} to use my service")
 
-     await bot.handler.propagate(message)
+     await bot.spamhandle.propagate(message)
 
 @bot.event
 async def on_guild_join(guild):
