@@ -402,24 +402,6 @@ class Other(commands.Cog):
 
         await interaction.response.send_message(embed=embed)
 
-    @app_commands.command(name="search", description="Search Youtube Videos")
-    @app_commands.describe(search="Youtube Video To Search")
-    async def yt(self, interaction: discord.Interaction, search: str):
-        await interaction.response.defer()
-        # nesting function
-        def blockingsearch(search):
-          query_string = urllib.parse.urlencode({
-             "search_query": search
-          })
-          html_content = urllib.request.urlopen(
-            "http://www.youtube.com/results?" + query_string
-          )
-          search_results = re.findall(
-            r"watch\?v=(\S{11})", html_content.read().decode())
-          return search_results
-        search_results = await asyncio.to_thread(blockingsearch, search)
-        await interaction.followup.send("http://www.youtube.com/watch?v=" + search_results[0])
-
     @app_commands.command(name="webhookspawn", description="Creates webhook")
     @app_commands.describe(name="Webhook Name")
     @app_commands.checks.has_permissions(manage_webhooks=True)
