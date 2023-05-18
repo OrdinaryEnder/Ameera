@@ -116,8 +116,8 @@ class Moderation(commands.Cog):
         if limit > 100:
             return await interaction.response.send_message("Too much 😖", ephemeral=True)
 
-        messcount = limit + 1
-        await interaction.response.defer()
+        messcount = limit
+        await interaction.response.defer(ephemeral=True)
         await interaction.channel.purge(limit=messcount)
         await interaction.followup.send("Purged by {}".format(interaction.user.mention), delete_after=5)
 
