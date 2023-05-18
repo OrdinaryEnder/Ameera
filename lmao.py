@@ -1,4 +1,7 @@
 import pytz
+from antispam import AntiSpamHandler
+from antispam.enums import Library
+from antispam.caches.mongo import MongoCache
 import asqlite
 from mystbin import Client
 from StringProgressBar import progressBar
@@ -113,6 +116,10 @@ tree = bot.tree
 bot.config = toml.load("config.toml")
 bot.startTime = time.time()
 
+bot.spamhandle = AntiSpamHandler(bot, library=Library.DPY)
+if bot.config['main']["MONGO_URL"] or os.getenv("MONGO_URL"):
+ thecache = MongoCache(bot.spamhandle, (bot.config['main']["MONGO_URL"] or os.getenv("MONGO_URL")))
+ bot.handler.set_cache(bot.thecache)
 
 @tree.error
 async def on_app_command_error(
@@ -194,6 +201,8 @@ async def on_message(message):
 
        await message.delete()
        await lolweb.send(embed=embed)
+
+     
 #    if any(badword in message.content.lower().split() for badword in badwords):
 #        authorava = await message.author.avatar.read()
 #        await message.delete()
@@ -203,6 +212,7 @@ async def on_message(message):
      if re.fullmatch(rf"<@!?<bot.user.id>", message.content):
       await message.channel.send(f"Huh, No command?, You can use {bot.command_prefix} to use my service")
 
+     await bot.handler.propagate(message)
 
 @bot.event
 async def on_guild_join(guild):

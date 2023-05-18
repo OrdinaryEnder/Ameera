@@ -1,6 +1,7 @@
 # Olivia config.toml
 
 [main]
-token = "1"
+token = ""
 openaikey = ""
+MONGO_URL = ""
 
