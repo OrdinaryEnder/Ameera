@@ -119,7 +119,7 @@ bot.startTime = time.time()
 bot.spamhandle = AntiSpamHandler(bot, library=Library.DPY)
 if bot.config['main']["MONGO_URL"] or os.getenv("MONGO_URL"):
  thecache = MongoCache(bot.spamhandle, (bot.config['main']["MONGO_URL"] or os.getenv("MONGO_URL")))
- bot.handler.set_cache(bot.thecache)
+ bot.spamhandle.set_cache(bot.thecache)
 
 @tree.error
 async def on_app_command_error(

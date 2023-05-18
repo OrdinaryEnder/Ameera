@@ -18,3 +18,4 @@ git+https://github.com/AmanoTeam/duckpy
 toml
 pytz
 Discord-Anti-Spam
+motor[srv]
