@@ -108,7 +108,11 @@ class MyBot(commands.AutoShardedBot):
      await self.wait_until_ready()
 
 
-intents = discord.Intents().all()
+intents = discord.Intents().default()
+intents.members = True
+intents.presences = True
+intents.message_content = True
+intents.messages = True
 bot = MyBot(command_prefix=commands.when_mentioned_or(">"), intents=intents,
             activity=discord.Activity(type=discord.ActivityType.listening, name="Prefix '>' or ping", ))
 
