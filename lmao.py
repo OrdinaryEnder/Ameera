@@ -95,15 +95,24 @@ class MyBot(commands.AutoShardedBot):
       await self.session.close()
       await super().close()
 
-    @tasks.loop(minutes=1)
+    @tasks.loop(seconds=30)
     async def presencetask(self):
-     self.currentime = dt.now(pytz.timezone('Asia/Jakarta'))
-     await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="Al-Qariah"))
-     await asyncio.sleep(30)
+     self.currentime = dt.now(pytz.timezone(random.choice(['Asia/Jakarta', 'US/Arizona'])))
      await self.change_presence(activity=discord.Game(name=f"Current Clock: {self.currentime.strftime('%H:%M %Z')}"))
 
     @presencetask.before_loop
     async def before_presence(self):
+     now = dt.now().astimezone()
+     task = presencetask
+     interval = datetime.timedelta(hours=task.hours, minutes=task.minutes, seconds=task.seconds)
+     next_run = now.replace(hour=0, minute=0, second=30)
+
+     while next_run > now:
+      next_run -= interval
+     while next_run < now:
+      next_run += interval
+
+     await discord.utils.sleep_until(next_run)
      print("Task Executed")
      await self.wait_until_ready()
 
