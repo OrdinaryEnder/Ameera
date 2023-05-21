@@ -102,17 +102,6 @@ class MyBot(commands.AutoShardedBot):
 
     @presencetask.before_loop
     async def before_presence(self):
-     now = dt.now().astimezone()
-     task = presencetask
-     interval = datetime.timedelta(hours=task.hours, minutes=task.minutes, seconds=task.seconds)
-     next_run = now.replace(hour=0, minute=0, second=30)
-
-     while next_run > now:
-      next_run -= interval
-     while next_run < now:
-      next_run += interval
-
-     await discord.utils.sleep_until(next_run)
      print("Task Executed")
      await self.wait_until_ready()
 
