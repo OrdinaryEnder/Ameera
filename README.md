@@ -18,23 +18,8 @@ Termux (Android, Not recommended using Data)
 ```
 bash termuxsetup.sh
 ```
-
-BEFORE YOU STARTING THE BOT, SET PORT ENVIROMENT AS YOUR OPERATING SYSTEM WAY
-
-Linux
-
-
-```bash
-export PORT=8080
-````
-
 ### Online Hosting
 You can host this bot to make it stay online on these online hostings.
-
-**PAID**
-
-
-<a href="https://heroku.com/deploy?template=https://github.com/zairullahdev/Alexandra"><img src="https://www.herokucdn.com/deploy/button.svg" alt="Run your bot in Heroku"></a>
 
 **FREE**
 
@@ -45,13 +30,10 @@ You can host this bot to make it stay online on these online hostings.
 
 
 # Credit 
-ZairullahDeveloper - Code's
 
 OrdinaryEnder - Idea & Codes
 
 
-# To-do List
+# To-do list
 
-
-**Completing Music Cogs into slash**
-
+Nothing :P
