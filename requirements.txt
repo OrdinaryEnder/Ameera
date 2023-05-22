@@ -3,7 +3,7 @@ git+https://github.com/Rapptz/discord.py
 qrcode
 pillow
 pynacl
-git+https://github.com/minibox24/Wavelink@fix/ignore
+wavelink
 python-dateutil
 git+https://github.com/johnwmillr/LyricsGenius.git
 colorama
