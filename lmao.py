@@ -198,7 +198,7 @@ async def on_message(message):
          mesg = message.content[22:]
          if len(mesg) < 2:
             pass
-         res = await openairequest((os.getenv("OPENAI_KEY") or self.bot.config['main']['openaikey']), mesg, message.author.name)
+         res = await openairequest((os.getenv("OPENAI_KEY") or bot.config['main']['openaikey']), mesg, message.author.name)
          await message.channel.send(res)
     # Kizzy Server Testing
     if message.guild.id in (948712005223735336, 1053610219353145374):
