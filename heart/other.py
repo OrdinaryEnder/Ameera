@@ -435,15 +435,6 @@ class Other(commands.Cog):
         return dalist
 
 
-    @app_commands.command(name="ask", description="Ask Olivia (Powered by OpenAI ChatGPT GPT-3.5-Turbo)")
-    @app_commands.describe(question="The Question")
-    @app_commands.checks.cooldown(1, 15.0, key=None)
-    async def chatgpt(self, interaction: discord.Interaction, question: str):
-      openaikey = os.getenv("OPENAI_KEY") or self.bot.config['main']['openaikey']
-      await interaction.response.defer()
-      result = await openairequest(openaikey, question, interaction.user.name)
-      await interaction.followup.send(embed=discord.Embed(title=f"{interaction.user.name}: {f'{question}'[:256]}...", description=f"{result}"))
-
     @app_commands.command(name="calculator", description="Calculate Something")
     async def basiccalculate(self, interaction: discord.Interaction):
         view = CalculatorView(interaction.user.id)

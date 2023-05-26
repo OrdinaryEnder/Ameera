@@ -36,6 +36,7 @@ from discord.ext import commands
 from discord.ext import tasks
 import json
 from wavelink import Node as node
+from mod.botmod import openairequest
 import aiohttp
 import asyncio
 import time
@@ -111,13 +112,13 @@ intents.members = True
 intents.presences = True
 intents.message_content = True
 intents.messages = True
-bot = MyBot(command_prefix=commands.when_mentioned_or(">"), intents=intents,
+bot = MyBot(command_prefix=">", intents=intents,
             activity=discord.Activity(type=discord.ActivityType.listening, name="Prefix '>' or ping", ))
 
 tree = bot.tree
 bot.config = toml.load("config.toml")
 bot.startTime = time.time()
-
+bot.gptcooldown = commands.CooldownMapping.from_cooldown(1, 20.0, commands.BucketType.guild)
 bot.spamhandle = AntiSpamHandler(bot, library=Library.DPY)
 if bot.config['main']["MONGO_URL"] or os.getenv("MONGO_URL"):
  thecache = MongoCache(bot.spamhandle, (bot.config['main']["MONGO_URL"] or os.getenv("MONGO_URL")))
@@ -188,6 +189,17 @@ async def on_message(message):
        await asyncio.sleep(2)
        if not message.embeds:
         await message.channel.send("https://media.tenor.com/7OZvk7ivrRkAAAAM/epic-embed-fail-gypsy-crusader.gif")
+     if f"<@{bot.user.id}> " in message.content:
+      bucket = bot.gptcooldown.get_bucket(message)
+      retry_after = bucket.update_rate_limit()
+      if retry_after:
+         pass
+      else:
+         mesg = message.content[22:]
+         if len(mesg) < 2:
+            pass
+         res = await openairequest((os.getenv("OPENAI_KEY") or self.bot.config['main']['openaikey']), mesg, message.author.name)
+         await message.channel.send(res)
     # Kizzy Server Testing
     if message.guild.id in (948712005223735336, 1053610219353145374):
      if re.fullmatch("(?:https?://)(?:(?:canary|ptb)\.)?discord(?:app)?\.com/channels/(?P<guild>\d{16,20})/(?P<channel>\d{16,20})/(?P<message>\d{16,20})/?", message.content):
@@ -211,8 +223,7 @@ async def on_message(message):
 #        lmao = await message.channel.create_webhook(name=message.author.name, avatar=authorava)
 #        await lmao.send("#" * len(message.content))
 #        await lmao.delete()
-     if re.fullmatch(rf"<@!?<bot.user.id>", message.content):
-      await message.channel.send(f"Huh, No command?, You can use {bot.command_prefix} to use my service")
+
 
      await bot.spamhandle.propagate(message)
 
