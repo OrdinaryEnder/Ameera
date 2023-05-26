@@ -118,7 +118,7 @@ bot = MyBot(command_prefix=">", intents=intents,
 tree = bot.tree
 bot.config = toml.load("config.toml")
 bot.startTime = time.time()
-bot.gptcooldown = commands.CooldownMapping.from_cooldown(1, 20.0, commands.BucketType.guild)
+bot.gptcooldown = commands.CooldownMapping.from_cooldown(3, 60.0, commands.BucketType.guild)
 bot.spamhandle = AntiSpamHandler(bot, library=Library.DPY)
 if bot.config['main']["MONGO_URL"] or os.getenv("MONGO_URL"):
  thecache = MongoCache(bot.spamhandle, (bot.config['main']["MONGO_URL"] or os.getenv("MONGO_URL")))
