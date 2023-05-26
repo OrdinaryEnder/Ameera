@@ -198,8 +198,10 @@ async def on_message(message):
          mesg = message.content[22:]
          if len(mesg) < 2:
             pass
+         await message.channel.typing()
          res = await openairequest((os.getenv("OPENAI_KEY") or bot.config['main']['openaikey']), mesg, message.author.name)
          await message.channel.send(res)
+
     # Kizzy Server Testing
     if message.guild.id in (948712005223735336, 1053610219353145374):
      if re.fullmatch("(?:https?://)(?:(?:canary|ptb)\.)?discord(?:app)?\.com/channels/(?P<guild>\d{16,20})/(?P<channel>\d{16,20})/(?P<message>\d{16,20})/?", message.content):
