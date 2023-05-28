@@ -2,8 +2,14 @@
   "__note__": "You can add many nodes you like (requires 1 active)",
   "lavalink": [
     {
-     "NODE_HOST": "node1.lewdhutao.tech:1183",
-     "NODE_AUTH": "lewdhutao"
+      "NODE_HOST": "lavalink.lexnet.cc:443",
+      "NODE_AUTH": "lexn3tl@val!nk",
+      "NODE_SECURE": true
+    },
+    {
+      "NODE_HOST": "eu-lavalink.lexnet.cc:443",
+      "NODE_AUTH": "lexn3tl@val!nk",
+      "NODE_SECURE": true
     }
   ]
 }
