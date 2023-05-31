@@ -4,4 +4,11 @@
 token = ""
 openaikey = ""
 MONGO_URL = ""
-postgresqldb_url = ""
+
+[PG_CONF]
+PG_HOST = ""
+PG_PORT = 5432
+PG_USER = ""
+# leave password if empty
+PG_PASS = ""
+PG_DB = ""

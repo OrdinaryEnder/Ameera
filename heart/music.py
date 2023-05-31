@@ -382,11 +382,13 @@ class Music(commands.Cog):
         # bot disconnected itself
 
     async def cog_load(self):
-     if not (self.bot.config['main'].get('postgresqldb_url') or os.getenv("POSTGRESQL_URL")):
-      print("im quit, no db?, set one with editing config or exporting POSTGRESQL_URL variable")
-      await self.bot.logout()
+     for x in self.bot.config['PG_CONF'];
+      if not self.bot.config['PG_CONF'][x]:
+        print("im quit, one of the db config (or even more) is empty, set one with editing config PG_DB")
+        await self.bot.wait_until_ready()
+        await self.bot.logout()
      else:
-      self.musicdbpool = await asyncpg.create_pool(dsn=self.bot.config['main'].get('postgresdb_url') or os.getenv('POSTGRESQL_URL'))
+      self.musicdbpool = await asyncpg.create_pool(host=self.bot.config['PG_CONF']['PG_HOST'], port=(self.bot.config['PG_CONF']['PG_PORT'] or 5432), user=self.bot.config['PG_PORT']['PG_USER'], password=self.bot.config['PG_CONF']['PG_PASS'], database=self.bot.config['PG_CONF']['PG_DB'])
       print("Established PostgreSQL Connection, DB Is Now Postgre, Setting up Table (if not exists)")
       async with self.musicdbpool.acquire() as pool:
                  await pool.execute('''CREATE TABLE IF NOT EXISTS minniemusicsetup (
