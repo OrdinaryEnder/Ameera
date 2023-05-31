@@ -1,3 +1,4 @@
+import asyncpg
 import asqlite
 from mystbin import Client
 from StringProgressBar import progressBar
@@ -176,6 +177,71 @@ class YTMusicSelectView(discord.ui.View):
         else:
             return True
 
+class MusicViewSetup(discord.ui.View):
+    def __init__(self):
+     super().__init__(timeout=None)
+
+
+    @discord.ui.button(emoji="🔉", style=discord.ButtonStyle.gray, custom_id="music_button:volumedown")
+    async def volumedown(self, interaction: discord.Interaction, button: discord.ui.Button):
+     if not interaction.user.voice:
+       return await interaction.response.send_message(f"{interaction.user.mention}, Naughty boy, youre not connected", delete_after=3)
+     vc: wavelink.Player = interaction.guild.voice_client
+     await vc.set_volume(vc.volume - 5)
+     if vc.volume < 5:
+      button.disabled = True
+      await self.message.edit(view=self)
+     return await interaction.response.send_message(embed=discord.Embed(description=f"``` Set Volume to {vc.volume} ```"), delete_after=3)
+
+
+    @discord.ui.button(emoji="⏸️", style=discord.ButtonStyle.gray, custom_id="music_button:pause")
+    async def pausesong(self, interaction: discord.Interaction, button: discord.ui.Button):
+     if not interaction.user.voice:
+       return await interaction.response.send_message(f"{interaction.user.mention}, Naughty boy, youre not connected", delete_after=3)
+     vc: wavelink.Player = interaction.guild.voice_client
+     if not vc.is_playing:
+      return await interaction.response.send_message("Music Already Paused", delete_after=3)
+     await vc.pause()
+     return await interaction.response.send_message("Paused.", delete_after=3)
+
+
+    @discord.ui.button(emoji="▶️", style=discord.ButtonStyle.gray, custom_id="music_button:play")
+    async def playsong(self, interaction: discord.Interaction, button: discord.ui.Button):
+     if not interaction.user.voice:
+       return await interaction.response.send_message(f"{interaction.user.mention}, Naughty boy, youre not connected", delete_after=3)
+     vc: wavelink.Player = interaction.guild.voice_client
+     if not vc.is_playing:
+      return await interaction.response.send_message("Music Already Played", delete_after=3)
+     await vc.resume()
+     return await interaction.response.send_message("Resumed.", delete_after=3)
+
+
+    @discord.ui.button(emoji="⏭️", style=discord.ButtonStyle.gray, custom_id="music_button:skip")
+    async def skipsong(self, interaction: discord.Interaction, button: discord.ui.Button):
+     if not interaction.user.voice:
+       return await interaction.response.send_message(f"{interaction.user.mention}, Naughty boy, youre not connected", delete_after=3)
+     vc: wavelink.Player = interaction.guild.voice_client
+     if len(vc.queue) < 1:
+      return await interaction.response.send_message("No Next Music?", delete_after=3)
+     await vc.stop()
+     return await interaction.response.send_message("Skipped", delete_after=3)
+
+
+    @discord.ui.button(emoji="🔊", style=discord.ButtonStyle.gray, custom_id="music_button:volumeup")
+    async def volumeup(self, interaction: discord.Interaction, button: discord.ui.Button):
+     if not interaction.user.voice:
+       return await interaction.response.send_message(f"{interaction.user.mention}, Naughty boy, youre not connected", delete_after=3)
+     vc: wavelink.Player = interaction.guild.voice_client
+     await vc.set_volume(vc.volume + 5)
+     if vc.volume < 5:
+      self.children[0].disabled = False
+      await self.message.edit(view=self)
+     return await interaction.response.send_message(embed=discord.Embed(description=f"``` Set Volume to {vc.volume} ```"), delete_after=3)
+
+
+
+
+
 
 class Music(commands.Cog):
     def __init__(self, bot):
@@ -200,31 +266,139 @@ class Music(commands.Cog):
        if sum(not m.bot for m in vcchan.members) < 1:
         # leave.
         wlvc: wavelink.Player = member.guild.voice_client
-        await wlvc.disconnect()
-        await wlvc.chan.send(embed=discord.Embed(title="Leaving due to no user in vc anymore", description=f"Thanks for using {self.bot.user.name} service!, i will be available any times (If {str(self.bot.application.owner)} didnt shutdown my service)", colour=self.bot.user.colour))
+        if wlvc.playfromsetup:
+            embed = discord.Embed(title="**Nothing currently playing right now ^^", description="Put some song to listen")
+            view = MusicViewSetup()
+            for child in view.children:
+             child.disabled = True
+            await wlvc.disconnect()
+            async with self.musicdbpool.acquire() as conn:
+             messageid = await conn.fetchrow("SELECT message_id, channel_id FROM minniemusicsetup WHERE guild_id = $1", wlvc.channel.guild.id)
+             themess = self.bot.get_channel(messageid['channel_id']).get_partial_message(messageid['message_id'])
+            await themess.edit(embed=embed, view=view)
+        else:
+          await wlvc.disconnect()
+          await wlvc.chan.send(embed=discord.Embed(title="Leaving due to no user in vc anymore", description=f"Thanks for using {self.bot.user.name} service!, i will be available any times (If {str(self.bot.application.owner)} didnt shutdown my service)", colour=self.bot.user.colour))
+
+
+    @tasks.loop(seconds=5)
+    async def cachedb(self):
+     async with self.musicdbpool.acquire() as conn:
+      sus = await conn.fetchrow("SELECT * FROM minniemusicsetup")
+      if sus:
+         self.bot.cacheddb = dict(sus)
+      else:
+        pass
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+     print(self.bot.cacheddb)
+     if str(message.channel.id) in str(self.bot.cacheddb['channel_id']):
+      if message.author.bot:
+       return
+
+      await message.delete()
+      if not message.author.voice:
+       await message.channel.send("You're not connected, connect first", delete_after=3)
+      async with self.musicdbpool.acquire() as conn:
+       essentialdatuh = await conn.fetchrow("SELECT message_id, musictype FROM minniemusicsetup WHERE channel_id = $1", message.channel.id)
+       musictyp = essentialdatuh['musictype']
+       realmessage = message.channel.get_partial_message(essentialdatuh['message_id'])
+       view = MusicViewSetup()
+       view.message = realmessage
+       for child in view.children:
+        child.disabled = False
+       if message.guild.voice_client:
+        vc: wavelink.Player = message.guild.voice_client
+       else:
+        vc: wavelink.Player = await message.author.voice.channel.connect(cls=wavelink.Player())
+       if musictyp == "SoundCloud":
+        siedsong = await wavelink.SoundCloudTrack.search(message.content, return_first=True)
+        embed = discord.Embed(title="**NOW PLAYING**", description=f"[{siedsong.title}]({siedsong.uri})")
+        siedimage = "https://media.discordapp.net/attachments/977216545921073192/1033304783156690984/images2.jpg"
+        embed.set_image(url=siedimage)
+        if vc.queue.is_empty and not vc.is_playing():
+           await vc.play(siedsong[0])
+           await realmessage.edit(embed=embed, view=view)
+        else:
+           await vc.queue.put_wait(siedsong)
+           await message.channel.send(f"Added {siedsong.title} to the queue", delete_after=3)
+       elif musictyp == "YouTube":
+        siedsong = await wavelink.YouTubeTrack.search(message.content, return_first=True)
+        if vc.queue.is_empty and not vc.is_playing():
+           await vc.play(siedsong)
+           embed = discord.Embed(title="**NOW PLAYING**", description=f"[{siedsong.title}]({siedsong.uri})")
+           embed.set_image(url=siedsong.thumbnail)
+           await realmessage.edit(embed=embed, view=view)
+        else:
+           await vc.queue.put_wait(siedsong)
+           await message.channel.send(f"Added {siedsong.title} to next queue", delete_after=3)
+        vc.playfromsetup = True
+
 
     @commands.Cog.listener()
     async def on_wavelink_track_end(self, payload: wavelink.TrackEventPayload):
      vc = payload.player
 
-     if vc.loop is True:
+     if hasattr(vc, "loop"):
         return await vc.play(track)
      try:
         next_song = vc.queue.get()
-        await vc.play(next_song)
-        embed = discord.Embed(
+        if vc.playfromsetup:
+                 embed = discord.Embed(title="**NOW PLAYING**", description=f"[{next_song.title}]({next_song.uri})")
+                 embed.set_image(url=(next_song.thumbnail if hasattr(next_song, "thumbnail") else "https://media.discordapp.net/attachments/977216545921073192/1033304783156690984/images2.jpg"))
+                 await vc.play(next_song)
+                 async with self.musicdbpool.acquire() as conn:
+                     datas = await conn.fetchrow("SELECT channel_id, message_id FROM minniemusicsetup WHERE guild_id = $1", vc.channel.guild.id)
+                     msgpr = self.bot.get_channel(datas['channel_id']).get_partial_message(datas['message_id'])
+                     await msgpr.edit(embed=embed)
+        else:
+           await vc.play(next_song)
+           embed = discord.Embed(
             title=" ", description=f"Started playing  **[{next_song.title}]({next_song.uri})**")
-        await vc.chan.send(embed=embed)
+           await vc.chan.send(embed=embed)
      except wavelink.QueueEmpty:
-        embed = discord.Embed(
+        if vc.playfromsetup:
+            embed = discord.Embed(title="**Nothing currently playing right now ^^", description="Put some song to listen")
+            await vc.disconnect()
+            async with self.musicdbpool.acquire() as conn:
+                mesid = await conn.fetchrow("SELECT message_id, channel_id FROM minniemusicsetup WHERE guild_id = $1", vc.channel.guild.id)
+                camsid = self.bot.get_channel(mesid['channel_id'])
+                pamsid = camsid.get_partial_message(mesid['message_id'])
+                view = MusicViewSetup()
+                view.message = pamsid
+                for child in view.children:
+                  child.disabled = True
+  
+                vc.playfromsetup = False
+            return await pamsid.edit(embed=embed, view=view)
+        else:
+          embed = discord.Embed(
             title=" ", description="There are no more tracks", color=discord.Color.from_rgb(255, 0, 0))
-        await vc.chan.send(embed=embed)
-        await vc.disconnect()
+          await vc.chan.send(embed=embed)
+          await vc.disconnect()
 
 
         # bot disconnected itself
 
+    async def cog_load(self):
+     if not (self.bot.config['main'].get('postgresdb_url') or os.getenv("POSTGRESQL_URL")):
+      print("im quit, no db?, set one with editing config or exporting POSTGRESQL_URL variable")
+      await self.bot.logout()
+     else:
+      self.musicdbpool = await asyncpg.create_pool(dsn=self.bot.config['main'].get('postgresdb_url') or os.getenv('POSTGRESQL_URL'))
+      print("Established PostgreSQL Connection, DB Is Now Postgre, Setting up Table (if not exists)")
+      async with self.musicdbpool.acquire() as pool:
+                 await pool.execute('''CREATE TABLE IF NOT EXISTS minniemusicsetup (
+                 guild_id bigint, 
+                 message_id bigint, 
+                 channel_id bigint, 
+                 musictype text);
+                 ''')
+      self.cachedb.start()
+
     async def cog_unload(self):
+        await self.musicdbpool.close()
         node = wavelink.NodePool.nodes
         for sus in node:
             await node.disconnect()
@@ -365,7 +539,7 @@ class Music(commands.Cog):
 
        # detect if user put url instead of title
         await interaction.response.defer(thinking=True)
-        if re.fullmatch("(?:https?:\/\/)((?:www\.)|(?:m\.))?soundcloud\.com\/[a-z0-9](?!.*?(-|_){2})[\w-]{1,23}[a-z0-9](?:\/.+)?$/?", search):
+        if re.fullmatch("(?:https?:\/\/)((?:www\.)|(?:m\.))?/soundcloud\.com\/[a-z0-9](?!.*?(-|_){2})[\w-]{1,23}[a-z0-9](?:\/.+)?$/?", search):
             scsong = (await wavelink.NodePool.get_connected_node().get_tracks(query=search, cls=wavelink.SoundCloudTrack))[0]
             embed = discord.Embed(
                 title="Now playing", description=f"[{scsong.title}]({scsong.uri})\n \n Uploader: {scsong.author}")
@@ -573,12 +747,59 @@ class Music(commands.Cog):
 
             vc.queue.clear()
         return await interaction.response.send_message(f"{interaction.user.mention} cleared the queue.")
+    
+    setupmusiccmd = app_commands.Group(name="setuprequest", description="Setup Music Request")
+    @setupmusiccmd.command(name="create", description="Creates Setup Music Channel (Requires Manage Server Perm)")
+    @app_commands.checks.has_permissions(manage_guild=True)
+    async def createmusic(self, interaction: discord.Interaction, musictype: typing.Literal['YouTube', 'SoundCloud']):
+      await interaction.response.defer()
+      async with self.musicdbpool.acquire() as conn:
+        checkguild = await conn.fetchrow('SELECT channel_id FROM minniemusicsetup WHERE guild_id = $1', interaction.guild.id)
+      if checkguild and checkguild['channel_id']:
+       return await interaction.followup.send("hmmmm?, a music setup already set on this guild, try to use delete and try again")
+      thecategory = await interaction.guild.create_category(f"{self.bot.user.name} Music")
+      thechannel = await thecategory.create_text_channel(f"{self.bot.user.name}-setup-music")
+      await thecategory.create_voice_channel(f"{self.bot.user.name} Voice Channel")
+
+      embed = discord.Embed(title="**Nothing currently playing right now ^^", description="Put some song to listen")
+      waitermessage = await thechannel.send(embed=embed)
+      view = MusicViewSetup()
+      view.message = waitermessage
+      for chil in view.children:
+       chil.disabled = True
+      await waitermessage.edit(view=view)
+
+      # saving to db
+      async with self.musicdbpool.acquire() as conn:
+       await conn.execute('''
+             INSERT INTO minniemusicsetup (guild_id, message_id, channel_id, musictype) VALUES ($1, $2, $3, $4)
+             ''', interaction.guild.id, waitermessage.id, thechannel.id, musictype)
+      await interaction.followup.send("Successfully setup")
+
+    @setupmusiccmd.command(name="delete", description="Deletes Setup Music Channel (Requires Manage Server Perm)")
+    @app_commands.checks.has_permissions(manage_guild=True)
+    async def deletemusic(self, interaction: discord.Interaction):
+      await interaction.response.defer()
+      async with self.musicdbpool.acquire() as conn:
+        checkguild = await conn.fetchrow('SELECT channel_id FROM minniemusicsetup WHERE guild_id = $1', interaction.guild.id)
+      if checkguild:
+         async with self.musicdbpool.acquire() as conn:
+           await conn.execute("DELETE FROM minniemusicsetup WHERE guild_id = $1", interaction.guild.id)
+           thecategory = bot.get_channel(checkguild['channel_id']).category
+           for chans in thecategory.channels;
+            await chans.delete()
+           await thecategory.delete()
+         return await interaction.followup.send("Successfully delete music request channel")
+      else:
+         return await interaction.followup.send("No such music request channel are set in here")
 
 
 async def node_connect(bot):
     jsonnode = json.load(open('node.json'))
     listnode = [wavelink.Node(uri=lol['NODE_HOST'], password=lol['NODE_AUTH'], secure=lol['NODE_SECURE']) for lol in jsonnode['lavalink']]
     await wavelink.NodePool.connect(client=bot, nodes=listnode)
+
 async def setup(bot):
-    await bot.loop.create_task(node_connect(bot))
+    bot.loop.create_task(node_connect(bot))
+    bot.add_view(MusicViewSetup())
     await bot.add_cog(Music(bot))
