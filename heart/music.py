@@ -382,7 +382,7 @@ class Music(commands.Cog):
         # bot disconnected itself
 
     async def cog_load(self):
-     if not (self.bot.config['main'].get('postgresdb_url') or os.getenv("POSTGRESQL_URL")):
+     if not (self.bot.config['main'].get('postgresqldb_url') or os.getenv("POSTGRESQL_URL")):
       print("im quit, no db?, set one with editing config or exporting POSTGRESQL_URL variable")
       await self.bot.logout()
      else:
