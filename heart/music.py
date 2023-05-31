@@ -785,7 +785,7 @@ class Music(commands.Cog):
       if checkguild:
          async with self.musicdbpool.acquire() as conn:
            await conn.execute("DELETE FROM minniemusicsetup WHERE guild_id = $1", interaction.guild.id)
-           thecategory = bot.get_channel(checkguild['channel_id']).category
+           thecategory = self.bot.get_channel(checkguild['channel_id']).category
            for chans in thecategory.channels:
             await chans.delete()
            await thecategory.delete()
