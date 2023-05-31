@@ -4,4 +4,4 @@
 token = ""
 openaikey = ""
 MONGO_URL = ""
-
+postgresql_url = ""
