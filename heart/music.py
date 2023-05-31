@@ -382,7 +382,7 @@ class Music(commands.Cog):
         # bot disconnected itself
 
     async def cog_load(self):
-     for x in self.bot.config['PG_CONF'];
+     for x in self.bot.config['PG_CONF']:
       if not self.bot.config['PG_CONF'][x]:
         print("im quit, one of the db config (or even more) is empty, set one with editing config PG_DB")
         await self.bot.wait_until_ready()
