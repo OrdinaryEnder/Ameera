@@ -340,8 +340,7 @@ class Music(commands.Cog):
     async def on_wavelink_track_end(self, payload: wavelink.TrackEventPayload):
      vc = payload.player
 
-     if hasattr(vc, "loop"):
-        return await vc.play(track)
+
      try:
         next_song = vc.queue.get()
         if vc.playfromsetup:
@@ -620,11 +619,11 @@ class Music(commands.Cog):
             vc: wavelink.Player = interaction.guild.voice_client
 
         try:
-            vc.loop ^= True
+            vc.queue.loop ^= True
         except Exception:
-            setattr(vc, "loop", False)
+            setattr(vc.queue, "loop", False)
 
-        if vc.loop:
+        if vc.queue.loop:
             embed = discord.Embed(
                 title=" ", description="I will now repeat the current track :repeat_one:")
             return await interaction.response.send_message(embed=embed)
