@@ -333,7 +333,7 @@ class Music(commands.Cog):
         else:
            await vc.queue.put_wait(siedsong)
            await message.channel.send(f"Added {siedsong.title} to next queue", delete_after=3)
-        vc.playfromsetup = True
+       vc.playfromsetup = True
 
 
     @commands.Cog.listener()
