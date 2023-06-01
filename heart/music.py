@@ -343,7 +343,7 @@ class Music(commands.Cog):
 
      try:
         next_song = vc.queue.get()
-        if vc.playfromsetup:
+        if hasattr(vc, "playfromsetup"):
                  embed = discord.Embed(title="**NOW PLAYING**", description=f"[{next_song.title}]({next_song.uri})")
                  embed.set_image(url=(next_song.thumbnail if hasattr(next_song, "thumbnail") else "https://media.discordapp.net/attachments/977216545921073192/1033304783156690984/images2.jpg"))
                  await vc.play(next_song)
