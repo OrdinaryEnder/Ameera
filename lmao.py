@@ -36,7 +36,7 @@ from discord.ext import commands
 from discord.ext import tasks
 import json
 from wavelink import Node as node
-from mod.botmod import openairequest
+from mod.botmod import OliviaOpenAI
 import aiohttp
 import asyncio
 import time
@@ -115,6 +115,7 @@ intents.messages = True
 bot = MyBot(command_prefix=">", intents=intents,
             activity=discord.Activity(type=discord.ActivityType.listening, name="Prefix '>' or ping", ))
 
+bot.aiclient = OliviaOpenAI()
 tree = bot.tree
 bot.config = toml.load("config.toml")
 bot.startTime = time.time()
@@ -199,7 +200,7 @@ async def on_message(message):
          if len(mesg) < 2:
             pass
          await message.channel.typing()
-         res = await openairequest((os.getenv("OPENAI_KEY") or bot.config['main']['openaikey']), mesg, message.author.name)
+         res = await bot.aiclient.openairequest((os.getenv("OPENAI_KEY") or bot.config['main']['openaikey']), mesg, message.author.name)
          await message.channel.send(res)
 
     # Kizzy Server Testing

@@ -14,19 +14,27 @@ import json
 import requests
 import aiohttp
 
-async def openairequest(key, message, authorname):
+
+
+class OliviaOpenAI:
+  def __init__(self):
+   self.message = [
+      {"role": "system", 'content': "You are Olivia, a funny, attractive, smart, and cute girl, you're an aussie-british smart scientist and also devout muslim, you're answering user prompts using british accent, you also write code without any mistakes, if theres inappropriate content, show the explict words with * as censor"},
+   ]
+
+  async def openairequest(self, key, message, authorname):
 
    headers = {"Authorization": f"Bearer {key}"}
+   self.message.append({'role': "user", "content": message})
    async with aiohttp.ClientSession(headers=headers) as session:
      async with session.post("https://api.openai.com/v1/chat/completions", json={
-         "messages": [
-          {"role": "system", 'content': "You are Olivia, a funny, attractive, smart, and cute girl, you're an aussie-british smart scientist and also devout muslim, you're answering user prompts using british accent, you also write code without any mistakes"},
-          {"role": "user", "content": message, "name": authorname}],
+         "messages": self.message,
          "model": "gpt-3.5-turbo"
      }) as response:
        if response.status > 299:
         return (await response.json())['error']['message']
        else:
+         self.message.append({"role": "assistant", "content": response["choices"][0]["message"]["content"]})
          return (await response.json())['choices'][0]['message']['content']
 
 async def openaiimage(key, prompt):
