@@ -32,7 +32,6 @@ from discord.ext import commands
 from discord.ext import tasks
 import json
 from mod.botmod import bypass
-from mod.botmod import openairequest
 from mod.botmod import format_dt, format_relative
 import aiohttp
 import asyncio
