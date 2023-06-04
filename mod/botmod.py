@@ -34,8 +34,9 @@ class OliviaOpenAI:
        if response.status > 299:
         return (await response.json())['error']['message']
        else:
-         self.message.append({"role": "assistant", "content": response["choices"][0]["message"]["content"]})
-         return (await response.json())['choices'][0]['message']['content']
+         thejson = await response.json()
+         self.message.append({"role": "assistant", "content": thejson["choices"][0]["message"]["content"]})
+         return (thejson)['choices'][0]['message']['content']
 
 async def openaiimage(key, prompt):
     headers = {"Authorization": f"Bearer {key}"}
