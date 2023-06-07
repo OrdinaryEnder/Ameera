@@ -108,7 +108,7 @@ class Fun(commands.Cog):
         print("Cached")
 
 
-    async def cog_load(self):
+     def cog_load(self):
         self.cachelist.start()
 
 
