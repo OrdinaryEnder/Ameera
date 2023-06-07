@@ -218,6 +218,7 @@ class Fun(commands.Cog):
     @app_commands.describe(typeimage="Type Of The Image", image="Can be Member, or URL Image")
     @app_commands.guild_only()
     async def jeyyimage(self, interaction: discord.Interaction, typeimage: str, image: discord.Member = None):
+        await interaction.response.defer()
         if typeimage in self.imagetypes:
             async with aiohttp.ClientSession(headers=self.jeyyheader) as sus:
              async with sus.get(f"{self.base_url + '/image/' + typeimage}", params={'image_url': image.display_avatar.url if image else interaction.author.display_avatar.url}) as resp:
