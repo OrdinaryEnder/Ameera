@@ -108,6 +108,10 @@ class Fun(commands.Cog):
         print("Cached")
 
 
+    async def cog_load(self):
+        self.cachelist.start()
+
+
     @app_commands.command(name='lvbypass', description='Bypass Linkvertise (powered by bypass.vip)')
     @app_commands.describe(url="URL About to Bypass (Example: https://linkvertise.com/38666/ArceusXRoblox")
     async def _lvbypass(self, interaction: discord.Interaction, url: str):
