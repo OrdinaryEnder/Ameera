@@ -105,7 +105,7 @@ class Fun(commands.Cog):
         print("Executed")
         async with aiohttp.ClientSession(headers=self.jeyyheader) as sus:
             async with sus.get("{self.base_url + '/general/endpoints'}") as resp:
-                rawdat = await resp.json
+                rawdat = await resp.json()
                 self.imagetypes = [l[10:] for l in rawdat if "/v2/image" in l]
 
         print("Cached")
