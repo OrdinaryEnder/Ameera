@@ -96,10 +96,12 @@ class refreshbutton(discord.ui.View):
 class Fun(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.base_url = "https://api.jeyy.xyz/v2"
 
 
     @tasks.loop(seconds=5)
     async def cachelist(self):
+        print("Executed")
         async with aiohttp.ClientSession() as sus:
             async with sus.get("{self.base_url/general/endpoints}") as resp:
                 rawdat = await resp.json
@@ -216,7 +218,7 @@ class Fun(commands.Cog):
     async def jeyyimage(self, interaction: discord.Interaction, typeimage: str, image: discord.Member = None):
         if typeimage in self.imagetypes:
             async with aiohttp.ClientSession(headers={"Authorization": f"Bearer {self.bot.config['main']['JEYYAPI_KEY']}"}) as sus:
-             async with sus.get(f"{self.base_url + 'image' + typeimage}", params={'image_url': image.display_avatar.url if image else interaction.author.display_avatar.url}) as resp:
+             async with sus.get(f"{self.base_url + '/image/' + typeimage}", params={'image_url': image.display_avatar.url if image else interaction.author.display_avatar.url}) as resp:
                 theimg = io.BytesIO(await resp.read())
                 myfile = discord.File(theimg, filename="output.png")
                 ourembed = discord.Embed(title="Result", description="API Made by Jeyy#6639")
