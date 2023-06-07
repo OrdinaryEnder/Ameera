@@ -97,12 +97,13 @@ class Fun(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.base_url = "https://api.jeyy.xyz/v2"
+        self.jeyyheader = {"Authorization": f"Bearer {bot.config['main']['JEYY_API'] if bot.config['main'].get('JEYY_API') else None}"}
 
 
     @tasks.loop(seconds=5)
     async def cachelist(self):
         print("Executed")
-        async with aiohttp.ClientSession() as sus:
+        async with aiohttp.ClientSession(headers=self.jeyyheader) as sus:
             async with sus.get("{self.base_url/general/endpoints}") as resp:
                 rawdat = await resp.json
                 self.imagetypes = [l[10:] for l in rawdat if "/v2/image" in l]
@@ -217,7 +218,7 @@ class Fun(commands.Cog):
     @app_commands.guild_only()
     async def jeyyimage(self, interaction: discord.Interaction, typeimage: str, image: discord.Member = None):
         if typeimage in self.imagetypes:
-            async with aiohttp.ClientSession(headers={"Authorization": f"Bearer {self.bot.config['main']['JEYYAPI_KEY']}"}) as sus:
+            async with aiohttp.ClientSession(headers=aelf.jeyyheader) as sus:
              async with sus.get(f"{self.base_url + '/image/' + typeimage}", params={'image_url': image.display_avatar.url if image else interaction.author.display_avatar.url}) as resp:
                 theimg = io.BytesIO(await resp.read())
                 myfile = discord.File(theimg, filename="output.png")
