@@ -17,6 +17,7 @@ from discord import app_commands
 from discord.app_commands import AppCommandError
 from discord import Interaction
 from discord import ClientException
+import io
 import re
 import os
 import subprocess
@@ -208,10 +209,10 @@ class Fun(commands.Cog):
     @app_commands.command(name="generate", description="Generate Image (Powered by JeyyAPI)")
     @app_commands.describe(typeimage="Type Of The Image", image="Can be Member, or URL Image")
     @app_commands.guild_only()
-    async def jeyyimage(self, interaction: discord.Interaction, typeimage: str, image: typing.Union[str, discord.Member]):
+    async def jeyyimage(self, interaction: discord.Interaction, typeimage: str, image: discord.Member = None):
         if typeimage in self.imagetypes:
          async with aiohttp.ClientSession() as sus:
-             async with sus.get(f"{self.base_url + 'image' + typeimage}", params={'image_url': image.avatar.url if image is discord.Member else image}) as resp:
+             async with sus.get(f"{self.base_url + 'image' + typeimage}", params={'image_url': image.display_avatar.url if image else interaction.author.display_avatar.url}) as resp:
                 theimg = io.BytesIO(await resp.read())
                 myfile = discord.File(theimg, filename="output.png")
                 ourembed = discord.Embed(title="Result", description="API Made by Jeyy#6639")
