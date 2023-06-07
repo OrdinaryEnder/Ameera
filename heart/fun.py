@@ -223,7 +223,7 @@ class Fun(commands.Cog):
             async with aiohttp.ClientSession(headers=self.jeyyheader) as sus:
              async with sus.get(f"{self.base_url + '/image/' + typeimage}", params={'image_url': image.display_avatar.url if image else interaction.author.display_avatar.url}) as resp:
                 theimg = io.BytesIO(await resp.read())
-                myfile = discord.File(theimg, filename="output.png")
+                myfile = discord.File(fp=theimg, filename="output.png")
                 ourembed = discord.Embed(title="Result", description="API Made by Jeyy#6639")
                 ourembed.set_image(url="attachment://output.png")
                 return await interaction.followup.send(embed=ourembed)
