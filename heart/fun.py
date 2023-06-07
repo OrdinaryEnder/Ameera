@@ -95,7 +95,17 @@ class refreshbutton(discord.ui.View):
 class Fun(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        super().__init__()
+
+
+    @tasks.loop(seconds=5)
+    async def cachelist(self):
+        async with aiohttp.ClientSession() as sus:
+            async with sus.get("{self.base_url/general/endpoints}") as resp:
+                rawdat = await resp.json
+                self.imagetypes = [l[10:] for l in rawdat if "/v2/image" in l]
+
+        print("Cached")
+
 
     @app_commands.command(name='lvbypass', description='Bypass Linkvertise (powered by bypass.vip)')
     @app_commands.describe(url="URL About to Bypass (Example: https://linkvertise.com/38666/ArceusXRoblox")
@@ -195,6 +205,28 @@ class Fun(commands.Cog):
         await interaction.followup.send(embed=embed, file=file)
         os.remove("temp.png")
 
+    @app_commands.command(name="generate", description="Generate Image (Powered by JeyyAPI)")
+    @app_commands.describe(typeimage="Type Of The Image", image="Can be Member, or URL Image")
+    @app_commands.guild_only()
+    async def jeyyimage(self, interaction: discord.Interaction, typeimage: str, image: typing.Union[str, discord.Member]):
+        if typeimage in self.imagetypes:
+         async with aiohttp.ClientSession() as sus:
+             async with sus.get(f"{self.base_url + 'image' + typeimage}", params={'image_url': image.avatar.url if image is discord.Member else image}) as resp:
+                theimg = io.BytesIO(await resp.read())
+                myfile = discord.File(theimg, filename="output.png")
+                ourembed = discord.Embed(title="Result", description="API Made by Jeyy#6639")
+                outembed.set_image(url="attachment://output.png")
+                return await interaction.followup.send(embed=ourembed)
+        else:
+            await interaction.followup.send(f"{typeimage} is not found")
+
+
+
+
+
+
+
+     
 
 async def setup(bot):
     await bot.add_cog(Fun(bot))
