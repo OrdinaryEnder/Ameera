@@ -4,7 +4,8 @@
 token = ""
 openaikey = ""
 MONGO_URL = ""
-
+# get jeyy api key at https://api.jeyy.xyz/
+JEYY_API = "" 
 [PG_CONF]
 PG_HOST = ""
 PG_PORT = 5432

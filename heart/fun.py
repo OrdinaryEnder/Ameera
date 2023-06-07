@@ -103,7 +103,6 @@ class Fun(commands.Cog):
     @tasks.loop(seconds=5)
     async def cachelist(self):
         print("Executed")
-        print(selg)
         async with aiohttp.ClientSession(headers=self.jeyyheader) as sus:
             async with sus.get(f"{self.base_url + '/general/endpoints'}") as resp:
                 rawdat = await resp.json()
