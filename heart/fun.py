@@ -219,7 +219,7 @@ class Fun(commands.Cog):
     @app_commands.guild_only()
     async def jeyyimage(self, interaction: discord.Interaction, typeimage: str, image: discord.Member = None):
         if typeimage in self.imagetypes:
-            async with aiohttp.ClientSession(headers=aelf.jeyyheader) as sus:
+            async with aiohttp.ClientSession(headers=self.jeyyheader) as sus:
              async with sus.get(f"{self.base_url + '/image/' + typeimage}", params={'image_url': image.display_avatar.url if image else interaction.author.display_avatar.url}) as resp:
                 theimg = io.BytesIO(await resp.read())
                 myfile = discord.File(theimg, filename="output.png")
