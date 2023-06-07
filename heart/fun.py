@@ -224,7 +224,7 @@ class Fun(commands.Cog):
                 theimg = io.BytesIO(await resp.read())
                 myfile = discord.File(theimg, filename="output.png")
                 ourembed = discord.Embed(title="Result", description="API Made by Jeyy#6639")
-                outembed.set_image(url="attachment://output.png")
+                ourembed.set_image(url="attachment://output.png")
                 return await interaction.followup.send(embed=ourembed)
         else:
             return await interaction.followup.send(f"{typeimage} is not found")
