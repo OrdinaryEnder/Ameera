@@ -231,7 +231,7 @@ class Fun(commands.Cog):
 
     @jeyyimage.autocomplete("typeimage")
     async def autocomplete_jeyyapi(self, interaction: discord.Interaction, current: str):
-        return [app_commands.Choice(name=l, value=l) for l in self.imagetypes if any(pred in current.lower() for pred in self.imagetypes)]
+        return [app_commands.Choice(name=l, value=l) for l in self.imagetypes[:25] if current.lower() in l]
 
      
 
