@@ -771,11 +771,12 @@ class Music(commands.Cog):
       else:
          embed = discord.Embed(title="**Nothing currently playing right now ^^", description="Put some song to listen")
          embed.set_image(url="https://media.discordapp.net/attachments/977216545921073192/1116244099721343046/peakpx.jpg")
+      waitermessage = await thechannel.send(embed=embed, view=view)
       view = MusicViewSetup()
       view.message = waitermessage
       for chil in view.children:
        chil.disabled = True
-      waitermessage = await thechannel.send(embed=embed, view=view)
+      await waitermessage.edit(view=view)
 
       # saving to db
       async with self.musicdbpool.acquire() as conn:
