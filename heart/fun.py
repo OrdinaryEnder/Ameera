@@ -215,9 +215,9 @@ class Fun(commands.Cog):
         os.remove("temp.png")
 
     @app_commands.command(name="generate", description="Generate Image (Powered by JeyyAPI)")
-    @app_commands.describe(typeimage="Type Of The Image", image="Can be Member, or URL Image")
+    @app_commands.describe(imagefilter="The Image Filter", member="Member")
     @app_commands.guild_only()
-    async def jeyyimage(self, interaction: discord.Interaction, typeimage: str, image: discord.Member = None):
+    async def jeyyimage(self, interaction: discord.Interaction, imagefilter: str, member: discord.Member = None):
         await interaction.response.defer()
         if typeimage in self.imagetypes:
             async with aiohttp.ClientSession(headers=self.jeyyheader) as sus:

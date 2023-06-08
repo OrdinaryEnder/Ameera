@@ -268,6 +268,7 @@ class Music(commands.Cog):
         wlvc: wavelink.Player = member.guild.voice_client
         if wlvc.playfromsetup:
             embed = discord.Embed(title="**Nothing currently playing right now ^^", description="Put some song to listen")
+            embed.set_image(url="https://media.discordapp.net/attachments/977216545921073192/1116244099721343046/peakpx.jpg")
             view = MusicViewSetup()
             for child in view.children:
              child.disabled = True
@@ -359,6 +360,7 @@ class Music(commands.Cog):
      except wavelink.QueueEmpty:
         if vc.playfromsetup:
             embed = discord.Embed(title="**Nothing currently playing right now ^^", description="Put some song to listen")
+            embed.set_image(url="https://media.discordapp.net/attachments/977216545921073192/1116244099721343046/peakpx.jpg")
             await vc.disconnect()
             async with self.musicdbpool.acquire() as conn:
                 mesid = await conn.fetchrow("SELECT message_id, channel_id FROM minniemusicsetup WHERE guild_id = $1", vc.channel.guild.id)
@@ -758,17 +760,22 @@ class Music(commands.Cog):
         checkguild = await conn.fetchrow('SELECT channel_id FROM minniemusicsetup WHERE guild_id = $1', interaction.guild.id)
       if checkguild and checkguild['channel_id']:
        return await interaction.followup.send("hmmmm?, a music setup already set on this guild, try to use delete and try again")
+      vc: wavelink.Player = interaction.guild.voice_client
       thecategory = await interaction.guild.create_category(f"{self.bot.user.name} Music")
       thechannel = await thecategory.create_text_channel(f"{self.bot.user.name}-setup-music")
       await thecategory.create_voice_channel(f"{self.bot.user.name} Voice Channel")
 
-      embed = discord.Embed(title="**Nothing currently playing right now ^^", description="Put some song to listen")
-      waitermessage = await thechannel.send(embed=embed)
+      if vc.is_playing():
+         embed = discord.Embed(title="**NOW PLAYING**", description=f"[{vc.track.title}]({vc.track.uri})")
+         embed.set_image(url=(vc.track.thumbnail if hasattr(vc.track, "thumbnail") else "https://media.discordapp.net/attachments/977216545921073192/1033304783156690984/images2.jpg"))
+      else:
+         embed = discord.Embed(title="**Nothing currently playing right now ^^", description="Put some song to listen")
+         embed.set_image(url="https://media.discordapp.net/attachments/977216545921073192/1116244099721343046/peakpx.jpg")
       view = MusicViewSetup()
       view.message = waitermessage
       for chil in view.children:
        chil.disabled = True
-      await waitermessage.edit(view=view)
+      waitermessage = await thechannel.send(embed=embed, view=view)
 
       # saving to db
       async with self.musicdbpool.acquire() as conn:
