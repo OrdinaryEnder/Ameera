@@ -760,12 +760,13 @@ class Music(commands.Cog):
         checkguild = await conn.fetchrow('SELECT channel_id FROM minniemusicsetup WHERE guild_id = $1', interaction.guild.id)
       if checkguild and checkguild['channel_id']:
        return await interaction.followup.send("hmmmm?, a music setup already set on this guild, try to use delete and try again")
-      vc: wavelink.Player = interaction.guild.voice_client
       thecategory = await interaction.guild.create_category(f"{self.bot.user.name} Music")
       thechannel = await thecategory.create_text_channel(f"{self.bot.user.name}-setup-music")
       await thecategory.create_voice_channel(f"{self.bot.user.name} Voice Channel")
-
-      if vc.is_playing():
+      
+      if interaction.guild.voice_client:
+       vc: wavelink.Player = interaction.guild.voice_client
+      if vc and vc.is_playing():
          embed = discord.Embed(title="**NOW PLAYING**", description=f"[{vc.track.title}]({vc.track.uri})")
          embed.set_image(url=(vc.track.thumbnail if hasattr(vc.track, "thumbnail") else "https://media.discordapp.net/attachments/977216545921073192/1033304783156690984/images2.jpg"))
       else:
