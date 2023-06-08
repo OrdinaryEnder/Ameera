@@ -221,7 +221,7 @@ class Fun(commands.Cog):
         await interaction.response.defer()
         if imagefilter in self.imagetypes:
             async with aiohttp.ClientSession(headers=self.jeyyheader) as sus:
-             async with sus.get(f"{self.base_url + '/image/' + imagefilter}", params={'image_url': member.display_avatar.url if image else interaction.user.display_avatar.url}) as resp:
+             async with sus.get(f"{self.base_url + '/image/' + imagefilter}", params={'image_url': member.display_avatar.url if member else interaction.user.display_avatar.url}) as resp:
                 theimg = io.BytesIO(await resp.read())
                 myfile = discord.File(fp=theimg, filename="output.gif")
                 ourembed = discord.Embed(title="Result", description="API Made by Jeyy#6639")
