@@ -219,9 +219,9 @@ class Fun(commands.Cog):
     @app_commands.guild_only()
     async def jeyyimage(self, interaction: discord.Interaction, imagefilter: str, member: discord.Member = None):
         await interaction.response.defer()
-        if typeimage in self.imagetypes:
+        if imagefilter in self.imagetypes:
             async with aiohttp.ClientSession(headers=self.jeyyheader) as sus:
-             async with sus.get(f"{self.base_url + '/image/' + typeimage}", params={'image_url': image.display_avatar.url if image else interaction.user.display_avatar.url}) as resp:
+             async with sus.get(f"{self.base_url + '/image/' + imagefilter}", params={'image_url': image.display_avatar.url if image else interaction.user.display_avatar.url}) as resp:
                 theimg = io.BytesIO(await resp.read())
                 myfile = discord.File(fp=theimg, filename="output.gif")
                 ourembed = discord.Embed(title="Result", description="API Made by Jeyy#6639")
@@ -230,7 +230,7 @@ class Fun(commands.Cog):
         else:
             return await interaction.followup.send(f"{typeimage} is not found")
 
-    @jeyyimage.autocomplete("typeimage")
+    @jeyyimage.autocomplete("imagefilter")
     async def autocomplete_jeyyapi(self, interaction: discord.Interaction, current: str):
         return [app_commands.Choice(name=l, value=l) for l in self.imagetypes if current.lower() in l][:25]
 
