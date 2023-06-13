@@ -315,12 +315,8 @@ class Music(commands.Cog):
         vc: wavelink.Player = await message.author.voice.channel.connect(cls=wavelink.Player())
        if musictyp == "SoundCloud":
         siedsong = await wavelink.SoundCloudTrack.search(message.content, return_first=True)
-        embed = discord.Embed(title="**NOW PLAYING**", description=f"[{siedsong.title}]({siedsong.uri})")
-        siedimage = "https://media.discordapp.net/attachments/977216545921073192/1033304783156690984/images2.jpg"
-        embed.set_image(url=siedimage)
         if vc.queue.is_empty and not vc.is_playing():
            await vc.play(siedsong)
-           await realmessage.edit(embed=embed, view=view)
         else:
            await vc.queue.put_wait(siedsong)
            await message.channel.send(f"Added {siedsong.title} to the queue", delete_after=3)
@@ -328,9 +324,6 @@ class Music(commands.Cog):
         siedsong = await wavelink.YouTubeTrack.search(message.content, return_first=True)
         if vc.queue.is_empty and not vc.is_playing():
            await vc.play(siedsong)
-           embed = discord.Embed(title="**NOW PLAYING**", description=f"[{siedsong.title}]({siedsong.uri})")
-           embed.set_image(url=siedsong.thumbnail)
-           await realmessage.edit(embed=embed, view=view)
         else:
            await vc.queue.put_wait(siedsong)
            await message.channel.send(f"Added {siedsong.title} to next queue", delete_after=3)
