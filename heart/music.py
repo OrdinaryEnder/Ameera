@@ -343,22 +343,10 @@ class Music(commands.Cog):
 
 
      try:
-        next_song = vc.queue.get()
-        if hasattr(vc, "playfromsetup"):
-                 embed = discord.Embed(title="**NOW PLAYING**", description=f"[{next_song.title}]({next_song.uri})")
-                 embed.set_image(url=(next_song.thumbnail if hasattr(next_song, "thumbnail") else "https://media.discordapp.net/attachments/977216545921073192/1033304783156690984/images2.jpg"))
-                 await vc.play(next_song)
-                 async with self.musicdbpool.acquire() as conn:
-                     datas = await conn.fetchrow("SELECT channel_id, message_id FROM minniemusicsetup WHERE guild_id = $1", vc.channel.guild.id)
-                     msgpr = self.bot.get_channel(datas['channel_id']).get_partial_message(datas['message_id'])
-                     await msgpr.edit(embed=embed)
-        else:
+           next_song = vc.queue.get()
            await vc.play(next_song)
-           embed = discord.Embed(
-            title=" ", description=f"Started playing  **[{next_song.title}]({next_song.uri})**")
-           await vc.chan.send(embed=embed)
      except wavelink.QueueEmpty:
-        if vc.playfromsetup:
+        if hasattr(vc, "playfromsetup"):
             embed = discord.Embed(title="**Nothing currently playing right now ^^", description="Put some song to listen")
             embed.set_image(url="https://media.discordapp.net/attachments/977216545921073192/1116244099721343046/peakpx.jpg")
             await vc.disconnect()
@@ -380,7 +368,25 @@ class Music(commands.Cog):
           await vc.disconnect()
 
 
-        # bot disconnected itself
+    @commands.Cog.listener()
+    async def on_wavelink_track_start(self, payload: wavelink.TrackEventPayload):
+          next_song = payload.track
+
+          async with self.musicdbpool.acquire() as conn:
+                     datas = await conn.fetchrow("SELECT channel_id, message_id FROM minniemusicsetup WHERE guild_id = $1", vc.channel.guild.id)
+                     msgpr = self.bot.get_channel(datas['channel_id']).get_partial_message(datas['message_id'])
+
+          if datas:
+                 embed = discord.Embed(title="**NOW PLAYING**", description=f"[{next_song.title}]({next_song.uri})")
+                 embed.set_image(url=(next_song.thumbnail if hasattr(next_song, "thumbnail") else "https://media.discordapp.net/attachments/977216545921073192/1033304783156690984/images2.jpg"))
+                 await msgpr.edit(embed=embed)
+          else:
+                 embed = discord.Embed(
+                  title=" ", description=f"Started playing  **[{next_song.title}]({next_song.uri})**")
+                 await vc.chan.send(embed=embed)
+   
+
+
 
     async def cog_load(self):
      for x in self.bot.config['PG_CONF']:
