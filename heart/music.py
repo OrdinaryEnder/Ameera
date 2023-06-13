@@ -339,21 +339,20 @@ class Music(commands.Cog):
            next_song = vc.queue.get()
            await vc.play(next_song)
      except wavelink.QueueEmpty:
-        if hasattr(vc, "playfromsetup"):
+        async with self.musicdbpool.acquire() as conn:
+                     datas = await conn.fetchrow("SELECT channel_id, message_id FROM minniemusicsetup WHERE guild_id = $1", vc.channel.guild.id)
+                     msgpr = self.bot.get_channel(datas['channel_id']).get_partial_message(datas['message_id'])
+
+        if datas:
             embed = discord.Embed(title="**Nothing currently playing right now ^^", description="Put some song to listen")
             embed.set_image(url="https://media.discordapp.net/attachments/977216545921073192/1116244099721343046/peakpx.jpg")
             await vc.disconnect()
-            async with self.musicdbpool.acquire() as conn:
-                mesid = await conn.fetchrow("SELECT message_id, channel_id FROM minniemusicsetup WHERE guild_id = $1", vc.channel.guild.id)
-                camsid = self.bot.get_channel(mesid['channel_id'])
-                pamsid = camsid.get_partial_message(mesid['message_id'])
-                view = MusicViewSetup()
-                view.message = pamsid
-                for child in view.children:
+            view = MusicViewSetup()
+            view.message = msgpr
+            for child in view.children:
                   child.disabled = True
   
-                vc.playfromsetup = False
-            return await pamsid.edit(embed=embed, view=view)
+            return await msgpr.edit(embed=embed, view=view)
         else:
           embed = discord.Embed(
             title=" ", description="There are no more tracks", color=discord.Color.from_rgb(255, 0, 0))
