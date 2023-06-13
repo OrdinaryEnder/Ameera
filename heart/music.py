@@ -371,9 +371,12 @@ class Music(commands.Cog):
                      msgpr = self.bot.get_channel(datas['channel_id']).get_partial_message(datas['message_id'])
 
           if datas:
+                 view = MusicViewSetup()
+                 for child in view.children:
+                     child.disabled = False
                  embed = discord.Embed(title="**NOW PLAYING**", description=f"[{next_song.title}]({next_song.uri})")
                  embed.set_image(url=(next_song.thumbnail if hasattr(next_song, "thumbnail") else "https://media.discordapp.net/attachments/977216545921073192/1033304783156690984/images2.jpg"))
-                 await msgpr.edit(embed=embed)
+                 await msgpr.edit(embed=embed, view=view)
           else:
                  embed = discord.Embed(
                   title=" ", description=f"Started playing  **[{next_song.title}]({next_song.uri})**")
