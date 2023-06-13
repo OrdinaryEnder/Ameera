@@ -363,7 +363,7 @@ class Music(commands.Cog):
 
     @commands.Cog.listener()
     async def on_wavelink_track_start(self, payload: wavelink.TrackEventPayload):
-          next_song = payload.track
+          next_song = payload.original
           vc = payload.player
 
           async with self.musicdbpool.acquire() as conn:
