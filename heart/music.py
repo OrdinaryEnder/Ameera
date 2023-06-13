@@ -364,6 +364,7 @@ class Music(commands.Cog):
     @commands.Cog.listener()
     async def on_wavelink_track_start(self, payload: wavelink.TrackEventPayload):
           next_song = payload.track
+          vc = payload.player
 
           async with self.musicdbpool.acquire() as conn:
                      datas = await conn.fetchrow("SELECT channel_id, message_id FROM minniemusicsetup WHERE guild_id = $1", vc.channel.guild.id)
