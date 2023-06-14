@@ -10,7 +10,7 @@
       "NODE_HOST": "eu-lavalink.lexnet.cc:443",
       "NODE_AUTH": "lexn3tl@val!nk",
       "NODE_SECURE": true
-    }
+    },
     {
       "NODE_HOST": "ssl.freelavalink.ga:443",
       "NODE_AUTH": "www.freelavalink.ga",
@@ -21,6 +21,5 @@
       "NODE_AUTH": "www.freelavalink.ga",
       "NODE_SECURE": false
     }
-
   ]
 }
