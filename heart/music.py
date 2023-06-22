@@ -285,6 +285,7 @@ class Music(commands.Cog):
     @tasks.loop(seconds=5)
     async def cachedb(self):
      async with self.musicdbpool.acquire() as conn:
+      print("hi")
       sus = await conn.fetch("SELECT * FROM minniemusicsetup")
       print(sus)
       if sus:
