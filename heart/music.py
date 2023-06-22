@@ -296,7 +296,7 @@ class Music(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
      print(self.bot.cacheddb)
-     if str(message.channel.id) in str(self.bot.cacheddb['channel_id']):
+     if any(message.channel.id in l for l in self.bot.cacheddb):
       print("Test")
       if message.author.bot:
        return
