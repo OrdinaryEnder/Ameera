@@ -289,7 +289,7 @@ class Music(commands.Cog):
       sus = await conn.fetch("SELECT * FROM minniemusicsetup")
       print(sus)
       if sus:
-         self.bot.cacheddb = dict(sus)
+         self.bot.cacheddb = [dict(l) for l in sus]
       else:
         pass
 
