@@ -394,9 +394,10 @@ class Music(commands.Cog):
         await self.bot.wait_until_ready()
         await self.bot.logout()
      else:
-      self.cachedb.start()
       self.musicdbpool = await asyncpg.create_pool(host=self.bot.config['PG_CONF']['PG_HOST'], port=(self.bot.config['PG_CONF']['PG_PORT'] or 5432), user=self.bot.config['PG_CONF']['PG_USER'], password=self.bot.config['PG_CONF']['PG_PASS'], database=self.bot.config['PG_CONF']['PG_DB'])
       print("Established PostgreSQL Connection, DB Is Now Postgre, Setting up Table (if not exists)")
+      self.cachedb.start()
+      print("Started Caching Task")
       async with self.musicdbpool.acquire() as pool:
                  await pool.execute('''CREATE TABLE IF NOT EXISTS minniemusicsetup (
                  guild_id bigint, 
