@@ -286,6 +286,7 @@ class Music(commands.Cog):
     async def cachedb(self):
      async with self.musicdbpool.acquire() as conn:
       sus = await conn.fetch("SELECT * FROM minniemusicsetup")
+      print(sus)
       if sus:
          self.bot.cacheddb = dict(sus)
       else:
