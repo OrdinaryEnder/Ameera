@@ -17,5 +17,6 @@ git+https://github.com/Rapptz/asqlite
 git+https://github.com/AmanoTeam/duckpy
 toml
 pytz
+asyncpg
 Discord-Anti-Spam
 motor[srv]

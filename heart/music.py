@@ -285,7 +285,7 @@ class Music(commands.Cog):
     @tasks.loop(seconds=5)
     async def cachedb(self):
      async with self.musicdbpool.acquire() as conn:
-      sus = await conn.fetchrow("SELECT * FROM minniemusicsetup")
+      sus = await conn.fetch("SELECT * FROM minniemusicsetup")
       if sus:
          self.bot.cacheddb = dict(sus)
       else:
@@ -295,6 +295,7 @@ class Music(commands.Cog):
     async def on_message(self, message):
      print(self.bot.cacheddb)
      if str(message.channel.id) in str(self.bot.cacheddb['channel_id']):
+      print("Test")
       if message.author.bot:
        return
 
