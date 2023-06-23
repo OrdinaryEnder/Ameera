@@ -405,12 +405,14 @@ class Music(commands.Cog):
                  channel_id bigint, 
                  musictype text);
                  ''')
+      self.nodetask = self.bot.loop.create_task(self.node_connect())
 
     async def cog_unload(self):
         await self.musicdbpool.close()
         node = wavelink.NodePool.nodes
         for sus in node:
             await node.disconnect()
+        self.nodetask.cancel()
 
     filterscmd = app_commands.Group(name="filter",  description="Set Filter")
     @filterscmd.command(name="bassboost", description="Set Bass Boost")
@@ -809,12 +811,11 @@ class Music(commands.Cog):
          return await interaction.followup.send("No such music request channel are set in here")
 
 
-async def node_connect(bot):
+    async def node_connect(self):
     jsonnode = json.load(open('node.json'))
     listnode = [wavelink.Node(uri=lol['NODE_HOST'], password=lol['NODE_AUTH'], secure=lol['NODE_SECURE']) for lol in jsonnode['lavalink']]
-    await wavelink.NodePool.connect(client=bot, nodes=listnode)
+    await wavelink.NodePool.connect(client=self.bot, nodes=listnode)
 
 async def setup(bot):
-    bot.loop.create_task(node_connect(bot))
     bot.add_view(MusicViewSetup())
     await bot.add_cog(Music(bot))
