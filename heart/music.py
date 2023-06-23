@@ -812,9 +812,9 @@ class Music(commands.Cog):
 
 
     async def node_connect(self):
-    jsonnode = json.load(open('node.json'))
-    listnode = [wavelink.Node(uri=lol['NODE_HOST'], password=lol['NODE_AUTH'], secure=lol['NODE_SECURE']) for lol in jsonnode['lavalink']]
-    await wavelink.NodePool.connect(client=self.bot, nodes=listnode)
+      jsonnode = json.load(open('node.json'))
+      listnode = [wavelink.Node(uri=lol['NODE_HOST'], password=lol['NODE_AUTH'], secure=lol['NODE_SECURE']) for lol in jsonnode['lavalink']]
+      await wavelink.NodePool.connect(client=self.bot, nodes=listnode)
 
 async def setup(bot):
     bot.add_view(MusicViewSetup())
