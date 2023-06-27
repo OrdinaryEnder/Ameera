@@ -317,14 +317,14 @@ class Music(commands.Cog):
        else:
         vc: wavelink.Player = await message.author.voice.channel.connect(cls=wavelink.Player())
        if musictyp == "SoundCloud":
-        siedsong = await wavelink.SoundCloudTrack.search(message.content, return_first=True)
+        siedsong = await wavelink.SoundCloudTrack.search(message.content)[0]
         if vc.queue.is_empty and not vc.is_playing():
            await vc.play(siedsong)
         else:
            await vc.queue.put_wait(siedsong)
            await message.channel.send(f"Added {siedsong.title} to the queue", delete_after=3)
        elif musictyp == "YouTube":
-        siedsong = await wavelink.YouTubeTrack.search(message.content, return_first=True)
+        siedsong = await wavelink.YouTubeTrack.search(message.content)[0]
         if vc.queue.is_empty and not vc.is_playing():
            await vc.play(siedsong)
         else:
@@ -527,7 +527,7 @@ class Music(commands.Cog):
              await vc.queue.put_wait(scsong)
              await interaction.followup.send("Added: " + scsong.title)
         else:
-            track = await wavelink.YouTubeTrack.search(search, return_first=False)
+            track = await wavelink.YouTubeTrack.search(search)
             if not track:
                return await interaction.followup.send("Song not found")
             else:
@@ -562,7 +562,7 @@ class Music(commands.Cog):
              await vc.queue.put_wait(scsong)
              await interaction.followup.send("Added: " + scsong.title)
         else:
-            track = await wavelink.SoundCloudTrack.search(search, return_first=False)
+            track = await wavelink.SoundCloudTrack.search(search)
             if not track:
              await interaction.followup.send("Song not found")
             else:
