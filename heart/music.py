@@ -272,10 +272,10 @@ class Music(commands.Cog):
             view = MusicViewSetup()
             for child in view.children:
              child.disabled = True
-            await wlvc.disconnect()
             async with self.musicdbpool.acquire() as conn:
              messageid = await conn.fetchrow("SELECT message_id, channel_id FROM minniemusicsetup WHERE guild_id = $1", wlvc.channel.guild.id)
              themess = self.bot.get_channel(messageid['channel_id']).get_partial_message(messageid['message_id'])
+            await wlvc.disconnect()
             await themess.edit(embed=embed, view=view)
         else:
           await wlvc.disconnect()
