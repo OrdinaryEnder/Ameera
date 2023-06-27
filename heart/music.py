@@ -317,14 +317,14 @@ class Music(commands.Cog):
        else:
         vc: wavelink.Player = await message.author.voice.channel.connect(cls=wavelink.Player())
        if musictyp == "SoundCloud":
-        siedsong = await wavelink.SoundCloudTrack.search(message.content)[0]
+        siedsong = (await wavelink.SoundCloudTrack.search(message.content))[0]
         if vc.queue.is_empty and not vc.is_playing():
            await vc.play(siedsong)
         else:
            await vc.queue.put_wait(siedsong)
            await message.channel.send(f"Added {siedsong.title} to the queue", delete_after=3)
        elif musictyp == "YouTube":
-        siedsong = await wavelink.YouTubeTrack.search(message.content)[0]
+        siedsong = (await wavelink.YouTubeTrack.search(message.content))[0]
         if vc.queue.is_empty and not vc.is_playing():
            await vc.play(siedsong)
         else:
