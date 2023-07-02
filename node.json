@@ -12,7 +12,7 @@
       "NODE_SECURE": true
     },
     {
-      "NODE_HOST": "https;//lavalink.ordinaryender.my.eu.org:443",
+      "NODE_HOST": "lavalink.ordinaryender.my.eu.org:443",
       "NODE_AUTH": "youshallnotpass",
       "NODE_SECURE": true
     }
