@@ -20,6 +20,11 @@
       "NODE_HOST": "nonssl.freelavalink.ga:80",
       "NODE_AUTH": "www.freelavalink.ga",
       "NODE_SECURE": false
+    },
+    {
+      "NODE_HOST": "lavalink.ordinaryender.my.eu.org:443",
+      "NODE_AUTH": "youshallnotpass",
+      "NODE_SECURE": true
     }
   ]
 }
