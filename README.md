@@ -1,6 +1,7 @@
+
 # Olivia
 A discord bot written in python (discord.py)
-![Meme](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfOTG-mRheVtAKqd6d0a7tR-qWqkSNuFHivw&usqp=CAU)
+![1689061840394](https://github.com/OrdinaryEnder/Olivia/assets/109149031/70884480-ece4-497b-bfc3-11858c9a8a21)
 
 Written in python using [Termux](https://github.com/termux/termux-app)
 
@@ -37,3 +38,6 @@ OrdinaryEnder - Idea & Codes
 # To-do list
 
 Nothing :P
+
+
+
