@@ -775,8 +775,8 @@ class Music(commands.Cog):
       if interaction.guild.voice_client:
         vc: wavelink.Player = interaction.guild.voice_client
         if vc.is_playing():
-          embed = discord.Embed(title="**NOW PLAYING**", description=f"[{vc.track.title}]({vc.track.uri})")
-          embed.set_image(url=(vc.track.thumbnail if hasattr(vc.track, "thumbnail") else "https://media.discordapp.net/attachments/977216545921073192/1033304783156690984/images2.jpg"))
+          embed = discord.Embed(title="**NOW PLAYING**", description=f"[{vc.current.title}]({vc.current.uri})")
+          embed.set_image(url=(vc.current.thumbnail if hasattr(vc.current, "thumbnail") else "https://media.discordapp.net/attachments/977216545921073192/1033304783156690984/images2.jpg"))
         else:
           embed = discord.Embed(title="**Nothing currently playing right now ^^", description="Put some song to listen")
           embed.set_image(url="https://media.discordapp.net/attachments/977216545921073192/1116244099721343046/peakpx.jpg")
