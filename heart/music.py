@@ -771,14 +771,23 @@ class Music(commands.Cog):
       thecategory = await interaction.guild.create_category(f"{self.bot.user.name} Music")
       thechannel = await thecategory.create_text_channel(f"{self.bot.user.name}-setup-music")
       await thecategory.create_voice_channel(f"{self.bot.user.name} Voice Channel")
-      
-      if interaction.guild.voice_client and vc.is_playing():
-         vc: wavelink.Player = interaction.guild.voice_client
-         embed = discord.Embed(title="**NOW PLAYING**", description=f"[{vc.track.title}]({vc.track.uri})")
-         embed.set_image(url=(vc.track.thumbnail if hasattr(vc.track, "thumbnail") else "https://media.discordapp.net/attachments/977216545921073192/1033304783156690984/images2.jpg"))
+
+      if interaction.guild.voice_client:
+        vc: wavelink.Player = interaction.guild.voice_client
+        if vc.is_playing():
+          embed = discord.Embed(title="**NOW PLAYING**", description=f"[{vc.track.title}]({vc.track.uri})")
+          embed.set_image(url=(vc.track.thumbnail if hasattr(vc.track, "thumbnail") else "https://media.discordapp.net/attachments/977216545921073192/1033304783156690984/images2.jpg"))
+        else:
+          embed = discord.Embed(title="**Nothing currently playing right now ^^", description="Put some song to listen")
+          embed.set_image(url="https://media.discordapp.net/attachments/977216545921073192/1116244099721343046/peakpx.jpg")
+
       else:
-         embed = discord.Embed(title="**Nothing currently playing right now ^^", description="Put some song to listen")
-         embed.set_image(url="https://media.discordapp.net/attachments/977216545921073192/1116244099721343046/peakpx.jpg")
+          embed = discord.Embed(title="**Nothing currently playing right now ^^", description="Put some song to listen")
+          embed.set_image(url="https://media.discordapp.net/attachments/977216545921073192/1116244099721343046/peakpx.jpg")
+6
+
+
+       
       waitermessage = await thechannel.send(embed=embed)
       view = MusicViewSetup()
       view.message = waitermessage
