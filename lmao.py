@@ -90,7 +90,6 @@ class MyBot(commands.AutoShardedBot):
         print(Back.WHITE + Fore.RED + "Support" + Fore.YELLOW + " us" + Fore.BLUE +
               " at" + Fore.GREEN + " https://github.com/OrdinaryEnder/Olivia")
         self.session = aiohttp.ClientSession()
-        self.presencetask.start()
 
     async def close(self):
       await self.session.close()

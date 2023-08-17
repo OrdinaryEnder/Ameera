@@ -100,7 +100,7 @@ class Fun(commands.Cog):
         self.jeyyheader = {"Authorization": f"Bearer {bot.config['main']['JEYY_API'] if bot.config['main'].get('JEYY_API') else None}"}
 
 
-    @tasks.loop(seconds=5)
+    @tasks.loop(hours=24)
     async def cachelist(self):
         print("Executed")
         async with aiohttp.ClientSession(headers=self.jeyyheader) as sus:
