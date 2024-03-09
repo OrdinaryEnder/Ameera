@@ -1,8 +1,8 @@
-# Olivia config.toml
+# Ameera config.toml
 
 [main]
 token = ""
-openaikey = ""
+# optional
 MONGO_URL = ""
 # get jeyy api key at https://api.jeyy.xyz/
 JEYY_API = "" 

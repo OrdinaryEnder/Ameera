@@ -357,6 +357,7 @@ class Music(commands.Cog):
   
             return await msgpr.edit(embed=embed, view=view)
         else:
+          await vc.edit(status=None)
           embed = discord.Embed(
             title=" ", description="There are no more tracks", color=discord.Color.from_rgb(255, 0, 0))
           await vc.chan.send(embed=embed)
@@ -380,8 +381,9 @@ class Music(commands.Cog):
                  embed.set_image(url=(next_song.thumbnail if hasattr(next_song, "thumbnail") else "https://media.discordapp.net/attachments/977216545921073192/1033304783156690984/images2.jpg"))
                  await msgpr.edit(embed=embed, view=view)
           else:
+                 await vc.edit(status=str(next_song.title))
                  embed = discord.Embed(
-                  title=" ", description=f"Started playing  **[{next_song.title}]({next_song.uri})**")
+                 title=" ", description=f"Started playing  **[{next_song.title}]({next_song.uri})**")
                  await vc.chan.send(embed=embed)
    
 

@@ -10,23 +10,16 @@ import platform
 from bs4 import BeautifulSoup
 import logging
 import traceback
-import brainfuck
 import qrcode
 import gc
 import colorama
 from colorama import Fore, Back, Style
-import urllib
 import typing
 from discord import app_commands
 from discord.app_commands import AppCommandError
 from discord import Interaction
 from discord import ClientException
 import re
-import pkgutil
-import os
-import subprocess
-import math
-import functools
 import sys
 import io
 import inspect
@@ -43,7 +36,6 @@ import time
 import datetime
 from datetime import datetime as dt
 import typing as t
-from email.base64mime import body_encode
 import wavelink
 from enum import Enum
 from discord.utils import get
@@ -54,8 +46,6 @@ from discord.gateway import DiscordWebSocket, _log
 from json import loads
 import wavelink
 import async_timeout
-from roblox import Client as Boblox
-from roblox import UserNotFound
 import toml
 
 colorama.init(autoreset=True)
@@ -169,56 +159,14 @@ async def on_ready():
     print(Back.WHITE + Fore.BLACK +
           f"@{bot.user.name}#{bot.user.discriminator}")
 
-@bot.event
-async def on_member_join(member):
-    embed = discord.Embed(title=f"Welcome to {member.guild.name}, {member.name}!",
-                          description="By Joining, Your agree to the rules given in server")
-    embed.timestamp = datetime.datetime.now()
-    await member.send(embed=embed)
-    await member.add_roles(member.guild.get_role(os.getenv("MEMBER_ROLE")))
-
 
 @bot.listen()
 async def on_message(message):
     if message.author.bot:
         return
 
-    # Assassin Clan Exclusive Troll feature
-    if message.guild.id == 1053610219353145374:
-     if re.fullmatch("(http?s:\/\/(media\.)?tenor\.com(\/images\/[a-f0-9]+\/tenor\.gif|\/view\/[\w\-]+-\d{8}))", message.content):
-       await asyncio.sleep(2)
-       if not message.embeds:
-        await message.channel.send("https://media.tenor.com/7OZvk7ivrRkAAAAM/epic-embed-fail-gypsy-crusader.gif")
-     if f"<@{bot.user.id}> " in message.content:
-      bucket = bot.gptcooldown.get_bucket(message)
-      retry_after = bucket.update_rate_limit()
-      if retry_after:
-         pass
-      else:
-         mesg = message.content[22:]
-         if len(mesg) < 2:
-            pass
-         await message.channel.typing()
-         res = await bot.aiclient.openairequest((os.getenv("OPENAI_KEY") or bot.config['main']['openaikey']), mesg, message.author.name)
-         await message.channel.send(res)
-
-    # Kizzy Server Testing
-    if message.guild.id in (948712005223735336, 1053610219353145374):
-     if re.fullmatch("(?:https?://)(?:(?:canary|ptb)\.)?discord(?:app)?\.com/channels/(?P<guild>\d{16,20})/(?P<channel>\d{16,20})/(?P<message>\d{16,20})/?", message.content):
-      print("Nice")
-      if int(message.content.split("/")[4]) in (948712005223735336, 1053610219353145374):
-       lol = (bot.get_channel(int(message.content.split("/")[5])) if bot.get_channel(int(message.content.split("/")[5])) else await bot.fetch_channel(int(message.content.split("/")[5])))
-       lolmsg = await lol.fetch_message(int(message.content.split("/")[6]))
-       lolweb = await message.channel.create_webhook(name=message.author.name, avatar=(await message.author.display_avatar.read()))
-       embed = discord.Embed(title=f"#{lol.name}", description=lolmsg.content, url=str(lolmsg.jump_url))
-       embed.set_author(name=lolmsg.author.name, icon_url=lolmsg.author.display_avatar.url)
-       if lolmsg.attachments:
-        embed.set_image(url=lolmsg.attachments[0].url)
-
-       await message.delete()
-       await lolweb.send(embed=embed)
-
-     
+    
+# this shit brokes     
 #    if any(badword in message.content.lower().split() for badword in badwords):
 #        authorava = await message.author.avatar.read()
 #        await message.delete()
@@ -234,9 +182,6 @@ async def on_guild_join(guild):
         channel = random.choice(guild.channels)
         await channel.send(f"Thanks for adding {bot.user.name}, The Multipurpose bot and Family Friendly")
 
-"""
-ZairullahDeveloper once said: Being a developer isnt that easy, start from making mistakes
-"""
 
 # Umbras Sync Command
 
@@ -283,7 +228,7 @@ class MyHelpCommand(commands.MinimalHelpCommand):
         commands = await tree.fetch_commands()
         for command in commands:
             embed = discord.Embed(
-                title="Olivia ", url="https://discord.com/api/oauth2/authorize?client_id=972459217548099584&permissions=0&scope=bot%20applications.commands", description="")
+                title=f"{bot.user.name} ", url="https://discord.com/api/oauth2/authorize?client_id={bot.user.id}&permissions=0&scope=bot%20applications.commands", description="")
             embed.set_author(name="OrdinaryEnder", url="https://github.com/OrdinaryEnder",
                              icon_url="https://cdn.discordapp.com/avatars/796915832617828352/c482794784b53f29bf5a58134e7f8825.png")
             embed.set_thumbnail(
