@@ -249,7 +249,7 @@ class Music(commands.Cog):
 
     @commands.Cog.listener()
     async def on_wavelink_node_ready(self, node: wavelink.Node):
-      print(node.id)
+      print(node.identifier)
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
@@ -563,7 +563,7 @@ class Music(commands.Cog):
              await vc.queue.put_wait(scsong)
              await interaction.followup.send("Added: " + scsong.title)
         else:
-            track = await wavelink.Playable.search(search)
+            track = await wavelink.Playable.search(search, source=wavelink.TrackSource(wavelink.TrackSource.SoundCloud))
             if not track:
              await interaction.followup.send("Song not found")
             else:
