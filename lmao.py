@@ -1,4 +1,4 @@
-import pytz
+import pytz, os, pkgutil
 from antispam import AntiSpamHandler
 from antispam.enums import Library
 from antispam.caches.mongo import MongoCache
@@ -29,7 +29,6 @@ from discord.ext import commands
 from discord.ext import tasks
 import json
 from wavelink import Node as node
-from mod.botmod import OliviaOpenAI
 import aiohttp
 import asyncio
 import time
@@ -104,7 +103,6 @@ intents.messages = True
 bot = MyBot(command_prefix=">", intents=intents,
             activity=discord.Activity(type=discord.ActivityType.listening, name="Prefix '>' or ping", ))
 
-bot.aiclient = OliviaOpenAI()
 tree = bot.tree
 bot.config = toml.load("config.toml")
 bot.startTime = time.time()
@@ -174,8 +172,7 @@ async def on_message(message):
 #        await lmao.send("#" * len(message.content))
 #        await lmao.delete()
 
-
-     await bot.spamhandle.propagate(message)
+    await bot.spamhandle.propagate(message)
 
 @bot.event
 async def on_guild_join(guild):

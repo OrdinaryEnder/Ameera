@@ -1,20 +1,16 @@
 {
-  "__note__": "You can add many nodes you like (requires 1 active)",
   "lavalink": [
     {
-      "NODE_HOST": "lavalink.lexnet.cc:443",
-      "NODE_AUTH": "lexn3tl@val!nk",
-      "NODE_SECURE": true
+      "NODE_HOST": "http://lavalink4.alfari.id:80",
+      "NODE_AUTH": "catfein"
     },
     {
-      "NODE_HOST": "eu-lavalink.lexnet.cc:443",
-      "NODE_AUTH": "lexn3tl@val!nk",
-      "NODE_SECURE": true
+      "NODE_HOST": "http://lavalink4.theelf.tech:6827",
+      "NODE_AUTH": "https://dsc.gg/elfmusic"
     },
     {
-      "NODE_HOST": "https://lavalink.ordinaryender.my.eu.org:443",
-      "NODE_AUTH": "youshallnotpass",
-      "NODE_SECURE": true
+      "NODE_HOST": "http://lavalink.jirayu.pw:2333",
+      "NODE_AUTH": "youshallnotpass"
     }
   ]
 }

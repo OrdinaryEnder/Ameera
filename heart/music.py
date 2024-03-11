@@ -32,8 +32,6 @@ from discord.ext import commands
 from discord.ext import tasks
 import json
 from wavelink import Node as node
-from mod.botmod import bypass
-from mod.botmod import format_dt, format_relative
 import aiohttp
 import asyncio
 import time
@@ -81,7 +79,7 @@ class MusicDropDown(discord.ui.Select):
         # selected options. We only want the first one.
         print(self.values[0])
         search = self.lel[int(self.values[0])]
-        if self.vc.queue.is_empty and not self.vc.is_playing():
+        if self.vc.queue.is_empty and not self.vc.playing:
             await self.vc.play(search)
             embed = discord.Embed(
                 title="Now playing", description=f"[{search.title}]({search.uri})\n \n Uploader: {search.author}")
@@ -139,8 +137,8 @@ class YTMusicDropDown(discord.ui.Select):
         # the user's favourite colour or choice. The self object refers to the
         # Select object, and the values attribute gets a list of the user's
         # selected options. We only want the first one.
-        search = (await wavelink.NodePool.get_connected_node().get_tracks(query=self.values[0], cls=wavelink.YouTubeTrack))[0]
-        if self.vc.queue.is_empty and not self.vc.is_playing():
+        search = (await wavelink.Pool.fetch_tracks(self.values[0]))[0]
+        if self.vc.queue.is_empty and not self.vc.playing:
             await self.vc.play(search)
             embed = discord.Embed(
                 title="Now playing", description=f"[{search.title}]({search.uri})\n \n Uploader: {search.author}")
@@ -199,7 +197,7 @@ class MusicViewSetup(discord.ui.View):
      if not interaction.user.voice:
        return await interaction.response.send_message(f"{interaction.user.mention}, Naughty boy, youre not connected", delete_after=3)
      vc: wavelink.Player = interaction.guild.voice_client
-     if not vc.is_playing:
+     if not vc.playing:
       return await interaction.response.send_message("Music Already Paused", delete_after=3)
      await vc.pause()
      return await interaction.response.send_message("Paused.", delete_after=3)
@@ -210,7 +208,7 @@ class MusicViewSetup(discord.ui.View):
      if not interaction.user.voice:
        return await interaction.response.send_message(f"{interaction.user.mention}, Naughty boy, youre not connected", delete_after=3)
      vc: wavelink.Player = interaction.guild.voice_client
-     if not vc.is_playing:
+     if not vc.playing:
       return await interaction.response.send_message("Music Already Played", delete_after=3)
      await vc.resume()
      return await interaction.response.send_message("Resumed.", delete_after=3)
@@ -317,15 +315,15 @@ class Music(commands.Cog):
        else:
         vc: wavelink.Player = await message.author.voice.channel.connect(cls=wavelink.Player())
        if musictyp == "SoundCloud":
-        siedsong = (await wavelink.SoundCloudTrack.search(message.content))[0]
-        if vc.queue.is_empty and not vc.is_playing():
+        siedsong = (await wavelink.Playable.search(message.content))[0]
+        if vc.queue.is_empty and not vc.playing:
            await vc.play(siedsong)
         else:
            await vc.queue.put_wait(siedsong)
            await message.channel.send(f"Added {siedsong.title} to the queue", delete_after=3)
        elif musictyp == "YouTube":
-        siedsong = (await wavelink.YouTubeTrack.search(message.content))[0]
-        if vc.queue.is_empty and not vc.is_playing():
+        siedsong = (await wavelink.Playable.search(message.content))[0]
+        if vc.queue.is_empty and not vc.playing:
            await vc.play(siedsong)
         else:
            await vc.queue.put_wait(siedsong)
@@ -334,7 +332,7 @@ class Music(commands.Cog):
 
 
     @commands.Cog.listener()
-    async def on_wavelink_track_end(self, payload: wavelink.TrackEventPayload):
+    async def on_wavelink_track_end(self, payload: wavelink.TrackEndEventPayload):
      vc = payload.player
 
 
@@ -365,7 +363,7 @@ class Music(commands.Cog):
 
 
     @commands.Cog.listener()
-    async def on_wavelink_track_start(self, payload: wavelink.TrackEventPayload):
+    async def on_wavelink_track_start(self, payload: wavelink.TrackStartEventPayload):
           next_song = payload.original
           vc = payload.player
 
@@ -408,10 +406,11 @@ class Music(commands.Cog):
                  musictype text);
                  ''')
       self.nodetask = self.bot.loop.create_task(self.node_connect())
+      
 
     async def cog_unload(self):
         await self.musicdbpool.close()
-        node = wavelink.NodePool.nodes
+        node = wavelink.Pool.nodes
         for sus in node:
             await node.disconnect()
         self.nodetask.cancel()
@@ -432,7 +431,7 @@ class Music(commands.Cog):
     (10, -0.1), (11, -0.1), (12, -0.1), (13, -0.1), (14, -0.1)
 ]
             vc: wavelink.Player = interaction.guild.voice_client
-            await vc.set_filter(wavelink.Filter(equalizer=wavelink.Equalizer(name="Bass Boost", bands=bands)))
+            await vc.set_filters(wavelink.Filter(equalizer=wavelink.Equalizer(name="Bass Boost", bands=bands)))
             return await interaction.followup.send("Set Filter: Bass Boost")
 
 
@@ -445,7 +444,7 @@ class Music(commands.Cog):
             return await interaction.followup.send("No such voice connected")
         else:
             vc: wavelink.Player = interaction.guild.voice_client
-            await vc.set_filter(wavelink.Filter(wavelink.Rotation(speed=15)))
+            await vc.set_filters(wavelink.Filter(wavelink.Rotation(speed=15)))
             return await interaction.followup.send("Set Filter: 8D")
 
     @filterscmd.command(name="nightcore", description="Set Nightcore")
@@ -457,7 +456,7 @@ class Music(commands.Cog):
             return await interaction.followup.send("No such voice connected")
         else:
             vc: wavelink.Player = interaction.guild.voice_client
-            await vc.set_filter(wavelink.Filter(timescale=wavelink.Timescale(speed=1.1, pitch=1.2, rate=1.1)))
+            await vc.set_filters(wavelink.Filter(timescale=wavelink.Timescale(speed=1.1, pitch=1.2, rate=1.1)))
             return await interaction.followup.send("Set Filter: Nightcore")
 
     @filterscmd.command(name="clear", description="Clear Filters")
@@ -469,7 +468,7 @@ class Music(commands.Cog):
             return await interaction.followup.send("No such voice connected")
         else:
             vc: wavelink.Player = interaction.guild.voice_client
-            await vc.set_filter(wavelink.Filter(equalizer=None, timescale=None))
+            await vc.set_filters(wavelink.Filter(equalizer=None, timescale=None))
             return await interaction.followup.send("Cleared Filters")
 
     @filterscmd.command(name="sloweffect", description="Set Slowdown Filter")
@@ -481,7 +480,7 @@ class Music(commands.Cog):
             return await interaction.followup.send("No such voice connected")
         else:
             vc: wavelink.Player = interaction.guild.voice_client
-            await vc.set_filter(wavelink.Filter(timescale=wavelink.Timescale(speed=0.9, pitch=0.9, rate=0.9)))
+            await vc.set_filters(wavelink.Filter(timescale=wavelink.Timescale(speed=0.9, pitch=0.9, rate=0.9)))
             await interaction.followup.send("Set Filter: Slowdown")
 
     @app_commands.command(name="connect", description="Connect to Your Voice")
@@ -516,20 +515,20 @@ class Music(commands.Cog):
         # detect if user put url instead of title
         await interaction.response.defer(thinking=True)
         if re.fullmatch("^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$", search):
-            scsong = (await wavelink.NodePool.get_connected_node().get_tracks(query=search, cls=wavelink.YouTubeTrack))[0]
+            scsong = (await wavelink.Pool.fetch_tracks(search))[0]
             embed = discord.Embed(
                 title="Now playing", description=f"[{scsong.title}]({scsong.uri})\n \n Uploader: {scsong.author}")
             embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
             embed.set_thumbnail(url=scsong.thumbnail)
             print(scsong)
-            if vc.queue.is_empty and not vc.is_playing():
+            if vc.queue.is_empty and not vc.playing:
              await vc.play(scsong)
              await interaction.followup.send(embed=embed)
             else:
              await vc.queue.put_wait(scsong)
              await interaction.followup.send("Added: " + scsong.title)
         else:
-            track = await wavelink.YouTubeTrack.search(search)
+            track = await wavelink.Playable.search(search)
             if not track:
                return await interaction.followup.send("Song not found")
             else:
@@ -553,18 +552,18 @@ class Music(commands.Cog):
        # detect if user put url instead of title
         await interaction.response.defer(thinking=True)
         if re.fullmatch("^(?:https?:\/\/)((?:www\.)|(?:m\.))?soundcloud\.com\/[a-z0-9](?!.*?(-|_){2})[\w-]{1,23}[a-z0-9](?:\/.+)?$", search):
-            scsong = (await wavelink.NodePool.get_connected_node().get_tracks(query=search, cls=wavelink.SoundCloudTrack))[0]
+            scsong = (await wavelink.Pool.fetch_tracks(search))[0]
             embed = discord.Embed(
                 title="Now playing", description=f"[{scsong.title}]({scsong.uri})\n \n Uploader: {scsong.author}")
             embed.set_image(url="https://i.imgur.com/4M7IWwP.gif")
-            if vc.queue.is_empty and not vc.is_playing():
+            if vc.queue.is_empty and not vc.playing:
              await vc.play(scsong)
              await interaction.followup.send(embed=embed)
             else:
              await vc.queue.put_wait(scsong)
              await interaction.followup.send("Added: " + scsong.title)
         else:
-            track = await wavelink.SoundCloudTrack.search(search)
+            track = await wavelink.Playable.search(search)
             if not track:
              await interaction.followup.send("Song not found")
             else:
@@ -696,7 +695,7 @@ class Music(commands.Cog):
         else:
             vc: wavelink.Player = interaction.guild.voice_client
 
-        if not vc.is_playing():
+        if not vc.playing:
             return await interaction.response.send_message("Nothing is playing")
 
         em = discord.Embed(
@@ -776,7 +775,7 @@ class Music(commands.Cog):
 
       if interaction.guild.voice_client:
         vc: wavelink.Player = interaction.guild.voice_client
-        if vc.is_playing():
+        if vc.playing:
           embed = discord.Embed(title="**NOW PLAYING**", description=f"[{vc.current.title}]({vc.current.uri})")
           embed.set_image(url=(vc.current.thumbnail if hasattr(vc.current, "thumbnail") else "https://media.discordapp.net/attachments/977216545921073192/1033304783156690984/images2.jpg"))
         else:
@@ -821,8 +820,8 @@ class Music(commands.Cog):
 
     async def node_connect(self):
       jsonnode = json.load(open('node.json'))
-      listnode = [wavelink.Node(uri=lol['NODE_HOST'], password=lol['NODE_AUTH'], secure=lol['NODE_SECURE'], use_http=(True if "http" in lol["NODE_HOST"] else False)) for lol in jsonnode['lavalink']]
-      await wavelink.NodePool.connect(client=self.bot, nodes=listnode)
+      listnode = [wavelink.Node(uri=lol['NODE_HOST'], password=lol['NODE_AUTH']) for lol in jsonnode['lavalink']]
+      await wavelink.Pool.connect(client=self.bot, nodes=listnode)
 
 async def setup(bot):
     bot.add_view(MusicViewSetup())
